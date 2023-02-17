@@ -6,4 +6,5 @@
 /ColorTransferLib.egg-info/
 /dist/
 __pycache__/
-__init__.pyc
+**.pyc
+

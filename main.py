@@ -155,7 +155,7 @@ if __name__ == '__main__':
     print("TOTAL: " + str(time.time() - start_time))
 
     if ct_input == "img-img" or ct_input == "img-pc":
-        output.write("/home/hpadmin/Downloads/output.png")
+        output["object"].write("/home/hpadmin/Downloads/output.png")
         #output.show()
     elif ct_input == "pc-pc" or ct_input == "pc-img":
         out_loader = PLYLoader(mesh=output)

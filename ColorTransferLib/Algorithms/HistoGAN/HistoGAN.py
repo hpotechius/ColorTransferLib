@@ -223,6 +223,14 @@ class HistoGAN:
         output = np.swapaxes(output,1,2)
 
         img_out = Img(array=cv2.cvtColor(output, cv2.COLOR_BGR2RGB), normalized=True)
-        return img_out
+
+
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": img_out
+        }
+        
+        return output
 
     

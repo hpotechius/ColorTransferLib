@@ -1,1 +1,0 @@
-wget --no-check-certificate https://drive.google.com/file/d/1fRBGCJpebXqpVc3kU0vv95eRlh6Go1BB/view?usp=sharing -O data.zip

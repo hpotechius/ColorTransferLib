@@ -15,15 +15,29 @@ import os
 
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 
+# read all available algorithms from the Algorithms folder and import them
+available_methods = os.listdir(os.path.dirname(os.path.abspath(__file__)) + "/Algorithms")
+available_methods.remove("__init__.pyc")
+available_methods.remove("__init__.py")
+available_methods.remove("__pycache__")
+for m in available_methods:
+    exec(m + " = getattr(importlib.import_module('ColorTransferLib.Algorithms."+m+"."+m+"'), '"+m+"')")
+
+# read all available metrics from the Evaluation folders
+available_metrics = os.listdir(os.path.dirname(os.path.abspath(__file__)) + "/Evaluation")
+available_metrics.remove("__init__.py")
+#available_metrics.remove("__init__.pyc")
+available_metrics.remove("__pycache__")
+
 # read all available algorithms from the <algorithms.json> config file and import them
-with open(os.path.dirname(os.path.abspath(__file__)) + "/Config/algorithms.json", 'r') as f:
-    available_methods = json.load(f)
-    for m in available_methods:
-        exec(m + " = getattr(importlib.import_module('ColorTransferLib.Algorithms."+m+"."+m+"'), '"+m+"')")
+# with open(os.path.dirname(os.path.abspath(__file__)) + "/Config/algorithms.json", 'r') as f:
+#     available_methods = json.load(f)
+#     for m in available_methods:
+#         exec(m + " = getattr(importlib.import_module('ColorTransferLib.Algorithms."+m+"."+m+"'), '"+m+"')")
 
 # read all available metrics from the <metrics.json> config file
-with open(os.path.dirname(os.path.abspath(__file__)) + "/Config/metrics.json", 'r') as f:
-    available_metrics = json.load(f)
+# with open(os.path.dirname(os.path.abspath(__file__)) + "/Config/metrics.json", 'r') as f:
+#     available_metrics = json.load(f)
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
