@@ -142,7 +142,6 @@ def process_image(model, name, input_image, target_hist, image_size=256,
 
     
         return output
-        print(f'recolored images generated at {results_dir}/{name}/'f'{samples_name}')
 
 # ----------------------------------------------------------------------------------------------------------------------
 #

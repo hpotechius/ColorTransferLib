@@ -144,21 +144,6 @@ class HistoGAN:
             if (extension == str.lower(extension) == '.jpg' or str.lower(extension) == '.png'):
                 face_extraction(opt.input_image)
                 input_image = f'./temp-faces/{os.path.split(opt.input_image)[-1]}'
-            elif extension == '':
-                files = [os.path.join('./temp-faces/', f) for f in
-                    os.listdir('./temp-faces/') if os.path.isfile(os.path.join(
-                './temp-faces/', f))]
-                for f in files:
-                    os.remove(f)
-
-                files = [os.path.join(opt.input_image, f) for f in
-                    os.listdir(opt.input_image) if os.path.isfile(os.path.join(
-                    opt.input_image, f))]
-                for f in files:
-                    extension = os.path.splitext(f)[1]
-                    if (extension == str.lower(extension) == '.jpg' or str.lower(extension) == '.png'):
-                        face_extraction(f)
-                input_image = './temp-faces/'
             else:
                 raise Exception('File extension is not supported!')
         else:

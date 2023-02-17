@@ -12,6 +12,8 @@ from numba import cuda
 import math
 from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
+from ColorTransferLib.ImageProcessing.Image import Image as Img
+from copy import deepcopy
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -30,6 +32,10 @@ from ColorTransferLib.Utils.BaseOptions import BaseOptions
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class GlobalColorTransfer:
+    compatibility = {
+        "src": ["Image", "Mesh"],
+        "ref": ["Image", "Mesh"]
+    }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -63,12 +69,40 @@ class GlobalColorTransfer:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
+    def check_compatibility(src, ref):
+        # return element
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None
+        }
+        
+        if src.get_type() not in GlobalColorTransfer.compatibility["src"]:
+            output["status_code"] = -1
+            output["response"] = "No support for the following source type: " + src.get_type()
+
+        if ref.get_type() not in GlobalColorTransfer.compatibility["ref"]:
+            output["status_code"] = -1
+            output["response"] = "No support for the following reference type: " + ref.get_type()
+
+        return output
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
     def apply(src, ref, opt):
+        # check if method is compatible with provided source and reference objects
+        output = GlobalColorTransfer.check_compatibility(src, ref)
+
+        # Preprocessing
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
 
         # [1] Copy source and reference to GPU and create output
-        device_src = cuda.to_device(src)
-        device_ref = cuda.to_device(ref)
-        device_out = cuda.device_array(src.shape)
+        device_src = cuda.to_device(src_color)
+        device_ref = cuda.to_device(ref_color)
+        device_out = cuda.device_array(src_color.shape)
 
         # [2] Convert RGB to lab color space
         if opt.colorspace == "lalphabeta":
@@ -102,9 +136,18 @@ class GlobalColorTransfer:
             device_out = ColorSpaces.lab_to_rgb(device_out)
 
         # [6] Copy output from GPU to RAM
-        out = device_out.copy_to_host()
+        out_colors = device_out.copy_to_host()
+        out_colors = np.clip(out_colors, 0, 1)
 
-        return np.clip(out, 0, 1)
+        out_img.set_colors(out_colors)
+
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img
+        }
+
+        return output
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------

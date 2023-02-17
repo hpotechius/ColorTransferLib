@@ -14,6 +14,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # 0: DEBUG, 1: INFO, 2: WARNING, 3: ERROR
 
 from ColorTransferLib.MeshProcessing.PLYLoader import PLYLoader
+from ColorTransferLib.MeshProcessing.Mesh import Mesh
 from ColorTransferLib.ImageProcessing.Image import Image
 from ColorTransferLib.ColorTransfer import ColorTransfer
 
@@ -112,8 +113,8 @@ if __name__ == '__main__':
 
     #for ct_approach in appr:
 
-    ct_approach = "HistoGAN"
-    ct_input = "img-img"
+    ct_approach = "GlobalColorTransfer"
+    ct_input = "pc-pc"
 
     ref_img = "data/images/starry-night.jpg"
     src_img = "data/images/the_scream.jpg"
@@ -155,9 +156,9 @@ if __name__ == '__main__':
     print("TOTAL: " + str(time.time() - start_time))
 
     if ct_input == "img-img" or ct_input == "img-pc":
-        output["object"].write("/home/hpadmin/Downloads/output.png")
+        output["object"].write("/home/hpadmin/Downloads/"+ct_approach+".png")
         #output.show()
     elif ct_input == "pc-pc" or ct_input == "pc-img":
-        out_loader = PLYLoader(mesh=output)
-        out_loader.write("/home/hpadmin/Downloads/Results/"+ct_approach+".ply")
+        out_loader = PLYLoader(mesh=output["object"])
+        out_loader.write("/home/hpadmin/Downloads/"+ct_approach+".ply")
 

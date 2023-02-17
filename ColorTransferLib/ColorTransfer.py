@@ -29,16 +29,6 @@ available_metrics.remove("__init__.py")
 #available_metrics.remove("__init__.pyc")
 available_metrics.remove("__pycache__")
 
-# read all available algorithms from the <algorithms.json> config file and import them
-# with open(os.path.dirname(os.path.abspath(__file__)) + "/Config/algorithms.json", 'r') as f:
-#     available_methods = json.load(f)
-#     for m in available_methods:
-#         exec(m + " = getattr(importlib.import_module('ColorTransferLib.Algorithms."+m+"."+m+"'), '"+m+"')")
-
-# read all available metrics from the <metrics.json> config file
-# with open(os.path.dirname(os.path.abspath(__file__)) + "/Config/metrics.json", 'r') as f:
-#     available_metrics = json.load(f)
-
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Proxy class for all color transfer algorithms within this project. This class allows the call of the algorithms with
@@ -83,12 +73,8 @@ class ColorTransfer:
         self.__out = globals()[self.__approach].apply(self.__src, self.__ref, self.__options)
         return self.__out
         exit()
-        if self.__approach == "GlobalColorTransfer":
-            src_color = self.__src.get_colors()
-            ref_color = self.__ref.get_colors()
-            out_colors = GlobalColorTransfer.apply(src_color, ref_color, self.__options)
-            self.__out.set_colors(out_colors)
-        elif self.__approach == "MongeKLColorTransfer":
+
+        if self.__approach == "MongeKLColorTransfer":
             src_color = self.__src.get_colors()
             ref_color = self.__ref.get_colors()
             out_colors = MongeKLColorTransfer.apply(src_color, ref_color, self.__options)

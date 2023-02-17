@@ -810,7 +810,7 @@ class recoloringTrainer():
         if self.variance_loss is True:
             self.var_loss = 0
 
-        self.init_folders()
+        #self.init_folders()
 
         self.loader = None
 
@@ -944,7 +944,7 @@ class recoloringTrainer():
         else:
             num_rows = int(np.ceil(sqrt(hist_batch.shape[0])))
         output_name = str(self.results_dir / self.name / f'{str(num)}-generated.{ext}')
-        torchvision.utils.save_image(generated_images, output_name, nrow=num_rows)
+        #torchvision.utils.save_image(generated_images, output_name, nrow=num_rows)
 
         if resizing is not None:
             if resizing == 'upscaling':
@@ -986,13 +986,11 @@ class recoloringTrainer():
                   f'| CR: {self.last_cr_loss:.2f} | Q: {self.q_loss:.2f}')
 
     def model_name(self, num):
-        print("GZGZ")
-        print(str(self.models_dir / self.name / f'model_0.pt'))
         return str(self.models_dir / self.name / f'model_0.pt')
 
-    def init_folders(self):
-        (self.results_dir / self.name).mkdir(parents=True, exist_ok=True)
-        (self.models_dir / self.name).mkdir(parents=True, exist_ok=True)
+    # def init_folders(self):
+    #     (self.results_dir / self.name).mkdir(parents=True, exist_ok=True)
+    #     (self.models_dir / self.name).mkdir(parents=True, exist_ok=True)
 
     def clear(self):
         rmtree(f'./models/{self.name}', True)
