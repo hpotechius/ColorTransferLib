@@ -10,11 +10,12 @@ Please see the LICENSE file that should have been included as part of this packa
 
 import time
 import numpy as np
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # 0: DEBUG, 1: INFO, 2: WARNING, 3: ERROR
 
 from ColorTransferLib.MeshProcessing.PLYLoader import PLYLoader
 from ColorTransferLib.ImageProcessing.Image import Image
 from ColorTransferLib.ColorTransfer import ColorTransfer
-
 
 from ColorTransferLib.Utils.Math import get_random_3x3rotation_matrix
 from ColorTransferLib.Evaluation.SSIM.SSIM import SSIM
@@ -28,25 +29,24 @@ import matplotlib.pyplot as plt
 from torch import nn
 from torch.functional import F
 from copy import copy
-import os
 import gdown
 import zipfile36 as zipfile
 
 # download Models folder
-if not os.path.exists("Models") and not os.path.exists("data"):
-    print("Download DATA.zip ...")
-    url = "https://drive.google.com/file/d/1ShJpPFJ9vCu5Vb7FJk7aSnn7ywFiT0GJ/view?usp=share_link"
-    output_path = 'DATA.zip'
-    gdown.download(url, output_path, quiet=False, fuzzy=True)
-    # Extract DATA.zip
-    print("Extract DATA.zip ...")
-    with zipfile.ZipFile("DATA.zip","r") as zip_ref:
-        zip_ref.extractall()
-    # Delete DATA.zip
-    print("Delete DATA.zip ...")
-    os.remove("DATA.zip")
+# if not os.path.exists("Models") and not os.path.exists("data"):
+#     print("Download DATA.zip ...")
+#     url = "https://drive.google.com/file/d/1ShJpPFJ9vCu5Vb7FJk7aSnn7ywFiT0GJ/view?usp=share_link"
+#     output_path = 'DATA.zip'
+#     gdown.download(url, output_path, quiet=False, fuzzy=True)
+#     # Extract DATA.zip
+#     print("Extract DATA.zip ...")
+#     with zipfile.ZipFile("DATA.zip","r") as zip_ref:
+#         zip_ref.extractall()
+#     # Delete DATA.zip
+#     print("Delete DATA.zip ...")
+#     os.remove("DATA.zip")
 
-exit()
+# exit()
 
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
@@ -92,7 +92,8 @@ if __name__ == '__main__':
             "GmmEmColorTransfer",
             "Eb3dColorTransfer", # no image support?
             "PSNetStyleTransfer",
-            "MongeKLColorTransfer"]
+            "MongeKLColorTransfer",
+            "HistoGAN"]
 
     appr = [#"GlobalColorTransfer",
             #"PdfColorTransfer",
@@ -111,14 +112,13 @@ if __name__ == '__main__':
 
     #for ct_approach in appr:
 
-    ct_approach = "TpsColorTransfer"
+    ct_approach = "HistoGAN"
     ct_input = "img-img"
 
-    # src_img = "data/images/starry-night.jpg"
-    # ref_img = "data/images/the_scream.jpg"
-    src_img = "/home/hpadmin/Downloads/drive-download-20230116T063805Z-001/fg_remv.png"
-    #src_img = "/home/hpadmin/Downloads/inpainted.png"
-    ref_img = "/home/hpadmin/Downloads/reference.png"
+    ref_img = "data/images/starry-night.jpg"
+    src_img = "data/images/the_scream.jpg"
+    # src_img = "/home/hpadmin/Projects/HistoGAN/input_images/2.jpg"
+    # ref_img = "/home/hpadmin/Projects/HistoGAN/target_images/4.jpg"
 
     ref_pc = "data/pointclouds/athen_postprocessed_simp.ply"
     src_pc = "data/pointclouds/Wappentier_blue.ply"
@@ -145,20 +145,19 @@ if __name__ == '__main__':
         exit(1)
     start_time = time.time()
 
-    #exit()
     ct = ColorTransfer(src, ref, ct_approach)
     output = ct.apply()
+
+    if output["status_code"] == -1:
+        print("\033[91mTypeError\033[0m: " + output["response"])
+        exit()
 
     print("TOTAL: " + str(time.time() - start_time))
 
     if ct_input == "img-img" or ct_input == "img-pc":
-        #output.resize(1024, 1024)
-        #output.write("/home/hpadmin/Downloads/"+ct_approach+".png")
-        output.write("/home/hpadmin/Downloads/wo_inpainting.png")
-        
+        output.write("/home/hpadmin/Downloads/output.png")
         #output.show()
     elif ct_input == "pc-pc" or ct_input == "pc-img":
         out_loader = PLYLoader(mesh=output)
-        #out_loader.write('data/pointclouds/out.ply')
         out_loader.write("/home/hpadmin/Downloads/Results/"+ct_approach+".ply")
 

@@ -10,5 +10,6 @@
     "GmmEmColorTransfer",
     "Eb3dColorTransfer",
     "PSNetStyleTransfer",
-    "MongeKLColorTransfer"
+    "MongeKLColorTransfer",
+    "HistoGAN"
 ]

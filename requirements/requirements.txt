@@ -20,3 +20,10 @@ imblearn
 gdown
 zipfile36 
 h5py
+tqdm
+PilloW
+torch-optimizer
+retry
+vector-quantize-pytorch
+linear_attention_transformer
+dlib

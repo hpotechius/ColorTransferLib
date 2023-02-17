@@ -66,6 +66,9 @@ class ColorTransfer:
     #
     # ------------------------------------------------------------------------------------------------------------------
     def apply(self):
+        self.__out = globals()[self.__approach].apply(self.__src, self.__ref, self.__options)
+        return self.__out
+        exit()
         if self.__approach == "GlobalColorTransfer":
             src_color = self.__src.get_colors()
             ref_color = self.__ref.get_colors()
@@ -85,6 +88,11 @@ class ColorTransfer:
             src_color = self.__src.get_raw() * 255.0
             ref_color = self.__ref.get_raw() * 255.0
             out_colors = NeuralStyleTransfer.apply(src_color, ref_color, self.__options)
+            self.__out.set_raw(out_colors)
+        elif self.__approach == "HistoGAN":
+            src_color = self.__src.get_raw()
+            ref_color = self.__ref.get_raw()
+            out_colors = HistoGAN.apply(src_color, ref_color, self.__options)
             self.__out.set_raw(out_colors)
         elif self.__approach == "FrequencyColorTransfer":
             src_color = self.__src.get_raw() * 255.0

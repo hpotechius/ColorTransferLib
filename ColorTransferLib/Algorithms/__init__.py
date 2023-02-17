@@ -11,3 +11,4 @@ from . import PSNetStyleTransfer
 from . import TpsColorTransfer
 from . import MongeKLColorTransfer
 from . import FrequencyColorTransfer
+from . import HistoGAN
