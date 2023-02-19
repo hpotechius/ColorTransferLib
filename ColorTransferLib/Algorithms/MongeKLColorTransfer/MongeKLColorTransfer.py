@@ -13,7 +13,8 @@ import math
 from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from scipy.linalg import fractional_matrix_power
-
+from ColorTransferLib.Utils.Helper import check_compatibility
+from copy import deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -38,6 +39,10 @@ from scipy.linalg import fractional_matrix_power
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class MongeKLColorTransfer:
+    compatibility = {
+        "src": ["Image", "Mesh"],
+        "ref": ["Image", "Mesh"]
+    }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -81,6 +86,13 @@ class MongeKLColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        # check if method is compatible with provided source and reference objects
+        output = check_compatibility(src, ref, MongeKLColorTransfer.compatibility)
+
+        # Preprocessing
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
         """
         EPS = 2.2204e-16
         def MKL(A, B):
@@ -116,8 +128,8 @@ class MongeKLColorTransfer:
         """
 
         # Convert colors from RGB to lalphabeta color space
-        src_color_rgb = src.reshape(src.shape[0], 3)
-        ref_color_rgb = ref.reshape(ref.shape[0], 3)
+        src_color_rgb = src_color.reshape(src_color.shape[0], 3)
+        ref_color_rgb = ref_color.reshape(ref_color.shape[0], 3)
 
 
         #src_mean = np.mean(src_color_rgb, axis=0)
@@ -135,12 +147,21 @@ class MongeKLColorTransfer:
         mean_src = np.mean(src_color_rgb, axis=0)
         mean_ref = np.mean(ref_color_rgb, axis=0)
         XR = (src_color_rgb - mean_src) @ M + mean_ref
-        IR = np.reshape(XR, src.shape, 'F')
+        IR = np.reshape(XR, src_color.shape, 'F')
         IR = np.real(IR)
         IR[IR > 1] = 1
         IR[IR < 0] = 0
 
-        return IR
+
+
+        out_img.set_colors(IR)
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img
+        }
+
+        return output
 
         out = np.dot(src_color_rgb, M)
 

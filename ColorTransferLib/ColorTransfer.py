@@ -15,19 +15,12 @@ import os
 
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 
-# read all available algorithms from the Algorithms folder and import them
-available_methods = os.listdir(os.path.dirname(os.path.abspath(__file__)) + "/Algorithms")
-available_methods.remove("__init__.pyc")
-available_methods.remove("__init__.py")
-available_methods.remove("__pycache__")
+from ColorTransferLib.Utils.Helper import get_methods, get_metrics
+
+available_methods = get_methods()
+available_metrics = get_metrics()
 for m in available_methods:
     exec(m + " = getattr(importlib.import_module('ColorTransferLib.Algorithms."+m+"."+m+"'), '"+m+"')")
-
-# read all available metrics from the Evaluation folders
-available_metrics = os.listdir(os.path.dirname(os.path.abspath(__file__)) + "/Evaluation")
-available_metrics.remove("__init__.py")
-#available_metrics.remove("__init__.pyc")
-available_metrics.remove("__pycache__")
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -71,87 +64,6 @@ class ColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     def apply(self):
         self.__out = globals()[self.__approach].apply(self.__src, self.__ref, self.__options)
-        return self.__out
-        exit()
-
-        if self.__approach == "MongeKLColorTransfer":
-            src_color = self.__src.get_colors()
-            ref_color = self.__ref.get_colors()
-            out_colors = MongeKLColorTransfer.apply(src_color, ref_color, self.__options)
-            self.__out.set_colors(out_colors)
-        elif self.__approach == "PdfColorTransfer":
-            src_color = self.__src.get_colors()
-            ref_color = self.__ref.get_colors()
-            out_colors = PdfColorTransfer.apply(src_color, ref_color, self.__options)
-            self.__out.set_colors(out_colors)
-        elif self.__approach == "NeuralStyleTransfer":
-            src_color = self.__src.get_raw() * 255.0
-            ref_color = self.__ref.get_raw() * 255.0
-            out_colors = NeuralStyleTransfer.apply(src_color, ref_color, self.__options)
-            self.__out.set_raw(out_colors)
-        elif self.__approach == "HistoGAN":
-            src_color = self.__src.get_raw()
-            ref_color = self.__ref.get_raw()
-            out_colors = HistoGAN.apply(src_color, ref_color, self.__options)
-            self.__out.set_raw(out_colors)
-        elif self.__approach == "FrequencyColorTransfer":
-            src_color = self.__src.get_raw() * 255.0
-            ref_color = self.__ref.get_raw() * 255.0
-            out_colors = FrequencyColorTransfer.apply(src_color, ref_color, self.__options)
-            self.__out.set_raw(out_colors)
-        elif self.__approach == "HistogramAnalogy":
-            src_color = self.__src.get_raw() * 255.0
-            ref_color = self.__ref.get_raw() * 255.0
-            out_colors = HistogramAnalogy.apply(src_color, ref_color, self.__options)
-            self.__out.set_raw(out_colors)
-        elif self.__approach == "CamsTransfer":
-            src_color = self.__src.get_raw() * 255.0
-            ref_color = self.__ref.get_raw() * 255.0
-            out_colors = CamsTransfer.apply(src_color, ref_color, self.__options)
-            self.__out.set_raw(out_colors)
-        elif self.__approach == "DeepPhotoStyleTransfer":
-            src_color = self.__src.get_raw() * 255.0
-            ref_color = self.__ref.get_raw() * 255.0
-            out_colors = DeepPhotoStyleTransfer.apply(src_color, ref_color, self.__options)
-            self.__out.set_raw(out_colors)
-        elif self.__approach == "TpsColorTransfer":
-            # NOTE RGB space needs multiplication with 255
-            src_color = self.__src.get_raw() 
-            ref_color = self.__ref.get_raw() 
-            out_colors = TpsColorTransfer.apply(src_color, ref_color, self.__options)
-            self.__out.set_raw(out_colors)
-        elif self.__approach == "FuzzyColorTransfer":
-            scale = 300
-            self.__src.resize(width=scale * self.__src.get_width() // self.__src.get_height(), height=scale)
-            self.__ref.resize(width=scale * self.__ref.get_width() // self.__ref.get_height(), height=scale)
-            self.__out.resize(width=scale * self.__src.get_width() // self.__src.get_height(), height=scale)
-            src_color = self.__src.get_colors()
-            ref_color = self.__ref.get_colors()
-            out_colors = FuzzyColorTransfer.apply(src_color, ref_color, self.__options)
-            self.__out.set_colors(out_colors)
-        elif self.__approach == "GmmEmColorTransfer":
-            scale = 200
-            self.__src.resize(width=scale * self.__src.get_width() // self.__src.get_height(), height=scale)
-            self.__ref.resize(width=scale * self.__ref.get_width() // self.__ref.get_height(), height=scale)
-            self.__out.resize(width=scale * self.__src.get_width() // self.__src.get_height(), height=scale)
-            src_color = self.__src.get_raw() * 255.0
-            ref_color = self.__ref.get_raw() * 255.0
-            out_colors = GmmEmColorTransfer.apply(src_color, ref_color, self.__options)
-            self.__out.set_raw(out_colors)
-        elif self.__approach == "Eb3dColorTransfer":
-            if self.__src.get_type() == "Image":
-                print("No support for source with type <Image>.")
-                exit(1)
-            else:
-                out_colors = Eb3dColorTransfer.apply(self.__src, self.__ref, self.__options)
-                self.__out.set_colors(out_colors)
-        elif self.__approach == "PSNetStyleTransfer":
-            if self.__src.get_type() == "Image":
-                print("No support for source with type <Image>.")
-                exit(1)
-            else:
-                self.__out = PSNetStyleTransfer.apply(self.__src, self.__ref, self.__options)
-
         return self.__out
 
     # ------------------------------------------------------------------------------------------------------------------

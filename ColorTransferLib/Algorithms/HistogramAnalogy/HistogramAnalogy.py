@@ -20,6 +20,8 @@ import torchvision.utils as vutils
 import sys
 
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
+from copy import deepcopy
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -51,6 +53,11 @@ class HistogramAnalogy:
     identifier = "HistogramAnalogy"
     title = "Deep Color Transfer using Histogram Analogy"
     year = 2020
+
+    compatibility = {
+        "src": ["Image"],
+        "ref": ["Image"]
+    }
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
@@ -96,11 +103,14 @@ class HistogramAnalogy:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
-        srcT = src.astype(np.float64) / 255
-        refT = ref.astype(np.float64) / 255
+        # check if method is compatible with provided source and reference objects
+        output = check_compatibility(src, ref, HistogramAnalogy.compatibility)
 
-        #opt = HistogramAnalogy.Options()
-        #opt = BaseOptions(options)
+        # Preprocessing
+        srcT = src.get_raw()
+        refT = ref.get_raw()
+        out_img = deepcopy(src)
+
         opt.checkpoints_dir = "Models/HistogramAnalogy"
 
         data_loader = CreateDataLoader(opt, srcT, refT)
@@ -122,10 +132,15 @@ class HistogramAnalogy:
         ou = np.swapaxes(ou, 1, 2)
 
         out = ou.cpu().detach().numpy()
-        out = out * 255
-        out = out.astype(np.uint8)
 
-        return out
+        out = out.astype(np.float32)
+        out_img.set_raw(out, normalized=True)
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img
+        }
+        return output
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------

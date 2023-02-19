@@ -21,6 +21,8 @@ import tensorflow as tf
 
 from ColorTransferLib.Algorithms.PSNetStyleTransfer.psnet import PSNet
 from ColorTransferLib.Algorithms.PSNetStyleTransfer.utils import *
+from copy import deepcopy
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 
 opj = os.path.join
@@ -51,6 +53,10 @@ import glob
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class PSNetStyleTransfer:
+    compatibility = {
+        "src": ["Mesh"],
+        "ref": ["Mesh"]
+    }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -89,7 +95,12 @@ class PSNetStyleTransfer:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref, opt):
+    def apply(src, ref, opt):       
+        # check if method is compatible with provided source and reference objects
+        output = check_compatibility(src, ref, PSNetStyleTransfer.compatibility)
+        if output["status_code"] != 0:
+            return output
+        
         iteration = opt.iterations  # iteration number for style transfer
         geotransfer = opt.geotransfer
 
@@ -270,5 +281,11 @@ class PSNetStyleTransfer:
                 previous_loss = current_total_loss
             sess.close()
 
-        return src
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": src
+        }
+
+        return output
 

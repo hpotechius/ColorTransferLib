@@ -62,10 +62,9 @@ class SemanticColorTransfer:
     def apply(src_rgb, src_sem, src_depth, ref_rgb, ref_sem, ref_depth, opt):
         print("qHello")
         # 1. Separate image into depth based layers 
-
-
-if __name__ == '__main__':
+    # ------------------------------------------------------------------------------------------------------------------
     # define tone mapping for HDR images
+    # ------------------------------------------------------------------------------------------------------------------
     def tonemapping(rgb_color, mask):
         render_entity_id = mask.astype("int32")[:,:,0]
         gamma                             = 1.0/2.2   # standard gamma correction exponent
@@ -93,6 +92,12 @@ if __name__ == '__main__':
 
         return rgb_color_tm
 
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+#
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+if __name__ == '__main__':
     # define semantic mapping
     mapping = np.array([ [0                , 0                , 0],
             [174              , 199              , 232],
@@ -144,12 +149,17 @@ if __name__ == '__main__':
 
     # Read source and reference RGB images
     img = h5py.File("data/ai_048_001_cam_00.hdf5", 'r')['dataset']
-    src_rgb = np.float32(tonemapping(img[50,:,:,:3], img[50,:,:,28:29]))
-    ref_rgb = np.float32(tonemapping(img[40,:,:,:3], img[40,:,:,28:29]))
+    src_rgb = np.float32(SemanticColorTransfer.tonemapping(img[50,:,:,:3], img[50,:,:,28:29]))
+    ref_rgb = np.float32(SemanticColorTransfer.tonemapping(img[99,:,:,:3], img[99,:,:,28:29]))
+    print(img.shape)
+
+    cv2.imwrite("/home/potechius/Downloads/SemanticColorTransfer/source.png", cv2.cvtColor(src_rgb, cv2.COLOR_BGR2RGB ) * 255)
+    cv2.imwrite("/home/potechius/Downloads/SemanticColorTransfer/reference.png", cv2.cvtColor(ref_rgb, cv2.COLOR_BGR2RGB ) * 255)
+    exit()
 
     # Read reflectance images
-    src_ref = np.float32(tonemapping(img[50,:,:,6:9], img[50,:,:,28:29]))
-    src_sha = np.float32(tonemapping(img[50,:,:,3:6], img[50,:,:,28:29]))
+    src_ref = np.float32(SemanticColorTransfer.tonemapping(img[50,:,:,6:9], img[50,:,:,28:29]))
+    src_sha = np.float32(SemanticColorTransfer.tonemapping(img[50,:,:,3:6], img[50,:,:,28:29]))
     #cv2.imwrite("/home/potechius/Downloads/out_temp/src_sha.png", cv2.cvtColor(src_sha, cv2.COLOR_BGR2RGB ) * 255)
     #exit()
 

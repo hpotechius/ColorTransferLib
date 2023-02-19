@@ -17,6 +17,8 @@ os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
 from oct2py import octave, Oct2Py
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 import cv2
+from copy import deepcopy
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -46,6 +48,10 @@ class TpsColorTransfer:
     identifier = "TpsColorTransfer"
     title = "L2 Divergence for robust colour transfer"
     year = 2019
+    compatibility = {
+        "src": ["Image"],
+        "ref": ["Image"]
+    }
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
@@ -87,6 +93,21 @@ class TpsColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        # NOTE: sudo apt-get install liboctave-dev
+        # NOTE: plg install -forge image
+        # NOTE: plg install -forge statistics
+
+
+
+        # check if method is compatible with provided source and reference objects
+        output = check_compatibility(src, ref, TpsColorTransfer.compatibility)
+
+        # Preprocessing
+        # NOTE RGB space needs multiplication with 255
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+        out_img = deepcopy(src)
+
         # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
         octave.addpath(octave.genpath('.'))
         #octave.addpath(octave.genpath('module/Algorithms/TpsColorTransfer/L2RegistrationForCT'))
@@ -94,6 +115,13 @@ class TpsColorTransfer:
         octave.eval('pkg load statistics')
         octave.eval("dir")
 
-        outp = octave.ctfunction(ref, src, opt.cluster_method, opt.cluster_num, opt.colorspace)
+        outp = octave.ctfunction(ref_img, src_img, opt.cluster_method, opt.cluster_num, opt.colorspace)
 
-        return outp
+        out_img.set_raw(outp.astype(np.float32))
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img
+        }
+
+        return output

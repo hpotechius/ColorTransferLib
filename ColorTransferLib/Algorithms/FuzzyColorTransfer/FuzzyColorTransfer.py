@@ -16,6 +16,8 @@ from fcmeans import FCM
 import networkx as nx
 import cv2
 
+from copy import deepcopy
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -39,6 +41,10 @@ import cv2
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class FuzzyColorTransfer:
+    compatibility = {
+        "src": ["Image", "Mesh"],
+        "ref": ["Image", "Mesh"]
+    }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -77,10 +83,17 @@ class FuzzyColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        scale = 300
+        src.resize(width=scale * src.get_width() // src.get_height(), height=scale)
+        ref.resize(width=scale * ref.get_width() // ref.get_height(), height=scale)
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
         # [1] Get Parameters
-        src_pix_num = src.shape[0]
-        ref_pix_num = ref.shape[0]
-        dim = src.shape[2]
+        src_pix_num = src_color.shape[0]
+        ref_pix_num = ref_color.shape[0]
+        dim = src_color.shape[2]
         clusters = opt.cluster_num
         max_iter = opt.max_iterations
         fuzzier = opt.fuzzier
@@ -92,8 +105,8 @@ class FuzzyColorTransfer:
 
 
         # [3] reshaping because input is of size (num_pixels, 1, 3)
-        src_reshape = src.reshape(src_pix_num, dim)
-        ref_reshape = ref.reshape(ref_pix_num, dim)
+        src_reshape = src_color.reshape(src_pix_num, dim)
+        ref_reshape = ref_color.reshape(ref_pix_num, dim)
 
         # [4] Apply FCM
         fcm_src = FCM(n_clusters=clusters, max_iter=max_iter, m=fuzzier, error=term_error)
@@ -179,4 +192,14 @@ class FuzzyColorTransfer:
         #lab_new = lab_new.reshape(src_pix_num, 1, dim)
         #lab_new = ColorSpaces.lab_to_rgb_host(lab_new)
         lab_new = np.clip(lab_new, 0.0, 1.0)
-        return lab_new
+
+
+        out_img.set_colors(lab_new)
+
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img
+        }
+
+        return output

@@ -14,6 +14,8 @@ from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from sklearn.decomposition import PCA
 from scipy.linalg import fractional_matrix_power
+from copy import deepcopy
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -38,6 +40,10 @@ from scipy.linalg import fractional_matrix_power
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class Eb3dColorTransfer:
+    compatibility = {
+        "src": ["Mesh"],
+        "ref": ["Mesh"]
+    }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -267,9 +273,27 @@ class Eb3dColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        # check if method is compatible with provided source and reference objects
+        output = check_compatibility(src, ref, Eb3dColorTransfer.compatibility)
+        if output["status_code"] != 0:
+            return output
+
+        # Preprocessing
+        out_img = deepcopy(src)
+
+
         if opt.version == "IGD":
             out = Eb3dColorTransfer.IGD(src, ref, opt.pca)
         else:
             out = Eb3dColorTransfer.MGD(src, ref, opt.pca)
 
-        return out
+
+        out_img.set_colors(out)
+
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img
+        }
+
+        return output

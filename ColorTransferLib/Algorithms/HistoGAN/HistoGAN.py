@@ -24,6 +24,7 @@ from .rehistoGAN import train_from_folder
 from ColorTransferLib.ImageProcessing.Image import Image as Img
 
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -103,30 +104,9 @@ class HistoGAN:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def check_compatibility(src, ref):
-        # return element
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": None
-        }
-        
-        if src.get_type() not in HistoGAN.compatibility["src"]:
-            output["status_code"] = -1
-            output["response"] = "No support for the following source type: " + src.get_type()
-
-        if ref.get_type() not in HistoGAN.compatibility["ref"]:
-            output["status_code"] = -1
-            output["response"] = "No support for the following reference type: " + ref.get_type()
-
-        return output
-    # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
     def apply(src, ref, opt):
         # check if method is compatible with provided source and reference objects
-        output = HistoGAN.check_compatibility(src, ref)
+        output = check_compatibility(src, ref, HistoGAN.compatibility)
 
         if output["status_code"] == -1:
             return output

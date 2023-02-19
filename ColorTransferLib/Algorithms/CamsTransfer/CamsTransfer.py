@@ -13,6 +13,8 @@ import math
 
 import ColorTransferLib.Algorithms.CamsTransfer.color_aware_st as cwst
 import cv2
+from copy import deepcopy
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -47,6 +49,10 @@ import cv2
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class CamsTransfer:
+    compatibility = {
+        "src": ["Image"],
+        "ref": ["Image"]
+    }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -95,9 +101,24 @@ class CamsTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, options):
-        out = cwst.apply(src, ref, options)
-        out = cv2.resize(out, (src.shape[1],src.shape[0]), interpolation=cv2.INTER_AREA)
-        #out = cv2.cvtColor(out, cv2.COLOR_BGR2RGB)
+        # check if method is compatible with provided source and reference objects
+        output = check_compatibility(src, ref, CamsTransfer.compatibility)
 
-        return out
+        # Preprocessing
+        src_img = src.get_raw() * 255.0
+        ref_img = ref.get_raw() * 255.0
+        out_img = deepcopy(src)
+
+        out = cwst.apply(src_img, ref_img, options)
+        out = cv2.resize(out, (src_img.shape[1],src_img.shape[0]), interpolation=cv2.INTER_AREA)
+
+        out_img.set_raw(out)
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img
+        }
+
+        return output
+
 

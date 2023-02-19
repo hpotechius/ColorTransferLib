@@ -18,6 +18,8 @@ import os
 from ColorTransferLib.Algorithms.DeepPhotoStyleTransfer.photo_style import stylize
 import cv2
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
+from copy import deepcopy
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -49,6 +51,10 @@ class DeepPhotoStyleTransfer:
     title = "Color Transfer between Images"
     year = 2017
 
+    compatibility = {
+        "src": ["Image"],
+        "ref": ["Image"]
+    }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -91,16 +97,25 @@ class DeepPhotoStyleTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
-        src_shape = src.shape
-        src = cv2.resize(src, (512, 512), interpolation=cv2.INTER_AREA)
+        # check if method is compatible with provided source and reference objects
+        output = check_compatibility(src, ref, DeepPhotoStyleTransfer.compatibility)
+
+        # Preprocessing
+        src_img = src.get_raw() * 255.0
+        ref_img = ref.get_raw() * 255.0
+        out_img = deepcopy(src)
+
+
+        src_shape = src_img.shape
+        src_img = cv2.resize(src_img, (512, 512), interpolation=cv2.INTER_AREA)
 
         if opt.style_option == 0:
-            best_image_bgr = stylize(opt, False, src, ref)
+            best_image_bgr = stylize(opt, False, src_img, ref_img)
             #result = Image.fromarray(np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0)))
             #result.save(opt.output_image)
             out = np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0))
         elif opt.style_option == 1:
-            best_image_bgr = stylize(opt, True, src, ref)
+            best_image_bgr = stylize(opt, True, src_img, ref_img)
             """
             if not args.apply_smooth:
                 result = Image.fromarray(np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0)))
@@ -127,12 +142,12 @@ class DeepPhotoStyleTransfer:
             out = np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0))
         elif opt.style_option == 2:
             opt.max_iter = 2 * opt.max_iter
-            tmp_image_bgr = stylize(opt, False, src, ref)
+            tmp_image_bgr = stylize(opt, False, src_img, ref_img)
             result = Image.fromarray(np.uint8(np.clip(tmp_image_bgr[:, :, ::-1], 0, 255.0)))
             opt.init_image_path = os.path.join(opt.serial, "tmp_result.png")
             result.save(opt.init_image_path)
 
-            best_image_bgr = stylize(opt, True, src, ref)
+            best_image_bgr = stylize(opt, True, src_img, ref_img)
             """
             if not args.apply_smooth:
                 result = Image.fromarray(np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0)))
@@ -159,7 +174,14 @@ class DeepPhotoStyleTransfer:
             out = np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0))
         out = cv2.resize(out, (src_shape[1], src_shape[0]), interpolation=cv2.INTER_AREA)
 
-        return out
+        out_img.set_raw(out.astype(np.float32))
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img
+        }
+
+        return output
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------

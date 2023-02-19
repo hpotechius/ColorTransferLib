@@ -64,6 +64,7 @@ import zipfile36 as zipfile
 #  "GmmEmColorTransfer",        support for [images]
 #  "Eb3dColorTransfer",         support for [point clouds]
 #  "PSNetStyleTransfer",        support for [point clouds]
+#  "SemanticColorTransfer",     support for [images]
 #  ]
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
@@ -96,25 +97,8 @@ if __name__ == '__main__':
             "MongeKLColorTransfer",
             "HistoGAN"]
 
-    appr = [#"GlobalColorTransfer",
-            #"PdfColorTransfer",
-            #"NeuralStyleTransfer", # no support for [point clouds]
-            #"HistogramAnalogy", # no support for [point clouds]
-            #"CamsTransfer", # no support for [point clouds]
-            #"DeepPhotoStyleTransfer", # no support for [point clouds]
-            #"TpsColorTransfer", # no support for [point clouds]
-            #"FuzzyColorTransfer", # no support for [point clouds]
-            #"GmmEmColorTransfer", # no support for [point clouds]
-            #"Eb3dColorTransfer", # no support for [images]
-            #"PSNetStyleTransfer", # no support for [images]
-            #"MongeKLColorTransfer"
-            ]
-
-
-    #for ct_approach in appr:
-
-    ct_approach = "GlobalColorTransfer"
-    ct_input = "pc-pc"
+    ct_approach = "SemanticColorTransfer"
+    ct_input = "img-img"
 
     ref_img = "data/images/starry-night.jpg"
     src_img = "data/images/the_scream.jpg"
@@ -156,9 +140,9 @@ if __name__ == '__main__':
     print("TOTAL: " + str(time.time() - start_time))
 
     if ct_input == "img-img" or ct_input == "img-pc":
-        output["object"].write("/home/hpadmin/Downloads/"+ct_approach+".png")
+        output["object"].write("/home/potechius/Downloads/"+ct_approach+".png")
         #output.show()
     elif ct_input == "pc-pc" or ct_input == "pc-img":
         out_loader = PLYLoader(mesh=output["object"])
-        out_loader.write("/home/hpadmin/Downloads/"+ct_approach+".ply")
+        out_loader.write("/home/potechius/Downloads/"+ct_approach+".ply")
 

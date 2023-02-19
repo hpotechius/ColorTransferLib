@@ -17,7 +17,8 @@ import struct
 import time
 import cv2
 import os
-from ColorTransferLib.Utils.BaseOptions import BaseOptions
+from copy import deepcopy
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -50,6 +51,11 @@ class NeuralStyleTransfer:
     identifier = "NeuralStyleTransfer"
     title = "A Neural Algorithm of Artistic Style"
     year = 2015
+
+    compatibility = {
+        "src": ["Image"],
+        "ref": ["Image"]
+    }
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
@@ -89,31 +95,47 @@ class NeuralStyleTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        # check if method is compatible with provided source and reference objects
+        output = check_compatibility(src, ref, NeuralStyleTransfer.compatibility)
+
+        # Preprocessing
+        src_img = src.get_raw() * 255.0
+        ref_img = ref.get_raw() * 255.0
+        out_img = deepcopy(src)
+
         opt.style_layer_weights = NeuralStyleTransfer.normalize(opt.style_layer_weights)
         opt.content_layer_weights = NeuralStyleTransfer.normalize(opt.content_layer_weights)
         opt.style_imgs_weights = NeuralStyleTransfer.normalize(opt.style_imgs_weights)
 
-        h, w, d = src.shape
+        h, w, d = src_img.shape
         mx = opt.max_size
         # resize if > max size
         if h > w and h > mx:
             w = (float(mx) / float(h)) * w
-            src = cv2.resize(src, dsize=(int(w), mx), interpolation=cv2.INTER_AREA)
+            src_img = cv2.resize(src_img, dsize=(int(w), mx), interpolation=cv2.INTER_AREA)
         if w > mx:
             h = (float(mx) / float(w)) * h
-            src = cv2.resize(src, dsize=(mx, int(h)), interpolation=cv2.INTER_AREA)
-        src = NeuralStyleTransfer.preprocess(src)
+            src_img = cv2.resize(src_img, dsize=(mx, int(h)), interpolation=cv2.INTER_AREA)
+        src_img = NeuralStyleTransfer.preprocess(src_img)
 
-        _, ch, cw, cd = src.shape
+        _, ch, cw, cd = src_img.shape
         style_imgs = []
-        ref = cv2.resize(ref, dsize=(cw, ch), interpolation=cv2.INTER_AREA)
-        ref = NeuralStyleTransfer.preprocess(ref)
-        style_imgs.append(ref)
+        ref_img = cv2.resize(ref_img, dsize=(cw, ch), interpolation=cv2.INTER_AREA)
+        ref_img = NeuralStyleTransfer.preprocess(ref_img)
+        style_imgs.append(ref_img)
 
-        out = NeuralStyleTransfer.render_single_image(src, style_imgs, opt)
+        out = NeuralStyleTransfer.render_single_image(src_img, style_imgs, opt)
         out = NeuralStyleTransfer.postprocess(out)
 
-        return out
+
+        out_img.set_raw(out)
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img
+        }
+
+        return output
 
     # ------------------------------------------------------------------------------------------------------------------
     # 'a neural algorithm for artistic style' loss functions

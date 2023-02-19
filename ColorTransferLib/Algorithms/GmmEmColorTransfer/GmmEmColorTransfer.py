@@ -14,6 +14,8 @@ from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 import cv2
 from sklearn.neighbors import KDTree
+from copy import deepcopy
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -40,6 +42,10 @@ from sklearn.neighbors import KDTree
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class GmmEmColorTransfer:
+    compatibility = {
+        "src": ["Image", "Mesh"],
+        "ref": ["Image", "Mesh"]
+    }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -90,6 +96,13 @@ class GmmEmColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        scale = 200
+        src.resize(width=scale * src.get_width() // src.get_height(), height=scale)
+        ref.resize(width=scale * ref.get_width() // ref.get_height(), height=scale)
+        out_img = deepcopy(src)
+        src = src.get_raw() * 255.0
+        ref = ref.get_raw() * 255.0
+
         #src = np.array([[[0.0,0.0,255.0],[0.0,255.0,0.0]],[[255.0,255.0,0.0],[255.0,0.0,0.0]]])
         #ref = np.array([[[228.0,206.0,56.0],[183.0,55.0,68.0]],[[0.0,113.0,255.0],[78.0,255.0,142.0]]])
 
@@ -210,5 +223,11 @@ class GmmEmColorTransfer:
         cv2.imshow("out", cv2.cvtColor(out, cv2.COLOR_RGB2BGR).astype("uint8"))
         cv2.waitKey(0)
         """
+        out_img.set_raw(out)
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img
+        }
 
-        return out
+        return output

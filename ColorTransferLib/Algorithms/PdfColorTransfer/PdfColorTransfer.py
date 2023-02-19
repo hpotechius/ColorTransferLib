@@ -19,6 +19,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
+from copy import deepcopy
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 
 
@@ -43,6 +45,10 @@ THREADSPERBLOCK = (32, 32)
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class PdfColorTransfer:
+    compatibility = {
+        "src": ["Image", "Mesh"],
+        "ref": ["Image", "Mesh"]
+    }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -81,23 +87,31 @@ class PdfColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        # check if method is compatible with provided source and reference objects
+        output = check_compatibility(src, ref, PdfColorTransfer.compatibility)
+
+        # Preprocessing
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
         # [1] Change range from [0.0, 1.0] to [0, 255] and copy source and reference to GPU and create output
         print("1. Read src and ref")
-        device_src = cuda.to_device(src*255.0)
-        device_ref = cuda.to_device(ref*255.0)
-        device_temp_src = cuda.device_array(src.shape)
-        device_temp_ref = cuda.device_array(ref.shape)
+        device_src = cuda.to_device(src_color*255.0)
+        device_ref = cuda.to_device(ref_color*255.0)
+        device_temp_src = cuda.device_array(src_color.shape)
+        device_temp_ref = cuda.device_array(ref_color.shape)
 
         fig = plt.figure(figsize=(20, 10))
 
         ax = fig.add_subplot(241, projection='3d')
         ax.set_title('SRC', fontstyle='italic')
         xyz=np.array(np.random.random((100, 3)))
-        print(xyz.shape)
-        print(src.shape)
-        print(ref.shape)
-        sss = src[0:src.shape[0]:100].copy()
-        print(sss.shape)
+        # print(xyz.shape)
+        # print(src.shape)
+        # print(ref.shape)
+        sss = src_color[0:src_color.shape[0]:100].copy()
+        #print(sss.shape)
         ax.scatter(sss[:,0,0]*255, sss[:,0,1]*255, sss[:,0,2]*255, color=sss[:,0,:])
         ax.set_xlim([-255.0, 255.0])
         ax.set_ylim([-255.0, 255.0])
@@ -106,7 +120,7 @@ class PdfColorTransfer:
 
         axr = fig.add_subplot(245, projection='3d')
         axr.set_title('REF', fontstyle='italic')
-        rrr = ref[0:ref.shape[0]:100].copy()
+        rrr = ref_color[0:ref_color.shape[0]:100].copy()
         axr.scatter(rrr[:,0,0]*255, rrr[:,0,1]*255, rrr[:,0,2]*255, color=rrr[:,0,:])
         axr.set_xlim([-255.0, 255.0])
         axr.set_ylim([-255.0, 255.0])
@@ -302,7 +316,7 @@ class PdfColorTransfer:
             # Adapt src values
 
             print("7. Transform")
-            device_temp_srcXX = cuda.device_array(src.shape)
+            device_temp_srcXX = cuda.device_array(src_color.shape)
             blockspergrid_x = int(math.ceil(device_temp_src.shape[0] / THREADSPERBLOCK[0]))
             blockspergrid_y = int(math.ceil(device_temp_src.shape[1] / THREADSPERBLOCK[1]))
             blockspergrid = (blockspergrid_x, blockspergrid_y)
@@ -313,11 +327,10 @@ class PdfColorTransfer:
                                                                              cuda.to_device(lut_z),
                                                                              device_temp_srcXX)
 
-
             # [7] Rotate Back
             print("8. Rotate back")
             mat_rot_inv = mat_rot.transpose()
-            device_temp_out = cuda.device_array(src.shape)
+            device_temp_out = cuda.device_array(src_color.shape)
 
             blockspergrid_x = int(math.ceil(device_temp_src.shape[0] / THREADSPERBLOCK[0]))
             blockspergrid_y = int(math.ceil(device_temp_src.shape[1] / THREADSPERBLOCK[1]))
@@ -335,7 +348,15 @@ class PdfColorTransfer:
 
         #plt.show()
 
-        return out
+        out_img.set_colors(out)
+
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img
+        }
+
+        return output
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
