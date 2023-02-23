@@ -14,8 +14,14 @@ python setup.py bdist_wheel
 pip install --force-reinstall ../ColorTransferLib/dist/ColorTransferLib-0.0.2-py3-none-any.whl 
 ``
 
+Necessary for TpsColorTransfer
 ``
 sudo apt-get install octave
+``
+
+Necessary for installing dlib -> HistoGAN
+``
+sudo apt-get install python3-dev
 ``
 
 run: for a in /sys/bus/pci/devices/*; do echo 0 | sudo tee -a $a/numa_node; done

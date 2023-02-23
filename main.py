@@ -95,9 +95,10 @@ if __name__ == '__main__':
             "Eb3dColorTransfer", # no image support?
             "PSNetStyleTransfer",
             "MongeKLColorTransfer",
-            "HistoGAN"]
+            "HistoGAN",
+            "BasicColorCategoryTransfer"]
 
-    ct_approach = "SemanticColorTransfer"
+    ct_approach = "BasicColorCategoryTransfer"
     ct_input = "img-img"
 
     ref_img = "data/images/starry-night.jpg"
