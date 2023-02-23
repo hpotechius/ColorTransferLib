@@ -8,16 +8,8 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 import numpy as np
-from numba import cuda
-import math
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
-from ColorTransferLib.Algorithms.HistogramAnalogy.models.models import create_model
-from ColorTransferLib.Algorithms.HistogramAnalogy.data.data_loader import CreateDataLoader
 import cv2
 import torch
-from PIL import Image
-import torchvision.utils as vutils
-import sys
 import os
 from .utils.face_preprocessing import face_extraction
 from .rehistoGAN import train_from_folder
@@ -86,15 +78,15 @@ class HistoGAN:
             "title": "HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms",
             "year": 2021,
             "abstract": "In this paper, we present HistoGAN, a color histogram-based method for controlling "
-                        "GAN-generated images' colors. We focus on color histograms as they provide an intuitive way "
+                        "GAN-generated images colors. We focus on color histograms as they provide an intuitive way "
                         "to describe image color while remaining decoupled from domain-specific semantics. "
                         "Specifically, we introduce an effective modification of the recent StyleGAN architecture to "
                         "control the colors of GAN-generated images specified by a target color histogram feature. We "
                         "then describe how to expand HistoGAN to recolor real images. For image recoloring, we jointly "
                         "train an encoder network along with HistoGAN. The recoloring model, ReHistoGAN, is an "
-                        "unsupervised approach trained to encourage the network to keep the original image's content "
+                        "unsupervised approach trained to encourage the network to keep the original images content "
                         "while changing the colors based on the given target histogram. We show that this "
-                        "histogram-based approach offers a better way to control GAN-generated and real images' colors "
+                        "histogram-based approach offers a better way to control GAN-generated and real images colors "
                         "while producing more compelling results compared to existing alternative strategies."
         }
 

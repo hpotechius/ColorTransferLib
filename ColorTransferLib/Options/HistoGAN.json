@@ -332,7 +332,7 @@
     "default": false,
     "type": "bool",
     "values": [true, false],
-    "tooltip": "To fix weights of the HistoGAN's head.",
+    "tooltip": "To fix weights of the HistoGANs head.",
     "changeable": false
   },
   {
@@ -340,7 +340,7 @@
     "default": true,
     "type": "bool",
     "values": [true, false],
-    "tooltip": "To load weights of HistoGAN's head.",
+    "tooltip": "To load weights of HistoGANs head.",
     "changeable": false
   },
   {
