@@ -27,7 +27,7 @@ class Image:
     # ------------------------------------------------------------------------------------------------------------------
     # If <file_path> is None, an empty image with the given <size>=(width, height) will be created
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, file_path=None, array=None, size=(0, 0),  color="RGB", normalized=False):
+    def __init__(self, file_path=None, array=None, size=(0, 0), color="RGB", normalized=False):
         if file_path is None and array is None:
             self.__img = np.zeros((size[1], size[0]), dtype=np.float32)
         elif file_path is not None and array is None:

@@ -101,10 +101,10 @@ if __name__ == '__main__':
     ct_approach = "BasicColorCategoryTransfer"
     ct_input = "img-img"
 
+    src_img = "data/images/Pearl2.png"
     ref_img = "data/images/starry-night.jpg"
-    src_img = "data/images/the_scream.jpg"
-    # src_img = "/home/hpadmin/Projects/HistoGAN/input_images/2.jpg"
-    # ref_img = "/home/hpadmin/Projects/HistoGAN/target_images/4.jpg"
+    #src_img = "/home/potechius/Pictures/Screenshots/src.png"
+    #ref_img = "/home/potechius/Pictures/Screenshots/ref.png"
 
     ref_pc = "data/pointclouds/athen_postprocessed_simp.ply"
     src_pc = "data/pointclouds/Wappentier_blue.ply"
