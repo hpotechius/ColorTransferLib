@@ -1,7 +1,7 @@
 [
   {
     "name": "cluster_num",
-    "default": 10,
+    "default": 50,
     "type": "int",
     "values": [],
     "tooltip": "Number of cluster per gaussian mixture model.",

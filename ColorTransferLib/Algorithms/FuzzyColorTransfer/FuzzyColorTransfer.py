@@ -83,9 +83,9 @@ class FuzzyColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
-        scale = 300
-        src.resize(width=scale * src.get_width() // src.get_height(), height=scale)
-        ref.resize(width=scale * ref.get_width() // ref.get_height(), height=scale)
+        #scale = 300
+        #src.resize(width=scale * src.get_width() // src.get_height(), height=scale)
+        #ref.resize(width=scale * ref.get_width() // ref.get_height(), height=scale)
         src_color = src.get_colors()
         ref_color = ref.get_colors()
         out_img = deepcopy(src)
@@ -112,9 +112,6 @@ class FuzzyColorTransfer:
         fcm_src = FCM(n_clusters=clusters, max_iter=max_iter, m=fuzzier, error=term_error)
         fcm_src.fit(src_reshape)
 
-        #print(fcm_src)
-        #exit()
-
         fcm_ref = FCM(n_clusters=clusters, max_iter=max_iter, m=fuzzier, error=term_error)
         fcm_ref.fit(ref_reshape)
 
@@ -123,7 +120,7 @@ class FuzzyColorTransfer:
         membership_s = fcm_src.u
         norm_factor_s = np.sum(membership_s, axis=0)
         centers_s = fcm_src.centers
-        #print(centers_s)
+
         std_s = np.zeros((clusters, 3))
         weights_s = np.zeros(clusters)
         for c in range(clusters):
@@ -139,11 +136,6 @@ class FuzzyColorTransfer:
         std_r = np.zeros((clusters, 3))
         weights_r = np.zeros(clusters)
         for c in range(clusters):
-            #print(membership_r[:,c:c+1][0])
-            #print(np.power(ref_reshape[:,0:1] - centers_r[c][0], 2)[0])
-            #print((membership_r[:,c:c+1] * np.power(ref_reshape[:,0:1] - centers_r[c][0], 2))[0])
-            #print(membership_r[:,c:c+1][0] * np.power(ref_reshape[:,0:1] - centers_r[c][0], 2)[0])
-            #exit()
             sig_l = np.sqrt(np.sum(membership_r[:,c:c+1] * np.power(ref_reshape[:,0:1] - centers_r[c][0], 2) / norm_factor_r[c]))
             sig_a = np.sqrt(np.sum(membership_r[:,c:c+1] * np.power(ref_reshape[:,1:2] - centers_r[c][1], 2) / norm_factor_r[c]))
             sig_b = np.sqrt(np.sum(membership_r[:,c:c+1] * np.power(ref_reshape[:,2:3] - centers_r[c][2], 2) / norm_factor_r[c]))
@@ -174,14 +166,6 @@ class FuzzyColorTransfer:
             a_c = (std_r[mapping[c]][1]/std_s[c][1]) * (src_reshape[:,1:2] - centers_s[c][1]) + centers_r[mapping[c]][1]
             b_c = (std_r[mapping[c]][2]/std_s[c][2]) * (src_reshape[:,2:3] - centers_s[c][2]) + centers_r[mapping[c]][2]
 
-            #print(np.sum(l_c * membership_s, axis=1).shape)
-            #print(l_c.shape)
-            #print(membership_s[:,c:c+1].shape)
-            #print(l_c[0])
-            #print(membership_s[:,c:c+1][0])
-            #print(l_c[0] * membership_s[:,c:c+1][0])
-            #print(np.sum(l_c * membership_s[:,c:c+1], axis=1)[0])
-            #exit()
             lab_new[0] += np.sum(l_c * membership_s[:,c:c+1], axis=1)
             lab_new[1] += np.sum(a_c * membership_s[:,c:c+1], axis=1)
             lab_new[2] += np.sum(b_c * membership_s[:,c:c+1], axis=1)
