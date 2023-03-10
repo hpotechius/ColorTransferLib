@@ -10,6 +10,7 @@ Please see the LICENSE file that should have been included as part of this packa
 import numpy as np
 from numba import cuda
 import math
+import time
 from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Algorithms.HistogramAnalogy.models.models import create_model
 from ColorTransferLib.Algorithms.HistogramAnalogy.data.data_loader import CreateDataLoader
@@ -103,6 +104,7 @@ class HistogramAnalogy:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, HistogramAnalogy.compatibility)
 
@@ -138,61 +140,7 @@ class HistogramAnalogy:
         output = {
             "status_code": 0,
             "response": "",
-            "object": out_img
+            "object": out_img,
+            "process_time": time.time() - start_time
         }
         return output
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # Options Class
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    class Options:
-        def __init__(self):
-            # Base Options
-            self.dataroot = "test"  # path to images (should have subfolders trainA, trainB, valA, valB, etc)'
-            self.batchSize = 1  # input batch size
-            self.loadSize = 286  # scale images to this size
-            self.fineSize = 256  # then crop to this size
-            self.ngf = 64  # num. of gen filters in first conv layer
-            self.ndf = 64  # num. of discrim filters in first conv layer
-            self.which_model_netD = "basic"  # selects model to use for netD
-            self.which_model_netG = "resnet_9blocks"  # selects model to use for netG
-            self.n_layers_D = 3  # only used if which_model_netD==n_layers
-            self.gpu_ids = [0]  # gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU
-            self.name = "experiment_name"  # name of the experiment. It decides where to store samples and models
-            self.model = "cycle_gan"  # chooses which model to use. cycle_gan, pix2pix, test
-            self.which_direction = "AtoB"  # AtoB or BtoA
-            self.nThreads = 1  # num. threads for loading data
-            self.checkpoints_dir = "checkpoints"  # models are saved here
-            self.network = "iccv_submitted"  # iccv_submitted
-            self.network_H = "basic"
-            self.norm = "instance"  # instance normalization or batch normalization
-            self.serial_batches = True  # if true, takes images in order to make batches, otherwise takes them randomly
-            self.display_winsize = 256  # display window size
-            self.display_id = 1  # window id of the web display
-            self.display_env = "main"  # Environment name of the web display
-            self.display_port = 6005  # visdom port of the web display
-            self.no_dropout = True  # no dropout for the generator
-            self.max_dataset_size = float("inf")  # Maximum number of samples allowed per dataset. If the dataset directory contains more than max_dataset_size, only a subset is loaded.
-            self.resize_or_crop = "resize_and_crop"  # scaling and cropping of images at load time [resize_and_crop|crop|scale_width|scale_width_and_crop]
-            self.no_flip = True  # if specified, do not flip the images for data augmentation
-            self.init_type = "normal"  # network initialization [normal|xavier|kaiming|orthogonal]
-            self.img_type = "lab"  # Environment name of the web display
-            self.pair_ratio = 0.0  # Ratio of Pair data
-            self.mode = "gsgt"  # gsgt, gsrt, rsrt
-            self.test_dir = "1"  # 1,2,3,4,5
-            self.is_psnr = False  # 1,2,3,4,5
-            self.is_SR = False  # 1,2,3,4,5
-
-            # Test Options
-            self.ntest = float("inf")  # num of test examples
-            self.results_dir = "results"  # saves results here.
-            self.aspect_ratio = 1.0  # aspect ratio of result images
-            self.phase = "test"  # train, val, test, etc
-            self.which_epoch = "latest"  # which epoch to load? set to latest to use latest cached model
-            self.how_many = 600  # how many test images to run
-            self.video_folder = "bear"  # folder name ..
-            self.ab_bin = 64  # ab_bin
-            self.l_bin = 8  # l_bin
-            self.isTrain = False

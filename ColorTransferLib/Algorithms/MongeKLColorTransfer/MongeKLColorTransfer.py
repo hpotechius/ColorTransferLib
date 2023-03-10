@@ -10,6 +10,7 @@ Please see the LICENSE file that should have been included as part of this packa
 import numpy as np
 from numba import cuda
 import math
+import time
 from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from scipy.linalg import fractional_matrix_power
@@ -86,6 +87,7 @@ class MongeKLColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, MongeKLColorTransfer.compatibility)
 
@@ -93,41 +95,7 @@ class MongeKLColorTransfer:
         src_color = src.get_colors()
         ref_color = ref.get_colors()
         out_img = deepcopy(src)
-        """
-        EPS = 2.2204e-16
-        def MKL(A, B):
-            Da2, Ua = np.linalg.eig(A)
 
-            Da2 = np.diag(Da2)
-            Da2[Da2 < 0] = 0
-            Da = np.sqrt(Da2 + EPS)
-            C = Da @ np.transpose(Ua) @ B @ Ua @ Da
-            Dc2, Uc = np.linalg.eig(C)
-
-            Dc2 = np.diag(Dc2)
-            Dc2[Dc2 < 0] = 0
-            Dc = np.sqrt(Dc2 + EPS)
-            Da_inv = np.diag(1 / (np.diag(Da)))
-            T = Ua @ Da_inv @ Uc @ Dc @ np.transpose(Uc) @ Da_inv @ np.transpose(Ua)
-            return T
-
-        X0 = np.reshape(src, (-1, 3), 'F')
-        X1 = np.reshape(ref, (-1, 3), 'F')
-        A = np.cov(X0, rowvar=False)
-        B = np.cov(X1, rowvar=False)
-        T = MKL(A, B)
-        mX0 = np.mean(X0, axis=0)
-        mX1 = np.mean(X1, axis=0)
-        XR = (X0 - mX0) @ T + mX1
-        IR = np.reshape(XR, src.shape, 'F')
-        IR = np.real(IR)
-        IR[IR > 1] = 1
-        IR[IR < 0] = 0
-
-        return IR
-        """
-
-        # Convert colors from RGB to lalphabeta color space
         src_color_rgb = src_color.reshape(src_color.shape[0], 3)
         ref_color_rgb = ref_color.reshape(ref_color.shape[0], 3)
 
@@ -141,33 +109,22 @@ class MongeKLColorTransfer:
         src_covs = fractional_matrix_power(src_cov, 0.5)
         src_covsr = fractional_matrix_power(src_cov, -0.5)
 
-        M = np.dot(src_covsr, np.dot(fractional_matrix_power(np.dot(src_covs, np.dot(ref_cov, src_covs)), 0.5), src_covsr))
+        T = np.dot(src_covsr, np.dot(fractional_matrix_power(np.dot(src_covs, np.dot(ref_cov, src_covs)), 0.5), src_covsr))
 
         # has to be rewritten
         mean_src = np.mean(src_color_rgb, axis=0)
         mean_ref = np.mean(ref_color_rgb, axis=0)
-        XR = (src_color_rgb - mean_src) @ M + mean_ref
-        IR = np.reshape(XR, src_color.shape, 'F')
-        IR = np.real(IR)
-        IR[IR > 1] = 1
-        IR[IR < 0] = 0
+        out = (src_color_rgb - mean_src) @ T + mean_ref
+        out = np.reshape(out, src_color.shape)
+        out = np.real(out)
+        out = np.clip(out, 0, 1)
 
-
-
-        out_img.set_colors(IR)
+        out_img.set_colors(out)
         output = {
             "status_code": 0,
             "response": "",
-            "object": out_img
+            "object": out_img,
+            "process_time": time.time() - start_time
         }
 
         return output
-
-        out = np.dot(src_color_rgb, M)
-
-        #lab_new = f_out[:,:3]
-        #lab_new = lab_new.reshape(src.get_num_vertices(), 1, 3)
-        #lab_new = ColorSpaces.lab_to_rgb_host(np.ascontiguousarray(lab_new, dtype=np.float32))
-        #lab_new = np.clip(lab_new, 0.0, 1.0)
-
-        return out

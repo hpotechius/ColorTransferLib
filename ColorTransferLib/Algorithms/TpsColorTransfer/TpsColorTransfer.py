@@ -10,6 +10,7 @@ Please see the LICENSE file that should have been included as part of this packa
 import numpy as np
 from numba import cuda
 import math
+import time
 from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 
 import os
@@ -93,6 +94,7 @@ class TpsColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        start_time = time.time()
         # NOTE: sudo apt-get install liboctave-dev
         # NOTE: plg install -forge image
         # NOTE: plg install -forge statistics
@@ -104,8 +106,8 @@ class TpsColorTransfer:
 
         # Preprocessing
         # NOTE RGB space needs multiplication with 255
-        src_img = src.get_raw()
-        ref_img = ref.get_raw()
+        src_img = src.get_raw() * 255
+        ref_img = ref.get_raw() * 255
         out_img = deepcopy(src)
 
         # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
@@ -121,7 +123,8 @@ class TpsColorTransfer:
         output = {
             "status_code": 0,
             "response": "",
-            "object": out_img
+            "object": out_img,
+            "process_time": time.time() - start_time
         }
 
         return output

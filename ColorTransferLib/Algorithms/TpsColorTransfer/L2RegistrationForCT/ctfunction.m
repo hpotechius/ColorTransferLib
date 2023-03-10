@@ -70,7 +70,7 @@ switch(clusterFun)
         X = mg_applyKMeans(he1,nColors);
         Y = mg_applyKMeans(he2,nColors);
     case 'MVQ'
-        X = mg_quantImage( he1, nColors);
+        X = mg_quantImage(he1, nColors);
         Y = mg_quantImage(he2, nColors);
 end
 disp('Clustering of palette and target image finished.');

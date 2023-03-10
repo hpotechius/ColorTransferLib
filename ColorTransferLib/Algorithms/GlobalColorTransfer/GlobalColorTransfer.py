@@ -10,6 +10,7 @@ Please see the LICENSE file that should have been included as part of this packa
 import numpy as np
 from numba import cuda
 import math
+import time
 from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from ColorTransferLib.ImageProcessing.Image import Image as Img
@@ -71,6 +72,8 @@ class GlobalColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        start_time = time.time()
+
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, GlobalColorTransfer.compatibility)
 
@@ -121,10 +124,12 @@ class GlobalColorTransfer:
 
         out_img.set_colors(out_colors)
 
+
         output = {
             "status_code": 0,
             "response": "",
-            "object": out_img
+            "object": out_img,
+            "process_time": time.time() - start_time
         }
 
         return output

@@ -65,7 +65,7 @@
   },
   {
       "name": "max_size",
-      "default": 1024,
+      "default": 2048,
       "type": "int",
       "values": [],
       "tooltip": "Maximum width or height of the input images.",
@@ -76,7 +76,7 @@
       "default": 5e0,
       "type": "float",
       "values": [],
-      "tooltip": "Weight for the content loss function.",
+      "tooltip": "Weight for the content loss function. Default: 5e0",
       "changeable": true
   },
   {
@@ -84,7 +84,7 @@
       "default": 1e4,
       "type": "float",
       "values": [],
-      "tooltip": "Weight for the style loss function.",
+      "tooltip": "Weight for the style loss function. Default: 1e4",
       "changeable": true
   },
   {
@@ -249,7 +249,7 @@
   },
   {
       "name": "max_iterations",
-      "default": 500,
+      "default": 1000,
       "type": "int",
       "values": [],
       "tooltip": "Max number of iterations for the Adam or L-BFGS optimizer.",

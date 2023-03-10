@@ -48,9 +48,9 @@ class ColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     def __init__(self, src, ref, approach):
         self.__src = src
-        self.__src_type = src.get_type()
+        #self.__src_type = src.get_type()
         self.__ref = ref
-        self.__ref_type = ref.get_type()
+        #self.__ref_type = ref.get_type()
 
         self.__out = deepcopy(src)
         self.__approach = approach

@@ -11,6 +11,7 @@ Please see the LICENSE file that should have been included as part of this packa
 import time
 import numpy as np
 import os
+import math
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # 0: DEBUG, 1: INFO, 2: WARNING, 3: ERROR
 
 from ColorTransferLib.MeshProcessing.PLYLoader import PLYLoader
@@ -85,52 +86,67 @@ if __name__ == '__main__':
     #exit()
 
     appr = ["GlobalColorTransfer",
+            "FuzzyColorTransfer",
+            "TpsColorTransfer",
+            "GmmEmColorTransfer",
             "PdfColorTransfer",
-            "NeuralStyleTransfer",
+            "MongeKLColorTransfer",
             "HistogramAnalogy",
+            "NeuralStyleTransfer",
             "CamsTransfer",
             "DeepPhotoStyleTransfer",
-            "TpsColorTransfer",
-            "FuzzyColorTransfer",
-            "GmmEmColorTransfer",
             "Eb3dColorTransfer", # no image support?
             "PSNetStyleTransfer",
-            "MongeKLColorTransfer",
             "HistoGAN",
             "BasicColorCategoryTransfer"]
 
-    ct_approach = "TpsColorTransfer"
+    ct_approach = "NeuralStyleTransfer"
     ct_input = "img-img"
 
-    files_256 = []
-    files_512 = []
-    files_1024 = []
-    files_2048 = []
-    files_4096 = []
-    files_8192 = []
-    for path, subdirs, files in os.walk("/home/potechius/Downloads/ACM-MM-Evaluation-Dataset"):
-        for name in files:
-            if name.split("_")[0] == "256":
-                files_256.append(path + "/" + name)
-            elif name.split("_")[0] == "512":
-                files_512.append(path + "/" + name)
-            elif name.split("_")[0] == "1024":
-                files_1024.append(path + "/" + name)
-            elif name.split("_")[0] == "2048":
-                files_2048.append(path + "/" + name)
-            elif name.split("_")[0] == "4096":
-                files_4096.append(path + "/" + name)
-            elif name.split("_")[0] == "8192":
-                files_8192.append(path + "/" + name)
-        #    print(os.path.join(path, name))
+    # files_256 = []
+    # files_512 = []
+    # files_1024 = []
+    # files_2048 = []
+    # files_4096 = []
+    # files_8192 = []
+    # for path, subdirs, files in os.walk("/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset"):
+    #     for name in files:
+    #         if name.split("_")[0] == "256":
+    #             files_256.append(path + "/" + name)
+    #         elif name.split("_")[0] == "512":
+    #             files_512.append(path + "/" + name)
+    #         elif name.split("_")[0] == "1024":
+    #             files_1024.append(path + "/" + name)
+    #         elif name.split("_")[0] == "2048":
+    #             files_2048.append(path + "/" + name)
+    #         elif name.split("_")[0] == "4096":
+    #             files_4096.append(path + "/" + name)
+    #         elif name.split("_")[0] == "8192":
+    #             files_8192.append(path + "/" + name)
 
-    times = 0
-    total_tests = 1
-    for i in range(total_tests):
+    # file1 = open("/home/hpadmin/Downloads/testset_8192.txt","a")
+    # for i in range(100):
+    #     src_img = random.choice(files_8192).replace('/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/', '')
+    #     ref_img = random.choice(files_8192).replace('/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/', '')
+    #     file1.writelines(src_img + " " + ref_img + "\n")
+    # exit()
+
+    times_arr = []
+    total_tests = 0
+
+    size = "1024"
+    ALG = "NST"
+    file1 = open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/testset_"+size+".txt")
+    file2 = open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/process_time_"+size+".txt","w")
+    #for i in range(total_tests):
+    for line in file1.readlines():
+        total_tests += 1
+        print(total_tests)
         # src_img = random.choice(files_2048)
         # ref_img = random.choice(files_2048)
-        src_img = "/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/city/2048_city-06.png"
-        ref_img = "/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/city/2048_city-04.png"
+        s_p, r_p = line.strip().split(" ")
+        src_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/' + s_p
+        ref_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/' + r_p
         #src_img = "/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/4096_abstract-02.png"
         #ref_img = "/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/4096_abstract-02.png"
         #src_img = "/home/potechius/Pictures/Screenshots/src.png"
@@ -160,25 +176,44 @@ if __name__ == '__main__':
             print("Unsupported types or type combination")
             exit(1)
 
-        start_time = time.time()
         ct = ColorTransfer(src, ref, ct_approach)
-        output = ct.apply()        
-        end_time = time.time() - start_time
-        print("TOTAL: " + str(end_time))
-        times += end_time
+        output = ct.apply()
+
+        times_arr.append(output["process_time"])
+        print("TOTAL: " + str(output["process_time"]))
 
         if output["status_code"] == -1:
             print("\033[91mTypeError\033[0m: " + output["response"])
             exit()
 
-
-
         if ct_input == "img-img" or ct_input == "img-pc":
-            output["object"].write("/home/potechius/Downloads/"+ct_approach+"_"+str(i).zfill(3)+".png")
+            file_name = "/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/"+ALG+"-"+size+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+            print(file_name)
+            ou = np.concatenate((src.get_raw(), ref.get_raw(), output["object"].get_raw()), axis=1) 
+            cv2.imwrite(file_name, cv2.cvtColor(ou, cv2.COLOR_BGR2RGB)*255)
+
+            file2.writelines(str(round(output["process_time"],3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
+
+            #output["object"].write(file_name)
             #output.show()
         elif ct_input == "pc-pc" or ct_input == "pc-img":
             out_loader = PLYLoader(mesh=output["object"])
             out_loader.write("/home/potechius/Downloads/"+ct_approach+".ply")
 
-    print("Averaged: " + str(times / total_tests))
+        if total_tests == 1:
+            exit()
 
+    # calculate mean
+    mean = sum(times_arr) / len(times_arr)
+
+    # calculate std
+    std = 0
+    for t in times_arr:
+        std += math.pow(t-mean, 2)
+    std /= len(times_arr)
+    std = math.sqrt(std)
+
+
+    print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
+    file1.close()
+    file2.close()

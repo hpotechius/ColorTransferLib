@@ -95,6 +95,7 @@ class NeuralStyleTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, NeuralStyleTransfer.compatibility)
 
@@ -132,7 +133,8 @@ class NeuralStyleTransfer:
         output = {
             "status_code": 0,
             "response": "",
-            "object": out_img
+            "object": out_img,
+            "process_time": time.time() - start_time
         }
 
         return output

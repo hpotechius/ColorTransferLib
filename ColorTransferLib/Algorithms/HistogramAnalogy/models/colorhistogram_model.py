@@ -22,9 +22,14 @@ import matplotlib.pyplot as plt
 
 
 class ColorHistogram_Model(BaseModel):
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     def name(self):
         return 'ColorHistogram_Model'
-
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     def initialize(self, opt):
         BaseModel.initialize(self, opt)
 
@@ -44,7 +49,9 @@ class ColorHistogram_Model(BaseModel):
             which_epoch = opt.which_epoch
             self.load_network(self.IRN, 'G_A', which_epoch)
             self.load_network(self.HEN, 'C_A', which_epoch)
-
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     def set_input(self, input):
         AtoB = self.opt.which_direction == 'AtoB'
         
@@ -65,13 +72,17 @@ class ColorHistogram_Model(BaseModel):
         self.input_A_Seg, self.input_B_Seg, self.input_SegNum = self.MakeLabelFromMap(self.input_A_Map,self.input_B_Map)
 
         self.image_paths = input['A_paths' if AtoB else 'B_paths']
-    
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     def forward(self):
         self.inp = self.input_A
         self.tar = self.input_B
         self.A_seg = self.input_A_Seg
         self.B_seg = self.input_B_Seg
-
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     def test(self):
         with torch.no_grad():
 
@@ -82,20 +93,21 @@ class ColorHistogram_Model(BaseModel):
             self.B_seg = Variable(self.input_B_Seg)
             self.A_map = Variable(self.input_A_Map)
 
-            # max 700 px with aspect ratio
-            if (self.inp.size(2)>700) or (self.inp.size(3)>700):
-                aspect_ratio = self.inp.size(2) / self.inp.size(3)
-                if (self.inp.size(2) > self.inp.size(3)):
-                    self.inp = F.upsample(self.inp , size = ( 700 ,  int(700 / aspect_ratio)), mode = 'bilinear')
-                else:
-                    self.inp = F.upsample(self.inp , size = ( int(700 * aspect_ratio),  700 ), mode = 'bilinear')
-            # max 700 px with aspect ratio
-            if (self.tar.size(2)>700) or (self.tar.size(3)>700):
-                aspect_ratio = self.tar.size(2) / self.tar.size(3)
-                if (self.tar.size(2) > self.tar.size(3)):
-                    self.tar = F.upsample(self.tar , size = ( 700 ,  int(700 / aspect_ratio)), mode = 'bilinear')
-                else:
-                    self.tar = F.upsample(self.tar , size = ( int(700 * aspect_ratio),  700 ), mode = 'bilinear')
+            # INFO: Removed to ensure a color transfer for images with a size greater than 700x700px
+            # # max 700 px with aspect ratio
+            # if (self.inp.size(2)>700) or (self.inp.size(3)>700):
+            #     aspect_ratio = self.inp.size(2) / self.inp.size(3)
+            #     if (self.inp.size(2) > self.inp.size(3)):
+            #         self.inp = F.upsample(self.inp , size = ( 700 ,  int(700 / aspect_ratio)), mode = 'bilinear')
+            #     else:
+            #         self.inp = F.upsample(self.inp , size = ( int(700 * aspect_ratio),  700 ), mode = 'bilinear')
+            # # max 700 px with aspect ratio
+            # if (self.tar.size(2)>700) or (self.tar.size(3)>700):
+            #     aspect_ratio = self.tar.size(2) / self.tar.size(3)
+            #     if (self.tar.size(2) > self.tar.size(3)):
+            #         self.tar = F.upsample(self.tar , size = ( 700 ,  int(700 / aspect_ratio)), mode = 'bilinear')
+            #     else:
+            #         self.tar = F.upsample(self.tar , size = ( int(700 * aspect_ratio),  700 ), mode = 'bilinear')
 
             # In case of mis-alignment
             self.A_seg = F.upsample(self.A_seg.unsqueeze(0).float() , size = (self.inp.size(2),  self.inp.size(3)),  mode = 'bilinear').squeeze(0).long()
@@ -144,9 +156,12 @@ class ColorHistogram_Model(BaseModel):
 
             self.inp = self.inp[:,:,self.pad:(self.inp.size(2)-2*self.pad),self.pad:(self.inp.size(3)-2*self.pad)]
             self.tar = self.tar[:,:,self.pad:(self.tar.size(2)-2*self.pad),self.pad:(self.tar.size(3)-2*self.pad)]
-            self.out = out[:,:,self.pad:(out.size(2)-2*self.pad),self.pad:(out.size(3)-2*self.pad)]
+            #self.out = out[:,:,self.pad:(out.size(2)-2*self.pad),self.pad:(out.size(3)-2*self.pad)]
+            self.out = out[:,:,self.pad:(out.size(2)-self.pad),self.pad:(out.size(3)-self.pad)]
 
-
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     def get_current_visuals(self):
         ret_visuals = OrderedDict([('01_input', util.tensor2im(self.inp,self.img_type)),
                                    ('02_target', util.tensor2im(self.tar,self.img_type)),
@@ -154,12 +169,11 @@ class ColorHistogram_Model(BaseModel):
 
         return ret_visuals
 
-###########################################################################################################################
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     def getHistogram2d_np(self, img_torch, num_bin):
         arr = img_torch.detach().cpu().numpy()
-
-        print(arr.shape)
-        print(arr[0][1].ravel().shape)
 
         # Exclude Zeros and Make value 0 ~ 1
         arr1 = ( arr[0][1].ravel()[np.flatnonzero(arr[0][1])] + 1 ) /2
@@ -174,9 +188,6 @@ class ColorHistogram_Model(BaseModel):
 
         # AB space
         arr_new = [arr1, arr2]
-        print(arr1.shape)
-        print(arr2.shape)
-        #exit()
 
         H,edges = np.histogramdd(arr_new, bins = [num_bin, num_bin], range = ((0,1),(0,1)))
 
@@ -192,6 +203,9 @@ class ColorHistogram_Model(BaseModel):
 
         return H_torch
 
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     def getHistogram1d_np(self,img_torch, num_bin): # L space # Idon't know why but they(np, conv) are not exactly same
         # Preprocess
         arr = img_torch.detach().cpu().numpy()
@@ -208,6 +222,9 @@ class ColorHistogram_Model(BaseModel):
 
         return H_torch
 
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     def segmentwise_tile(self, img, seg_src, seg_tgt, final_tensor,segment_num):
         
         # Mask only Specific Segmentation
@@ -225,6 +242,9 @@ class ColorHistogram_Model(BaseModel):
         #Embeded to Final Tensor
         final_tensor[:,:,seg_tgt.squeeze(0)==segment_num] = hist_feat.repeat(1,1, final_tensor[:,:,seg_tgt.squeeze(0)==segment_num].size(2), 1).squeeze(0).permute(2,0,1)
 
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     def MakeLabelFromMap(self,input_A_Map, input_B_Map):
         label_A = self.LabelFromMap(input_A_Map)
         label_B = self.LabelFromMap(input_B_Map)
@@ -245,6 +265,9 @@ class ColorHistogram_Model(BaseModel):
 
         return A_seg, B_seg, label_AB.size(0)
 
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     def LabelFromMap(self, tensor_map):
         np1 = tensor_map.squeeze(0).detach().cpu().numpy()
         np2 = np.transpose(np1, (1,2,0))

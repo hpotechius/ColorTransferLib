@@ -28,3 +28,4 @@ vector-quantize-pytorch
 linear_attention_transformer
 cmake
 dlib
+faiss-gpu

@@ -15,6 +15,7 @@ from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from fcmeans import FCM
 import networkx as nx
 import cv2
+import time
 
 from copy import deepcopy
 from ColorTransferLib.Utils.Helper import check_compatibility
@@ -83,9 +84,8 @@ class FuzzyColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
-        #scale = 300
-        #src.resize(width=scale * src.get_width() // src.get_height(), height=scale)
-        #ref.resize(width=scale * ref.get_width() // ref.get_height(), height=scale)
+        start_time = time.time()
+
         src_color = src.get_colors()
         ref_color = ref.get_colors()
         out_img = deepcopy(src)
@@ -100,8 +100,8 @@ class FuzzyColorTransfer:
         term_error = opt.error
 
         # [2] Convert RGB to lab color space
-        #src = ColorSpaces.rgb_to_lab_host(src)
-        #ref = ColorSpaces.rgb_to_lab_host(ref)
+        src_color = ColorSpaces.rgb_to_lab_host(src_color)
+        ref_color = ColorSpaces.rgb_to_lab_host(ref_color)
 
 
         # [3] reshaping because input is of size (num_pixels, 1, 3)
@@ -173,8 +173,8 @@ class FuzzyColorTransfer:
         lab_new = lab_new.T.reshape((src_pix_num, dim))
 
         # [8] Convert to RGB
-        #lab_new = lab_new.reshape(src_pix_num, 1, dim)
-        #lab_new = ColorSpaces.lab_to_rgb_host(lab_new)
+        lab_new = lab_new.reshape(src_pix_num, 1, dim)
+        lab_new = ColorSpaces.lab_to_rgb_host(lab_new)
         lab_new = np.clip(lab_new, 0.0, 1.0)
 
 
@@ -183,7 +183,8 @@ class FuzzyColorTransfer:
         output = {
             "status_code": 0,
             "response": "",
-            "object": out_img
+            "object": out_img,
+            "process_time": time.time() - start_time
         }
 
         return output

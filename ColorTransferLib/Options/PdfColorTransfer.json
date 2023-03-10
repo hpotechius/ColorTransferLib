@@ -1,7 +1,7 @@
 [
   {
     "name": "iterations",
-    "default": 2,
+    "default": 20,
     "type": "int",
     "values": [],
     "tooltip": "Number of iterations the algorithm is applied.",
