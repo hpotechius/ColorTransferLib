@@ -52,7 +52,7 @@ class ColorTransfer:
         self.__ref = ref
         #self.__ref_type = ref.get_type()
 
-        self.__out = deepcopy(src)
+        self.__out = None#deepcopy(src)
         self.__approach = approach
 
         with open(os.path.dirname(os.path.abspath(__file__)) + "/Options/" + approach + ".json", 'r') as f:

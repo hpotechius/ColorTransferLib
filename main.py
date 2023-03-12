@@ -35,6 +35,20 @@ import gdown
 import zipfile36 as zipfile
 import random
 
+# ------------------------------------------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------------------------------------------
+def img2img_test(src_path, ref_path, ct_approach):
+    src = Image(file_path=src_path)
+
+    #kernel = np.ones((5,5),np.float32)/25
+    #src.set_raw(cv2.filter2D(src.get_raw(), -1, kernel), normalized=True)
+
+    ref = Image(file_path=ref_path)
+    ct = ColorTransfer(src, ref, ct_approach)
+    output = ct.apply()
+    return output
+
 # download Models folder
 # if not os.path.exists("Models") and not os.path.exists("data"):
 #     print("Download DATA.zip ...")
@@ -98,10 +112,17 @@ if __name__ == '__main__':
             "Eb3dColorTransfer", # no image support?
             "PSNetStyleTransfer",
             "HistoGAN",
-            "BasicColorCategoryTransfer"]
+            "BasicColorCategoryTransfer",
+            "FuzzyColorCategoryTransfer"]
 
-    ct_approach = "NeuralStyleTransfer"
+    ct_approach = "FuzzyColorCategoryTransfer"
     ct_input = "img-img"
+
+    src_img = '/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/256_abstract-01.png'
+    ref_img = '/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/256_abstract-08.png'
+    output = img2img_test(src_img, ref_img, ct_approach)
+    cv2.imwrite("/home/potechius/Downloads/out_dithering-16.png", cv2.cvtColor(output["object"].get_raw(), cv2.COLOR_BGR2RGB)*255)
+    exit()
 
     # files_256 = []
     # files_512 = []
@@ -217,3 +238,4 @@ if __name__ == '__main__':
     print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
     file1.close()
     file2.close()
+

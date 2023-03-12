@@ -13,3 +13,4 @@ from . import MongeKLColorTransfer
 from . import FrequencyColorTransfer
 from . import HistoGAN
 from . import SemanticColorTransfer
+from . import FuzzyColorCategoryTransfer
