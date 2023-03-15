@@ -120,6 +120,14 @@
     "changeable": true
   },
   {
+    "name": "enable_img_scale",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "Desired size of the output image.",
+    "changeable": true
+  },
+  {
     "name": "img_size",
     "default": 384,
     "type": "int",

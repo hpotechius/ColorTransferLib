@@ -11,6 +11,7 @@ import numpy as np
 import cv2
 import torch
 import os
+import time
 from .utils.face_preprocessing import face_extraction
 from .rehistoGAN import train_from_folder
 from ColorTransferLib.ImageProcessing.Image import Image as Img
@@ -97,6 +98,7 @@ class HistoGAN:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, HistoGAN.compatibility)
 
@@ -124,7 +126,7 @@ class HistoGAN:
         input_image = img_src
         opt.target_hist = img_ref
 
-        output = train_from_folder(
+        out_temp = train_from_folder(
             results_dir=opt.results_dir,
             models_dir=opt.models_dir,
             name=opt.name,
@@ -175,17 +177,18 @@ class HistoGAN:
             post_recoloring=opt.post_recoloring
         )
 
-        output = output.squeeze().cpu().detach().numpy().astype("float32")
-        output = np.swapaxes(output,0,1)
-        output = np.swapaxes(output,1,2)
+        out_temp = out_temp.squeeze().cpu().detach().numpy().astype("float32")
+        out_temp = np.swapaxes(out_temp,0,1)
+        out_temp = np.swapaxes(out_temp,1,2)
 
-        img_out = Img(array=cv2.cvtColor(output, cv2.COLOR_BGR2RGB), normalized=True)
+        img_out = Img(array=cv2.cvtColor(out_temp, cv2.COLOR_BGR2RGB), normalized=True)
 
 
         output = {
             "status_code": 0,
             "response": "",
-            "object": img_out
+            "object": img_out,
+            "process_time": time.time() - start_time
         }
         
         return output

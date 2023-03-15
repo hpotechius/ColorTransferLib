@@ -115,14 +115,14 @@ if __name__ == '__main__':
             "BasicColorCategoryTransfer",
             "FuzzyColorCategoryTransfer"]
 
-    ct_approach = "FuzzyColorCategoryTransfer"
+    ct_approach = "TpsColorTransfer"
     ct_input = "img-img"
 
-    src_img = '/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/256_abstract-01.png'
-    ref_img = '/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/256_abstract-08.png'
-    output = img2img_test(src_img, ref_img, ct_approach)
-    cv2.imwrite("/home/potechius/Downloads/out_dithering-16.png", cv2.cvtColor(output["object"].get_raw(), cv2.COLOR_BGR2RGB)*255)
-    exit()
+    # src_img = '/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/256_abstract-01.png'
+    # ref_img = '/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/256_abstract-08.png'
+    # output = img2img_test(src_img, ref_img, ct_approach)
+    # cv2.imwrite("/home/potechius/Downloads/out_dithering-16.png", cv2.cvtColor(output["object"].get_raw(), cv2.COLOR_BGR2RGB)*255)
+    # exit()
 
     # files_256 = []
     # files_512 = []
@@ -156,7 +156,7 @@ if __name__ == '__main__':
     total_tests = 0
 
     size = "1024"
-    ALG = "NST"
+    ALG = "TPS"
     file1 = open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/testset_"+size+".txt")
     file2 = open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/process_time_"+size+".txt","w")
     #for i in range(total_tests):
@@ -168,6 +168,8 @@ if __name__ == '__main__':
         s_p, r_p = line.strip().split(" ")
         src_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/' + s_p
         ref_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/' + r_p
+        #src_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/256_interior-07_dithering-4.png'
+        #ref_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/256_abstract-03_dithering-4.png'
         #src_img = "/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/4096_abstract-02.png"
         #ref_img = "/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/4096_abstract-02.png"
         #src_img = "/home/potechius/Pictures/Screenshots/src.png"
@@ -222,7 +224,7 @@ if __name__ == '__main__':
             out_loader.write("/home/potechius/Downloads/"+ct_approach+".ply")
 
         if total_tests == 1:
-            exit()
+           exit()
 
     # calculate mean
     mean = sum(times_arr) / len(times_arr)

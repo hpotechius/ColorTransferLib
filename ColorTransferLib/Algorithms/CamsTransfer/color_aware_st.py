@@ -348,18 +348,28 @@ class Hist3D:
         num_bins = self._num_bins
         c_min, c_max = self._color_range
 
-        hist_bins = np.zeros((num_bins, num_bins, num_bins), dtype=np.float32)
-        color_bins = np.zeros((num_bins, num_bins, num_bins, 3), 
-                              dtype=np.float32)
 
-        color_ids = (num_bins - 1) * (pixels - c_min) / (c_max - c_min)
+
+        hist_bins = np.zeros((num_bins, num_bins, num_bins), dtype=np.float32)
+        color_bins = np.zeros((num_bins, num_bins, num_bins, 3), dtype=np.float32)
+
+        # ADDED
+        # if range is 0, add small number for division
+        rangee = c_max - c_min
+        for i in range(rangee.shape[0]):
+            if rangee[i] == 0:
+                rangee[i] += 1e-5
+
+        color_ids = (num_bins - 1) * (pixels - c_min) / rangee
         color_ids = np.int32(color_ids)
+
+        #print(rangee)
+        #exit()
 
         for pi, color_id in enumerate(color_ids):
             hist_bins[color_id[0], color_id[1], color_id[2]] += 1
-            color_bins[color_id[0], color_id[1], 
-                       color_id[2]] += self._rgb_pixels[pi]
-
+            color_bins[color_id[0], color_id[1], color_id[2]] += self._rgb_pixels[pi]
+        
         self._hist_bins = hist_bins
         hist_positive = self._hist_bins > 0.0
 
@@ -930,14 +940,19 @@ def apply(src, ref, opt):
 
     opt.gaussian_kernel = get_gaussian_kernel(opt)
 
-    opt.loader = transforms.Compose([
-        transforms.Resize((opt.img_size, opt.img_size)),  # scale imported image
-        transforms.ToTensor()])  # transform it into a torch tensor
+    # ADDED
+    if opt.enable_img_scale:
+        opt.loader = transforms.Compose([
+            transforms.Resize((opt.img_size, opt.img_size)),  # scale imported image
+            transforms.ToTensor()])  # transform it into a torch tensor
+    else:
+        opt.loader = transforms.Compose([
+            transforms.ToTensor()])  # transform it into a torch tensor
 
     opt.unloader = transforms.ToPILImage()  # reconvert into PIL image
 
-    style_img, style_palette = image_loader(ref, opt, opt.palette_size)
     content_img, content_palette = image_loader(src, opt, opt.palette_size)
+    style_img, style_palette = image_loader(ref, opt, opt.palette_size)
 
 
     assert style_img.size() == content_img.size(), \

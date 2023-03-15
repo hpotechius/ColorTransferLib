@@ -15,6 +15,7 @@ import argparse
 from PIL import Image
 import numpy as np
 import os
+import time
 from ColorTransferLib.Algorithms.DeepPhotoStyleTransfer.photo_style import stylize
 import cv2
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
@@ -97,6 +98,7 @@ class DeepPhotoStyleTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, DeepPhotoStyleTransfer.compatibility)
 
@@ -178,7 +180,8 @@ class DeepPhotoStyleTransfer:
         output = {
             "status_code": 0,
             "response": "",
-            "object": out_img
+            "object": out_img,
+            "process_time": time.time() - start_time
         }
 
         return output

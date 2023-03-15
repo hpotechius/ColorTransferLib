@@ -955,7 +955,8 @@ class recoloringTrainer():
                     reference = Image.fromarray((input_image_name*255).astype("uint8"))
                     transform = transforms.Compose([transforms.ToTensor()])
                     reference = torch.unsqueeze(transform(reference), dim=0).to(device=torch.cuda.current_device())
-                    output = upsampling.pyramid_upsampling(generated_images, reference, levels=pyramid_levels,swapping_levels=swapping_levels, blending=level_blending)
+                    #output = upsampling.pyramid_upsampling(generated_images, reference, levels=pyramid_levels,swapping_levels=swapping_levels, blending=level_blending)
+                    generated_images = upsampling.pyramid_upsampling(generated_images, reference, levels=pyramid_levels,swapping_levels=swapping_levels, blending=level_blending)
 
             elif resizing == 'downscaling':
                 if original_size is not None:
@@ -971,7 +972,8 @@ class recoloringTrainer():
             result = ct.color_transfer_MKL(original_image, target)
             result = Image.fromarray(np.uint8(result * 255))
 
-        return output
+        #return output
+        return generated_images
 
     def print_log(self):
         if hasattr(self, 'var_loss'):

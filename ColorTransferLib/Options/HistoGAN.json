@@ -121,7 +121,7 @@
   },
   {
     "name": "batch_size",
-    "default": 2,
+    "default": 1,
     "type": "int",
     "values": [],
     "tooltip": "...",

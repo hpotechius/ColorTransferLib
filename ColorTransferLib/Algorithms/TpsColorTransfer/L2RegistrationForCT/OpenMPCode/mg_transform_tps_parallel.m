@@ -8,8 +8,9 @@ function [warped_pts, bending_energy] = mg_transform_tps_parallel(param, landmar
     Pn = [ones(n,1) ctrl_pts];
     PP = null(Pn'); 
     Nv = PP*param((d+2):end, :);
-    param(1:(d+1), 1:d)
+    %param(1:(d+1), 1:d)
     warped_pts = mgRecolourPixels(landmarks, param(1:(d+1), 1:d), Nv, ctrl_pts);
+    %disp("FUCK")
     warped_pts = warped_pts';
 
 

@@ -107,8 +107,8 @@ finalResult = uint8(finalResult);
 %imshow(finalResult);
 
 %sve the result
-#disp('Saving the result in Results/result.png');
-#imwrite(finalResult, 'Results/nocorrresult.png', 'png' );
+%disp('Saving the result in Results/result.png');
+%imwrite(finalResult, 'Results/nocorrresult.png', 'png' );
 
 end
 

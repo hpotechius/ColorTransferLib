@@ -19,10 +19,16 @@ end
 % there are too many iterations when the scale is too large, a bad solution
 % may be reached.
 if(config.iter >1)
-    options = optimset( 'LargeScale','off','GradObj','on', 'TolFun',1e-3, 'TolX',1e-3, 'TolCon', 1e-3);
+    options = optimset('GradObj','on', 'TolFun',1e-3, 'TolX',1e-3);
 else
-    options = optimset(  'LargeScale','off','GradObj','on', 'TolFun',1*10^(-10), 'TolX',1e-10, 'TolCon', 1e-10);
+    options = optimset( 'GradObj','on', 'TolFun',1*10^(-10), 'TolX',1e-10);
 end
+%if(config.iter >1)
+%    options = optimset( 'LargeScale','off','GradObj','on', 'TolFun',1e-3, 'TolX',1e-3, 'TolCon', 1e-3);
+%else
+%   options = optimset(  'LargeScale','off','GradObj','on', 'TolFun',1*10^(-10), 'TolX',1e-10, 'TolCon', 1e-10);
+%end
+
 %options = optimset(options, 'outputfcn',@outfun, 'PlotFcns', @optimplotfval );
 options = optimset(options, 'MaxFunEvals', config.max_iter, 'MaxIter', config.max_iter);
 options = optimset(options, 'GradObj', 'on');

@@ -10,6 +10,7 @@ Please see the LICENSE file that should have been included as part of this packa
 import numpy as np
 from numba import cuda
 import math
+import time
 
 import ColorTransferLib.Algorithms.CamsTransfer.color_aware_st as cwst
 import cv2
@@ -101,6 +102,7 @@ class CamsTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, options):
+        start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, CamsTransfer.compatibility)
 
@@ -110,13 +112,15 @@ class CamsTransfer:
         out_img = deepcopy(src)
 
         out = cwst.apply(src_img, ref_img, options)
-        out = cv2.resize(out, (src_img.shape[1],src_img.shape[0]), interpolation=cv2.INTER_AREA)
+        print(out.shape)
+        #out = cv2.resize(out, (src_img.shape[1],src_img.shape[0]), interpolation=cv2.INTER_AREA)
 
         out_img.set_raw(out)
         output = {
             "status_code": 0,
             "response": "",
-            "object": out_img
+            "object": out_img,
+            "process_time": time.time() - start_time
         }
 
         return output

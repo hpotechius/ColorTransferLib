@@ -101,6 +101,7 @@ class BasicColorCategoryTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, BasicColorCategoryTransfer.compatibility)
 
@@ -192,7 +193,7 @@ class BasicColorCategoryTransfer:
         #     ref_color[i,0,:] = color_samples[color_terms[int(pred)]]
         # out_img.set_colors(ref_color)
 
-        # output = {
+        # output = {2048
         #     "status_code": 0,
         #     "response": "",
         #     "object": out_img
@@ -217,19 +218,28 @@ class BasicColorCategoryTransfer:
             output_ids = np.concatenate((output_ids, np.asarray(color_cats_src_ids[color_cat])[:, np.newaxis]))
             # Create Convex Hulls
             # Check if color categories are not empty
-            if len(color_cats_src[color_cat]) > 4 and len(color_cats_ref[color_cat]) <= 4:
+            if len(color_cats_src[color_cat]) >= 4 and len(color_cats_ref[color_cat]) < 4:
                 output_colors = np.concatenate((output_colors, np.asarray(color_cats_src[color_cat])))
                 continue
             elif len(color_cats_src[color_cat]) == 0:
                 continue
-            elif len(color_cats_src[color_cat]) <= 4:
+            elif len(color_cats_src[color_cat]) < 4:
                 output_colors = np.concatenate((output_colors, np.asarray(color_cats_src[color_cat])))
                 continue
+
+
+            if BCC.__check_identity(np.asarray(color_cats_src[color_cat])) or BCC.__check_identity(np.asarray(color_cats_ref[color_cat])):
+                output_colors = np.concatenate((output_colors, np.asarray(color_cats_src[color_cat])))
+                continue
+            #exit()
+
             #time_stamp = time.time()
-            print(len(color_cats_src[color_cat]))
+            #print(len(color_cats_src[color_cat]))
             mesh_src = BasicColorCategoryTransfer.__calc_convex_hull(color_cats_src[color_cat])
             mesh_ref = BasicColorCategoryTransfer.__calc_convex_hull(color_cats_ref[color_cat])
             #print("Time - Convex Hull:", round(time.time() - time_stamp, 4))
+
+            #BCC.__check_coplanarity(np.asarray(color_cats_src_ids[color_cat]))
 
             mass_center_src = BasicColorCategoryTransfer.__calc_gravitational_center(mesh_src)
             mass_center_ref = BasicColorCategoryTransfer.__calc_gravitational_center(mesh_ref)
@@ -271,11 +281,31 @@ class BasicColorCategoryTransfer:
         output = {
             "status_code": 0,
             "response": "",
-            "object": out_img
+            "object": out_img,
+            "process_time": time.time() - start_time
         }
 
         return output
 
+    # ------------------------------------------------------------------------------------------------------------------
+    # checks if the given data does not lie on a plane -> this would lead to a convex hull with volume = 0
+    # ------------------------------------------------------------------------------------------------------------------  
+    def __check_coplanarity(data):
+        print(data.shape)
+        for val in data:
+            print(val)
+            exit()
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # checks if the given data contains at least four different values for creating a convex hull with volume > 0
+    # returns true if the data does not contain at least four different values
+    # ------------------------------------------------------------------------------------------------------------------  
+    def __check_identity(data):
+        unique_val = np.unique(data, axis=0)
+        if unique_val.shape[0] < 4:
+            return True
+        else:
+            return False
 
     # ------------------------------------------------------------------------------------------------------------------
     #
@@ -359,7 +389,7 @@ class BasicColorCategoryTransfer:
                                    write_triangle_uvs=False)
         
     # ------------------------------------------------------------------------------------------------------------------
-    #
+    #coplanarity
     # ------------------------------------------------------------------------------------------------------------------         
     def __transfer_colors(output_colors, colors, mass_center_src, mass_center_ref, dist_src, dist_ref):
         point_dir = colors - mass_center_src 
@@ -375,3 +405,5 @@ class BasicColorCategoryTransfer:
         out = shift + mass_center_ref
         output_colors = np.concatenate((output_colors, out))
         return output_colors
+    
+BCC = BasicColorCategoryTransfer
