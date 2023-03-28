@@ -93,7 +93,7 @@ class GmmEmColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
-        start_time = time.time()
+        A_start_time = time.time()
 
         out_img = deepcopy(src)
         src = src.get_raw() * 255.0
@@ -141,7 +141,7 @@ class GmmEmColorTransfer:
             "status_code": 0,
             "response": "",
             "object": out_img,
-            "process_time": time.time() - start_time
+            "process_time": time.time() - A_start_time
         }
 
         return output

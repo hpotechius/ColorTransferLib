@@ -108,8 +108,8 @@ class DeepPhotoStyleTransfer:
         out_img = deepcopy(src)
 
 
-        src_shape = src_img.shape
-        src_img = cv2.resize(src_img, (512, 512), interpolation=cv2.INTER_AREA)
+        #src_shape = src_img.shape
+        #src_img = cv2.resize(src_img, (512, 512), interpolation=cv2.INTER_AREA)
 
         if opt.style_option == 0:
             best_image_bgr = stylize(opt, False, src_img, ref_img)
@@ -174,7 +174,7 @@ class DeepPhotoStyleTransfer:
             #result = Image.fromarray(np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0)))
             #result.save(opt.output_image)
             out = np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0))
-        out = cv2.resize(out, (src_shape[1], src_shape[0]), interpolation=cv2.INTER_AREA)
+        #out = cv2.resize(out, (src_shape[1], src_shape[0]), interpolation=cv2.INTER_AREA)
 
         out_img.set_raw(out.astype(np.float32))
         output = {

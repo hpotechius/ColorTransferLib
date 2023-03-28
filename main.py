@@ -115,7 +115,7 @@ if __name__ == '__main__':
             "BasicColorCategoryTransfer",
             "FuzzyColorCategoryTransfer"]
 
-    ct_approach = "TpsColorTransfer"
+    ct_approach = "GlobalColorTransfer"
     ct_input = "img-img"
 
     # src_img = '/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/256_abstract-01.png'
@@ -145,20 +145,31 @@ if __name__ == '__main__':
     #         elif name.split("_")[0] == "8192":
     #             files_8192.append(path + "/" + name)
 
-    # file1 = open("/home/hpadmin/Downloads/testset_8192.txt","a")
-    # for i in range(100):
-    #     src_img = random.choice(files_8192).replace('/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/', '')
-    #     ref_img = random.choice(files_8192).replace('/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/', '')
+    # file1 = open("/home/hpadmin/Downloads/testset_evaluation_512.txt","w")
+    # eval_list = []
+    # counter = 1
+    # while True:
+    #     print(counter)
+    #     src_img = random.choice(files_512).replace('/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/', '')
+    #     ref_img = random.choice(files_512).replace('/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/', '')
+    #     if src_img + ref_img in eval_list:
+    #         continue
+    #     eval_list.append(src_img + ref_img)
     #     file1.writelines(src_img + " " + ref_img + "\n")
+
+    #     if counter == 1000:
+    #         break
+    #     counter += 1
+
     # exit()
 
     times_arr = []
     total_tests = 0
 
-    size = "1024"
-    ALG = "TPS"
-    file1 = open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/testset_"+size+".txt")
-    file2 = open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/process_time_"+size+".txt","w")
+    size = "512"
+    ALG = "GLO"
+    #file1 = open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/testset_"+size+".txt")
+    file1 = open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/testset_evaluation_"+size+".txt")
     #for i in range(total_tests):
     for line in file1.readlines():
         total_tests += 1
@@ -210,12 +221,14 @@ if __name__ == '__main__':
             exit()
 
         if ct_input == "img-img" or ct_input == "img-pc":
-            file_name = "/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/"+ALG+"-"+size+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+            #file_name = "/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/"+ALG+"-"+size+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+            file_name = "/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
             print(file_name)
             ou = np.concatenate((src.get_raw(), ref.get_raw(), output["object"].get_raw()), axis=1) 
             cv2.imwrite(file_name, cv2.cvtColor(ou, cv2.COLOR_BGR2RGB)*255)
 
-            file2.writelines(str(round(output["process_time"],3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
+            with open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/process_time_"+size+".txt","a") as file2:
+                file2.writelines(str(round(output["process_time"],3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
             #output["object"].write(file_name)
             #output.show()
@@ -223,8 +236,8 @@ if __name__ == '__main__':
             out_loader = PLYLoader(mesh=output["object"])
             out_loader.write("/home/potechius/Downloads/"+ct_approach+".ply")
 
-        if total_tests == 1:
-           exit()
+        #if total_tests == 1:
+        #   exit()
 
     # calculate mean
     mean = sum(times_arr) / len(times_arr)

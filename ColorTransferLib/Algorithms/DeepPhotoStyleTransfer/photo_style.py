@@ -247,7 +247,6 @@ def stylize(args, Matting, src, ref):
     config.gpu_options.allow_growth = True
     sess = tf.compat.v1.Session(config=config)
 
-    start = time.time()
     # prepare input images
     content_image = np.array(src, dtype=np.float32)
     #content_image = np.array(Image.open("data/images/2020_Lee_Example-18_Source.png").convert("RGB"), dtype=np.float32)
@@ -413,5 +412,7 @@ def stylize(args, Matting, src, ref):
 
         if i % args.save_iter == 0 and i != 0:
             save_result(best_image[:, :, ::-1], os.path.join(args.serial, 'out_iter_{}.png'.format(i)))
+
+    tf.keras.backend.clear_session()
 
     return best_image
