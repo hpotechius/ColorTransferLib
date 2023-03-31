@@ -157,10 +157,14 @@ class Image:
     # ------------------------------------------------------------------------------------------------------------------
     # returns the 3D color histogram
     # ------------------------------------------------------------------------------------------------------------------
-    def get_color_statistic_3D(self, bins=[256,256,256]):
+    def get_color_statistic_3D(self, bins=[256,256,256], normalized=False):
         color = self.get_colors()
         rgb_c = (color * 255.0).astype(np.int).reshape(color.shape[0], color.shape[2])
         histo = np.asarray(np.histogramdd(rgb_c, bins)[0])
+
+        if normalized:
+            sum_h = np.sum(histo)
+            histo /= sum_h
         return histo
 
     # ------------------------------------------------------------------------------------------------------------------

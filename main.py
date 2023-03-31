@@ -115,7 +115,7 @@ if __name__ == '__main__':
             "BasicColorCategoryTransfer",
             "FuzzyColorCategoryTransfer"]
 
-    ct_approach = "GlobalColorTransfer"
+    ct_approach = "BasicColorCategoryTransfer"
     ct_input = "img-img"
 
     # src_img = '/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/256_abstract-01.png'
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     total_tests = 0
 
     size = "512"
-    ALG = "GLO"
+    ALG = "BCC"
     #file1 = open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/testset_"+size+".txt")
     file1 = open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/testset_evaluation_"+size+".txt")
     #for i in range(total_tests):
@@ -227,8 +227,8 @@ if __name__ == '__main__':
             ou = np.concatenate((src.get_raw(), ref.get_raw(), output["object"].get_raw()), axis=1) 
             cv2.imwrite(file_name, cv2.cvtColor(ou, cv2.COLOR_BGR2RGB)*255)
 
-            with open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/process_time_"+size+".txt","a") as file2:
-                file2.writelines(str(round(output["process_time"],3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
+            # with open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/process_time_"+size+".txt","a") as file2:
+            #     file2.writelines(str(round(output["process_time"],3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
             #output["object"].write(file_name)
             #output.show()
@@ -252,5 +252,5 @@ if __name__ == '__main__':
 
     print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
     file1.close()
-    file2.close()
+    #file2.close()
 

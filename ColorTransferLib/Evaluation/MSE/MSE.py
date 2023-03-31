@@ -11,16 +11,19 @@ import cv2
 import math
 import numpy as np
 from ColorTransferLib.ImageProcessing.Image import Image
+from skimage.metrics import peak_signal_noise_ratio as psnr
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# HistogramIntersection
-# ...
+# Mean Square Error (MSE)
+# 
 #
-# Source: ...
+# Source: 
+#
+# Range []
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-class HistogramIntersection:
+class MSE:
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -33,14 +36,37 @@ class HistogramIntersection:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref, bins=[10,10,10]):
-        histo1 = src.get_color_statistic_3D(bins=bins, normalized=True)
-        histo2 = ref.get_color_statistic_3D(bins=bins, normalized=True)
-        minimum = np.minimum(histo1, histo2)
-        intersection = np.sum(minimum)
-        #intersection = np.true_divide(np.sum(minima), np.sum(histo2))
-        return round(intersection, 4)
-    
+    def apply(src, ref):
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+
+        num_pix = src_img.shape[0] * src_img.shape[1]# + ref_img.shape[0] * ref_img.shape[1]
+
+        mse_c = np.sum(np.power(np.subtract(src_img, ref_img), 2), axis=(0,1)) / num_pix
+        mse = np.sum(mse_c) / 3
+
+        # print(mse)
+        # psnr_v = 10 * math.log10(math.pow(1,2) / mse)
+        # print(psnr_v)
+
+        # difference = cv2.subtract(src.get_raw(), ref.get_raw())
+        # b, g, r = cv2.split(difference)
+        # if cv2.countNonZero(b) == 0 and cv2.countNonZero(g) == 0 and cv2.countNonZero(r) == 0:
+        #     return 9999
+
+        # psnrval = psnr(src.get_raw(), ref.get_raw())
+        # print(psnrval)
+        # exit()
+        return round(mse, 4)
+
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    # @staticmethod
+    # def apply2(src, ref):
+    #     mssim = ssim(src.get_raw(), ref.get_raw(), channel_axis=2)
+    #     return round(mssim, 4)
+
 # ------------------------------------------------------------------------------------------------------------------
 #
 # ------------------------------------------------------------------------------------------------------------------ 
@@ -61,14 +87,13 @@ def main():
         out_img = img_tri[:,1024:,:]
 
         src = Image(array=src_img)
-        ref = Image(array=ref_img)
         out = Image(array=out_img)
-        hint = HistogramIntersection.apply(ref, out)
-        print(hint)
-        eval_arr.append(hint)
+        mse = MSE.apply(src, out)
+        print(mse)
+        eval_arr.append(mse)
 
-        with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/hint.txt","a") as file2:
-            file2.writelines(str(round(hint,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
+        with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/mse.txt","a") as file2:
+            file2.writelines(str(round(mse,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 
 
