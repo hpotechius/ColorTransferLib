@@ -143,12 +143,18 @@ class Image:
     # ------------------------------------------------------------------------------------------------------------------
     # returns the color histogram, mean and variance
     # ------------------------------------------------------------------------------------------------------------------
-    def get_color_statistic(self, bins=256):
+    def get_color_statistic(self, bins=256, normalized=False):
         color = self.get_colors()
         rgb_c = (color * 255.0).astype(np.int).reshape(color.shape[0], color.shape[2])
         histo_red = np.asarray(np.histogram(rgb_c[:,0], bins=np.arange(bins+1))[0]).reshape(bins,1)
         histo_green = np.asarray(np.histogram(rgb_c[:,1], bins=np.arange(bins+1))[0]).reshape(bins,1)
         histo_blue = np.asarray(np.histogram(rgb_c[:,2], bins=np.arange(bins+1))[0]).reshape(bins,1)
+
+        if normalized:
+            histo_red = histo_red / np.sum(histo_red)
+            histo_green = histo_green / np.sum(histo_green)
+            histo_blue = histo_blue / np.sum(histo_blue)
+
         histo = np.concatenate((histo_red, histo_green, histo_blue), axis=1)
         mean = np.mean(rgb_c, axis=0).astype(np.int)
         std = np.std(rgb_c, axis=0).astype(np.int)

@@ -7,23 +7,26 @@ This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
 
-from skimage.metrics import structural_similarity as ssim
 import cv2
 import math
 import numpy as np
+import lpips
+import torch
 from ColorTransferLib.ImageProcessing.Image import Image
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# Structural similarity index measure (SSIM)
-# Measuring the perceived quality of an image regarding an original (uncompressed and distortion-free) image.
+# Learned Perceptual Image Patch Simiality (LPIPS)
+# 
 #
-# Source: Image quality assessment: from error visibility to structural similarity
+# Source: https://github.com/richzhang/PerceptualSimilarity
+# Paper: The Unreasonable Effectiveness of Deep Features as a Perceptual Metric
 #
-# Range [-1, 1]
+# Range [0, ?] -> Value of 0 means perfect similarity
+# 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-class SSIM:
+class LPIPS:
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -37,16 +40,26 @@ class SSIM:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref):
-        mssim = ssim(src.get_raw(), ref.get_raw(), channel_axis=2)
-        return round(mssim, 4)
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
 
-    # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    # @staticmethod
-    # def apply2(src, ref):
-    #     mssim = ssim(src.get_raw(), ref.get_raw(), channel_axis=2)
-    #     return round(mssim, 4)
+        # image should be RGB, IMPORTANT: normalized to [-1,1]
+        src_img_norm = torch.from_numpy(src_img * 2 - 1)
+        ref_img_norm = torch.from_numpy(ref_img * 2 - 1)
+        print(src_img_norm.shape)
+
+        src_img_norm = torch.swapaxes(src_img_norm, 1, 2)
+        src_img_norm = torch.swapaxes(src_img_norm, 0, 1)
+        src_img_norm = src_img_norm.unsqueeze(0)
+
+        ref_img_norm = torch.swapaxes(ref_img_norm, 1, 2)
+        ref_img_norm = torch.swapaxes(ref_img_norm, 0, 1)
+        ref_img_norm = ref_img_norm.unsqueeze(0)
+
+        loss_fn_alex = lpips.LPIPS(net='alex') # best forward scores
+        lp = loss_fn_alex(src_img_norm, ref_img_norm).detach().numpy().squeeze()
+        
+        return float(lp)
 
 # ------------------------------------------------------------------------------------------------------------------
 #
@@ -68,12 +81,15 @@ def main():
         out_img = img_tri[:,1024:,:]
 
         src = Image(array=src_img)
+        ref = Image(array=ref_img)
         out = Image(array=out_img)
-        ssim = SSIM.apply(src, out)
-        eval_arr.append(ssim)
+        mse = LPIPS.apply(src, out)
+        #print(mse)
+        #exit()
+        eval_arr.append(mse)
 
-        with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/ssim.txt","a") as file2:
-            file2.writelines(str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
+        with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/lpips.txt","a") as file2:
+            file2.writelines(str(round(mse,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 
 

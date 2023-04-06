@@ -37,14 +37,26 @@ class PSNR:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref):
-        # check if images are completely equal
-        difference = cv2.subtract(src.get_raw(), ref.get_raw())
-        b, g, r = cv2.split(difference)
-        if cv2.countNonZero(b) == 0 and cv2.countNonZero(g) == 0 and cv2.countNonZero(r) == 0:
-            return 9999
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
 
-        psnrval = psnr(src.get_raw(), ref.get_raw())
-        return round(psnrval, 4)
+        num_pix = src_img.shape[0] * src_img.shape[1]
+
+        mse_c = np.sum(np.power(np.subtract(src_img, ref_img), 2), axis=(0,1)) / num_pix
+        mse = np.sum(mse_c) / 3
+
+        # print(mse)
+        psnr_v = 10 * math.log10(math.pow(1, 2) / mse)
+        # print(psnr_v)
+
+        # check if images are completely equal
+        # difference = cv2.subtract(src.get_raw(), ref.get_raw())
+        # b, g, r = cv2.split(difference)
+        # if cv2.countNonZero(b) == 0 and cv2.countNonZero(g) == 0 and cv2.countNonZero(r) == 0:
+        #     return 9999
+
+        # psnrval = psnr(src.get_raw(), ref.get_raw())
+        return round(psnr_v, 4)
 
 # ------------------------------------------------------------------------------------------------------------------
 #

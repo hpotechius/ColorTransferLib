@@ -31,3 +31,4 @@ dlib
 faiss-gpu
 phasepack
 pyfftw
+lpips

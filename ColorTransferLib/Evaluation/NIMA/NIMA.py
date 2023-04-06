@@ -7,23 +7,28 @@ This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
 
-from skimage.metrics import structural_similarity as ssim
 import cv2
 import math
+import os
 import numpy as np
+import json
 from ColorTransferLib.ImageProcessing.Image import Image
+from predict import image_file_to_json, predict, image_dir_to_json
+from utils.utils import calc_mean_score, save_json
+from handlers.model_builder import Nima
+from handlers.data_generator import TestDataGenerator
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# Structural similarity index measure (SSIM)
-# Measuring the perceived quality of an image regarding an original (uncompressed and distortion-free) image.
+# ... (NIMA)
+# 
 #
-# Source: Image quality assessment: from error visibility to structural similarity
+# Source: https://github.com/idealo/image-quality-assessment
 #
-# Range [-1, 1]
+# Range []
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-class SSIM:
+class NIMA:
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -36,17 +41,24 @@ class SSIM:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref):
-        mssim = ssim(src.get_raw(), ref.get_raw(), channel_axis=2)
-        return round(mssim, 4)
+    def apply(img):
+        img.resize(224, 224)
+        img = img.get_raw()
 
-    # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    # @staticmethod
-    # def apply2(src, ref):
-    #     mssim = ssim(src.get_raw(), ref.get_raw(), channel_axis=2)
-    #     return round(mssim, 4)
+        img_format = "png"
+        base_model_name = "MobileNet"
+        weights_file = "/home/hpadmin/Projects/image-quality-assessment/models/MobileNet/weights_mobilenet_aesthetic_0.07.hdf5"
+
+        # build model and load weights
+        nima = Nima(base_model_name, weights=None)
+        nima.build()
+        nima.nima_model.load_weights(weights_file)
+
+        # get predictions
+        predictions = predict(nima.nima_model, img)
+        nim = calc_mean_score(predictions[0])
+
+        return round(nim, 4)
 
 # ------------------------------------------------------------------------------------------------------------------
 #
@@ -69,11 +81,12 @@ def main():
 
         src = Image(array=src_img)
         out = Image(array=out_img)
-        ssim = SSIM.apply(src, out)
-        eval_arr.append(ssim)
+        mse = NIMA.apply(out)
+        print(mse)
+        eval_arr.append(mse)
 
-        with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/ssim.txt","a") as file2:
-            file2.writelines(str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
+        with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/nima.txt","a") as file2:
+            file2.writelines(str(round(mse,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 
 

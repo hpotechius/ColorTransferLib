@@ -17,7 +17,7 @@ from ColorTransferLib.ImageProcessing.Image import Image
 # HistogramIntersection
 # ...
 #
-# Source: ...
+# Source: https://docs.opencv.org/3.4/d8/dc8/tutorial_histogram_comparison.html
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class HistogramIntersection:
@@ -54,7 +54,7 @@ def main():
         print(total_tests)
         s_p, r_p = line.strip().split(" ")
         outfile_name = "/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        print(outfile_name)
+        #print(outfile_name)
         img_tri = cv2.imread(outfile_name)
         src_img = img_tri[:,:512,:]
         ref_img = img_tri[:,512:1024,:]
@@ -67,7 +67,7 @@ def main():
         print(hint)
         eval_arr.append(hint)
 
-        with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/hint.txt","a") as file2:
+        with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/hi.txt","a") as file2:
             file2.writelines(str(round(hint,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 
