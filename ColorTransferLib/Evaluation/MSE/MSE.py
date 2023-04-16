@@ -45,18 +45,6 @@ class MSE:
         mse_c = np.sum(np.power(np.subtract(src_img, ref_img), 2), axis=(0,1)) / num_pix
         mse = np.sum(mse_c) / 3
 
-        # print(mse)
-        # psnr_v = 10 * math.log10(math.pow(1,2) / mse)
-        # print(psnr_v)
-
-        # difference = cv2.subtract(src.get_raw(), ref.get_raw())
-        # b, g, r = cv2.split(difference)
-        # if cv2.countNonZero(b) == 0 and cv2.countNonZero(g) == 0 and cv2.countNonZero(r) == 0:
-        #     return 9999
-
-        # psnrval = psnr(src.get_raw(), ref.get_raw())
-        # print(psnrval)
-        # exit()
         return round(mse, 4)
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -71,15 +59,15 @@ class MSE:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    file1 = open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "GLO"
+    file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
+    ALG = "BCC"
     total_tests = 0
     eval_arr = []
     for line in file1.readlines():
         total_tests += 1
         print(total_tests)
         s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+        outfile_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
         print(outfile_name)
         img_tri = cv2.imread(outfile_name)
         src_img = img_tri[:,:512,:]
@@ -92,7 +80,7 @@ def main():
         print(mse)
         eval_arr.append(mse)
 
-        with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/mse.txt","a") as file2:
+        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/mse.txt","a") as file2:
             file2.writelines(str(round(mse,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 

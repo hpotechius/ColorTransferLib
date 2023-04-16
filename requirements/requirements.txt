@@ -32,3 +32,8 @@ faiss-gpu
 phasepack
 pyfftw
 lpips
+torchmetrics
+libsvm
+Cython
+pysaliency
+pyiqa

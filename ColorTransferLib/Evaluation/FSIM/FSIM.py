@@ -138,15 +138,30 @@ class FSIM:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    file1 = open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "GLO"
+    # with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/PDF/fsim.txt","r") as file2:
+    #     cc = 0
+    #     summ = 0
+    #     for line in file2.readlines():
+    #         tim = float(line.strip().split(" ")[0])
+    #         if math.isinf(tim):
+    #             continue
+    #         summ += tim
+    #         cc += 1
+    #     summ /= cc
+    #     print(cc)
+    #     print(summ)
+    # exit()    
+
+    file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
+    ALG = "PDF"
     total_tests = 0
     eval_arr = []
+
     for line in file1.readlines():
         total_tests += 1
         print(total_tests)
         s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+        outfile_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
         print(outfile_name)
         img_tri = cv2.imread(outfile_name)
         src_img = img_tri[:,:512,:]
@@ -160,10 +175,8 @@ def main():
         print(fsim)
         eval_arr.append(fsim)
 
-        with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/fsim.txt","a") as file2:
+        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/fsim.txt","a") as file2:
             file2.writelines(str(round(fsim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
-
-
 
         # calculate mean
     mean = sum(eval_arr) / len(eval_arr)

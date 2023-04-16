@@ -25,7 +25,7 @@
   },
   {
     "name": "neigbhours",
-    "default": 10,
+    "default": 1,
     "type": "int",
     "values": [],
     "tooltip": "Number of neighbouring pixels for color transferring.",

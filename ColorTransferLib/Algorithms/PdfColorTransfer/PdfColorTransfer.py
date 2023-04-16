@@ -11,9 +11,18 @@ import numpy as np
 from numba import cuda
 import math
 import time
+import os
+import json
+import cv2
+
+import os
+os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
+from oct2py import octave, Oct2Py
+
 from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.Math import get_random_3x3rotation_matrix
 from ColorTransferLib.Utils.Math import device_mul_mat3x3_vec3
+#from ColorTransferLib.Utils.Helper import check_compatibility
 
 from mpl_toolkits import mplot3d
 import numpy as np
@@ -22,7 +31,7 @@ from scipy.spatial.transform import Rotation as R
 
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from copy import deepcopy
-from ColorTransferLib.Utils.Helper import check_compatibility
+from ColorTransferLib.ImageProcessing.Image import Image as Img
 
 
 
@@ -91,7 +100,13 @@ class PdfColorTransfer:
     def apply(src, ref, opt):
         start_time = time.time()
         # check if method is compatible with provided source and reference objects
-        output = check_compatibility(src, ref, PdfColorTransfer.compatibility)
+        #output = Helper.check_compatibility(src, ref, PdfColorTransfer.compatibility)
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None
+        }
+
 
         # Preprocessing
         src_color = src.get_colors()
@@ -206,3 +221,78 @@ class PdfColorTransfer:
         }
 
         return output
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def apply_matlab(src, ref, opt):
+        start_time = time.time()
+        # NOTE: sudo apt-get install liboctave-dev
+        # NOTE: plg install -forge image
+        # NOTE: plg install -forge statistics
+
+
+
+        # check if method is compatible with provided source and reference objects
+        #output = check_compatibility(src, ref, TpsColorTransfer.compatibility)
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None
+        }
+
+        # Preprocessing
+        # NOTE RGB space needs multiplication with 255
+        src_img = src.get_raw()# * 255
+        ref_img = ref.get_raw()# * 255
+        out_img = deepcopy(src)
+
+        # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
+        octave.addpath(octave.genpath('.'))
+        #octave.addpath(octave.genpath('module/Algorithms/TpsColorTransfer/L2RegistrationForCT'))
+        octave.eval('pkg load image')
+        octave.eval('pkg load statistics')
+        octave.eval("dir")
+
+        outp = octave.colour_transfer_IDT(src_img, ref_img, 10)
+
+        out_img.set_raw(outp.astype(np.float32), normalized=True)
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img,
+            "process_time": time.time() - start_time
+        }
+
+        return output
+
+# ------------------------------------------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------------------------------------------ 
+def main():
+    #src = Img(file_path="/home/potechius/Downloads/cf.jpg")
+    #src = Img(file_path="/home/potechius/Downloads/psource_new.png")
+    #ref = Img(file_path="/home/potechius/Downloads/preference_new.png")
+    src_name = "512_interior-02_dithering-4"
+    ref_name = "512_abstract-08_dithering-4"
+
+    src = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/"+src_name+".png")
+    ref = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/"+ref_name+".png")
+
+    with open("/home/potechius/Projects/ColorTransferLib/ColorTransferLib/Options/PdfColorTransfer.json", 'r') as f:
+        options = json.load(f)
+        opt = BaseOptions(options)
+
+    out = PDF.apply(src, ref, opt)
+    out["object"].write("/home/potechius/Downloads/result.png")
+
+    file_name = "/home/potechius/Downloads/"+src_name+"__to__"+ref_name+".png"
+    ou = np.concatenate((src.get_raw(), ref.get_raw(), out["object"].get_raw()), axis=1) 
+    cv2.imwrite(file_name, cv2.cvtColor(ou, cv2.COLOR_BGR2RGB)*255)
+
+
+PDF = PdfColorTransfer
+
+if __name__ == "__main__":
+    main()

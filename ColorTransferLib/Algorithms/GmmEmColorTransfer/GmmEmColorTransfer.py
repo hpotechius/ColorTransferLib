@@ -16,8 +16,12 @@ from ColorTransferLib.Utils.BaseOptions import BaseOptions
 import cv2
 from sklearn.neighbors import KDTree
 from copy import deepcopy
-from ColorTransferLib.Utils.Helper import check_compatibility
+#from ColorTransferLib.Utils.Helper import check_compatibility
 import multiprocessing as mp
+#from .FaissKNeighbors import FaissKNeighbors
+from ColorTransferLib.ImageProcessing.Image import Image
+from ColorTransferLib.ColorTransfer import ColorTransfer
+import json
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -244,3 +248,28 @@ class GmmEmColorTransfer:
         regul_term = mu * (pou_lap - src_lap)
 
         return regul_term
+
+# ------------------------------------------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------------------------------------------ 
+def main():
+    #src_img = '/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/1024_abstract-08.png'
+    #ref_img = '/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/1024_abstract-05.png'
+    src_img = '/home/potechius/Downloads/source.png'
+    ref_img = '/home/potechius/Downloads/reference.png'
+    src = Image(file_path=src_img)
+    ref = Image(file_path=ref_img)
+
+    with open("/home/potechius/Projects/ColorTransferLib/ColorTransferLib/Options/GmmEmColorTransfer.json", 'r') as f:
+        options = json.load(f)
+        opt = BaseOptions(options)
+
+    output = GmmEmColorTransfer.apply(src, ref, opt)
+
+    #ou = np.concatenate((src.get_raw(), ref.get_raw(), output["object"].get_raw()), axis=1) 
+    #cv2.imwrite("/home/potechius/Downloads/test.png", cv2.cvtColor(ou, cv2.COLOR_BGR2RGB)*255)
+    cv2.imwrite("/home/potechius/Downloads/test.png", cv2.cvtColor( output["object"].get_raw(), cv2.COLOR_BGR2RGB)*255)
+
+
+if __name__ == "__main__":
+    main()
