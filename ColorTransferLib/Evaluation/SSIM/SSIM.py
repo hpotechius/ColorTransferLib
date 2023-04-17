@@ -180,7 +180,7 @@ class SSIM:
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
     file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "TPS"
+    ALG = "RHG"
     total_tests = 0
     eval_arr = []
     for line in file1.readlines():

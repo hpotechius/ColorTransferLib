@@ -62,7 +62,7 @@ class PSNR:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    # with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/BCC/psnr.txt","r") as file2:
+    # with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/CAM/psnr.txt","r") as file2:
     #     cc = 0
     #     summ = 0
     #     for line in file2.readlines():
@@ -78,7 +78,7 @@ def main():
 
 
     file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "BCC"
+    ALG = "RHG"
     total_tests = 0
     eval_arr = []
     for line in file1.readlines():
