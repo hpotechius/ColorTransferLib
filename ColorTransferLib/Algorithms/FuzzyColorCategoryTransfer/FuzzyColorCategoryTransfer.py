@@ -26,7 +26,7 @@ from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from ColorTransferLib.ImageProcessing.Image import Image as Img
 from copy import deepcopy
 #from ColorTransferLib.Utils.Helper import check_compatibility
-from FaissKNeighbors import FaissKNeighbors
+from .FaissKNeighbors import FaissKNeighbors
 from pyhull.convex_hull import ConvexHull
 from sklearn.decomposition import PCA
 from scipy.spatial.transform import Rotation as R

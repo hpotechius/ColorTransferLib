@@ -22,7 +22,7 @@ from ColorTransferLib.ColorTransfer import ColorTransfer
 from ColorTransferLib.Utils.Math import get_random_3x3rotation_matrix
 from ColorTransferLib.Evaluation.SSIM.SSIM import SSIM
 from ColorTransferLib.Evaluation.PSNR.PSNR import PSNR
-from ColorTransferLib.Evaluation.HistogramIntersection.HistogramIntersection import HistogramIntersection
+from ColorTransferLib.Evaluation.HI.HI import HistogramIntersection
 from ColorTransferLib.Evaluation.PerceptualMetric.PerceptualMetric import PerceptualMetric
 import cv2
 import tensorflow_probability as tfp
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             "BasicColorCategoryTransfer",
             "FuzzyColorCategoryTransfer"]
 
-    ct_approach = "BasicColorCategoryTransfer"
+    ct_approach = "DeepPhotoStyleTransfer"
     ct_input = "img-img"
 
     # src_img = '/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/256_abstract-01.png'
@@ -167,9 +167,9 @@ if __name__ == '__main__':
     total_tests = 0
 
     size = "512"
-    ALG = "BCC"
+    ALG = "DPT"
     #file1 = open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/testset_"+size+".txt")
-    file1 = open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/testset_evaluation_"+size+".txt")
+    file1 = open("/media/NAS/Datasets/PAPER_METRIC/testset_evaluation_512.txt")
     #for i in range(total_tests):
     for line in file1.readlines():
         total_tests += 1
@@ -177,8 +177,8 @@ if __name__ == '__main__':
         # src_img = random.choice(files_2048)
         # ref_img = random.choice(files_2048)
         s_p, r_p = line.strip().split(" ")
-        src_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/' + s_p
-        ref_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/' + r_p
+        src_img = '/media/NAS/Datasets/PAPER_METRIC/ACM-MM-Evaluation-Dataset/' + s_p
+        ref_img = '/media/NAS/Datasets/PAPER_METRIC/ACM-MM-Evaluation-Dataset/' + r_p
         #src_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/256_interior-07_dithering-4.png'
         #ref_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/256_abstract-03_dithering-4.png'
         #src_img = "/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/4096_abstract-02.png"
@@ -222,7 +222,7 @@ if __name__ == '__main__':
 
         if ct_input == "img-img" or ct_input == "img-pc":
             #file_name = "/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/"+ALG+"-"+size+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-            file_name = "/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+            file_name = "/media/NAS/Datasets/PAPER_METRIC/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
             print(file_name)
             ou = np.concatenate((src.get_raw(), ref.get_raw(), output["object"].get_raw()), axis=1) 
             cv2.imwrite(file_name, cv2.cvtColor(ou, cv2.COLOR_BGR2RGB)*255)

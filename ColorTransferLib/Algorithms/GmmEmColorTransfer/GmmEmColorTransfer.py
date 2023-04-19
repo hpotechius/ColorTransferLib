@@ -20,7 +20,6 @@ from copy import deepcopy
 import multiprocessing as mp
 #from .FaissKNeighbors import FaissKNeighbors
 from ColorTransferLib.ImageProcessing.Image import Image
-from ColorTransferLib.ColorTransfer import ColorTransfer
 import json
 
 # ----------------------------------------------------------------------------------------------------------------------

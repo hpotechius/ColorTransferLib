@@ -152,46 +152,51 @@ def main():
     #     print(summ)
     # exit()    
 
-    file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "PDF"
-    total_tests = 0
-    eval_arr = []
 
-    for line in file1.readlines():
-        total_tests += 1
-        print(total_tests)
-        s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        print(outfile_name)
-        img_tri = cv2.imread(outfile_name)
-        src_img = img_tri[:,:512,:]
-        ref_img = img_tri[:,512:1024,:]
-        out_img = img_tri[:,1024:,:]
+    fuu = ["TPS", "NST", "CAM", "DPT", "RHG"]
+    for ALG in fuu:
+        print(ALG)
 
-        src = Image(array=src_img)
-        ref = Image(array=ref_img)
-        out = Image(array=out_img)
-        fsim = FSIM.apply(src, out)
-        print(fsim)
-        eval_arr.append(fsim)
+        file1 = open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
+        #ALG = "PDF"
+        total_tests = 0
+        eval_arr = []
 
-        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/fsim.txt","a") as file2:
-            file2.writelines(str(round(fsim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
+        for line in file1.readlines():
+            total_tests += 1
+            #print(total_tests)
+            s_p, r_p = line.strip().split(" ")
+            outfile_name = "/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+            #print(outfile_name)
+            img_tri = cv2.imread(outfile_name)
+            src_img = img_tri[:,:512,:]
+            ref_img = img_tri[:,512:1024,:]
+            out_img = img_tri[:,1024:,:]
 
-        # calculate mean
-    mean = sum(eval_arr) / len(eval_arr)
+            src = Image(array=src_img)
+            ref = Image(array=ref_img)
+            out = Image(array=out_img)
+            fsim = FSIM.apply(src, out)
+            #print(fsim)
+            eval_arr.append(fsim)
 
-    # calculate std
-    std = 0
-    for t in eval_arr:
-        std += math.pow(t-mean, 2)
-    std /= len(eval_arr)
-    std = math.sqrt(std)
+            with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/fsim.txt","a") as file2:
+                file2.writelines(str(round(fsim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
+
+            # calculate mean
+        mean = sum(eval_arr) / len(eval_arr)
+
+        # calculate std
+        std = 0
+        for t in eval_arr:
+            std += math.pow(t-mean, 2)
+        std /= len(eval_arr)
+        std = math.sqrt(std)
 
 
-    print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
+        print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
 
-    file1.close()
+        file1.close()
 
 
 

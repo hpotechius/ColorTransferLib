@@ -13,10 +13,10 @@ import os
 import numpy as np
 import json
 from ColorTransferLib.ImageProcessing.Image import Image
-from predict import image_file_to_json, predict, image_dir_to_json
-from utils.utils import calc_mean_score, save_json
-from handlers.model_builder import Nima
-from handlers.data_generator import TestDataGenerator
+from .predict import image_file_to_json, predict, image_dir_to_json
+from .utils.utils import calc_mean_score, save_json
+from .handlers.model_builder import Nima
+from .handlers.data_generator import TestDataGenerator
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------

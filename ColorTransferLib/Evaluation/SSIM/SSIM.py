@@ -8,12 +8,14 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 from skimage.metrics import structural_similarity as ssim
+from torchmetrics import StructuralSimilarityIndexMeasure
 import cv2
 import math
 import numpy as np
 from scipy import signal
 from ColorTransferLib.ImageProcessing.Image import Image
-import pysaliency
+import time
+#import pysaliency
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -77,13 +79,18 @@ class SSIM:
     def apply2(src, ref):
         kernel_gaus = SSIM.iso2Dgauss()
 
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+
+        
+
         k1 = 0.01
         k2 = 0.03
         L = 1.0
         N = 11
-        M = N * N
-        c1 = math.pow(k1 * L, 2)
-        c2 = math.pow(k2 * L, 2)
+        M = src_img.shape[0] * src_img.shape[1]
+        c1 = (k1 * L) ** 2
+        c2 = (k2 * L) ** 2
         c3 = c2 / 2.0
         alp = 1.0
         bet = 1.0
@@ -92,36 +99,56 @@ class SSIM:
         w_g = 1.0/3.0
         w_b = 1.0/3.0
         
-        #mu_src = cv2.GaussianBlur(src.get_raw(),(11,11),1.5)
-        #mu_ref = cv2.GaussianBlur(ref.get_raw(),(11,11),1.5)
-        mu_src = cv2.filter2D(src.get_raw(), -1, kernel_gaus)
-        mu_ref = cv2.filter2D(ref.get_raw(), -1, kernel_gaus)
-
-        #sig_src = cv2.GaussianBlur(np.power(np.subtract(src.get_raw(), mu_src), 2), (11,11), 1.5)
-        sig_src = cv2.filter2D(np.power(np.subtract(src.get_raw(), mu_src), 2), -1, kernel_gaus)
-        #sig_src = np.power(sig_src / (M - 1), 0.5)
-        sig_src = np.power(sig_src, 0.5)
+        mu_src = cv2.filter2D(src_img, -1, kernel_gaus)
+        mu_ref = cv2.filter2D(ref_img, -1, kernel_gaus)
 
 
-        #sig_ref = cv2.GaussianBlur(np.power(np.subtract(ref.get_raw(), mu_ref), 2), (11,11), 1.5)
-        sig_ref = cv2.filter2D(np.power(np.subtract(ref.get_raw(), mu_ref), 2), -1, kernel_gaus)
-        #sig_ref = np.power(sig_ref / (M - 1), 0.5)
-        sig_ref = np.power(sig_ref, 0.5)
+        src_pad = np.pad(src_img, ((5, 5), (5, 5), (0, 0)), 'reflect')
+        ref_pad = np.pad(ref_img, ((5, 5), (5, 5), (0, 0)), 'reflect')
 
-        #cov = cv2.GaussianBlur(np.multiply(np.subtract(src.get_raw(), mu_src), np.subtract(ref.get_raw(), mu_ref)), (11,11), 1.5)
-        cov = cv2.filter2D(np.multiply(np.subtract(src.get_raw(), mu_src), np.subtract(ref.get_raw(), mu_ref)), -1, kernel_gaus)
-        #cov = cov / (M - 1)
+        sig_src = np.zeros_like(src_img)
+        sig_ref = np.zeros_like(ref_img)
+        cov = np.zeros_like(src_img)
 
-        l = (2 * np.multiply(mu_src, mu_ref) + c1) / (np.power(mu_src, 2) + np.power(mu_ref, 2) + c1)
-        c = (2 * np.multiply(sig_src, sig_ref) + c2) / (np.power(sig_src, 2) + np.power(sig_ref, 2) + c2)
-        s = (cov + c3) / (np.multiply(sig_src, sig_ref) + c3)
+        # start_time = time.time()
+        # for y in range(src_img.shape[0]):
+        #     for x in range(src_img.shape[1]):
+        #         for c in range(3):
+        #             wind_src = src_pad[y:y+11, x:x+11, c]
+        #             wind_ref = ref_pad[y:y+11, x:x+11, c]
+        #             sig_src[y, x, c] = np.sum(kernel_gaus * (wind_src - np.full((11, 11), mu_src[y,x,c])) ** 2) ** 0.5
+        #             sig_ref[y, x, c] = np.sum(kernel_gaus * (wind_ref - np.full((11, 11), mu_ref[y,x,c])) ** 2) ** 0.5
+        #             cov[y, x, c] = np.sum(kernel_gaus * (wind_src - np.full((11, 11), mu_src[y,x,c])) * (wind_ref - np.full((11, 11), mu_ref[y,x,c])))
+        # print(time.time()-start_time)
 
-        #ssim_local = np.multiply(np.power(l, alp), np.power(c, bet), np.power(s, gam))
-        ssim_local = np.multiply(np.power(l, alp), np.power(c, bet))
-        ssim_local = np.multiply(ssim_local, np.power(s, gam))
+
+        start_time = time.time()
+        kernel_gaus_3d = np.concatenate((np.expand_dims(kernel_gaus, 2), np.expand_dims(kernel_gaus, 2), np.expand_dims(kernel_gaus, 2)), 2)
+        for y in range(src_img.shape[0]):
+            for x in range(src_img.shape[1]):
+                wind_src = src_pad[y:y+11, x:x+11, :]
+                wind_ref = ref_pad[y:y+11, x:x+11, :]
+
+                mu_src_win = np.tile(mu_src[y, x], (11, 11, 1))
+                mu_ref_win = np.tile(mu_ref[y, x], (11, 11, 1))
+
+                sig_src[y, x] = np.sum(kernel_gaus_3d * (wind_src - mu_src_win) ** 2, axis=(0,1)) ** 0.5
+                sig_ref[y, x] = np.sum(kernel_gaus_3d * (wind_ref - mu_ref_win) ** 2, axis=(0,1)) ** 0.5
+                cov[y, x] = np.sum(kernel_gaus_3d * (wind_src - mu_src_win) * (wind_ref - mu_ref_win), axis=(0,1))
+        print(time.time()-start_time)
+
+        # for c in range(3):
+        #     sig_src[c] = np.sqrt(np.abs(signal.convolve2d(src_img[c] ** 2, kernel_gaus, mode='same', boundary='symm') - mu_src[c]**2))
+        #     sig_ref[c] = np.sqrt(np.abs(signal.convolve2d(ref_img[c] ** 2, kernel_gaus, mode='same', boundary='symm') - mu_ref[c]**2))
+        #     cov[c] = signal.convolve2d(src_img[c] * ref_img[c], kernel_gaus, mode='same', boundary='symm') - mu_src[c] * mu_ref[c]
+
+        l = (2 * mu_src * mu_ref + c1) / (mu_src ** 2 + mu_ref ** 2 + c1)
+        c = (2 * sig_src * sig_ref + c2) / (sig_src ** 2 + sig_ref ** 2 + c2)
+        s = (cov + c3) / (sig_src * sig_ref + c3)
+
+        ssim_local = l ** alp * c ** bet * s ** gam
         mssim = np.sum(ssim_local, axis=(0,1)) / M
         mssim = mssim[0] * w_r + mssim[1] * w_g + mssim[2] * w_b
-
 
         print(mssim)
 
@@ -131,7 +158,10 @@ class SSIM:
         ff = 1/3 * rr + 1/3 * gg + 1/3 * bb
         print(ff)
 
-        mssim2 = ssim(src.get_raw(), ref.get_raw(), data_range=1.0, gaussian_weights=True, sigma=1.5, use_sample_covariance=False, channel_axis=2)
+        ret = ssim(src.get_raw()[:,:,0], ref.get_raw()[:,:,0], data_range=1.0, gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
+        get = ssim(src.get_raw()[:,:,1], ref.get_raw()[:,:,1], data_range=1.0, gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
+        bet = ssim(src.get_raw()[:,:,2], ref.get_raw()[:,:,2], data_range=1.0, gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
+        mssim2 = 1/3 * ret + 1/3 * get + 1/3 * bet
         print(mssim2)
 
         exit()
@@ -179,15 +209,15 @@ class SSIM:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "RHG"
+    file1 = open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
+    ALG = "GLO"
     total_tests = 0
     eval_arr = []
     for line in file1.readlines():
         total_tests += 1
         print(total_tests)
         s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+        outfile_name = "/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
         print(outfile_name)
         img_tri = cv2.imread(outfile_name)
         src_img = img_tri[:,:512,:]
@@ -197,11 +227,11 @@ def main():
         src = Image(array=src_img)
         ref = Image(array=ref_img)
         out = Image(array=out_img)
-        ssim = SSIM.apply(src, out)
+        ssim = SSIM.apply2(src, ref)
 
         eval_arr.append(ssim)
 
-        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/ssim.txt","a") as file2:
+        with open("/media/hpadmin/Active_Disk/Tests/MetricEvaluation/"+ALG+"/ssim.txt","a") as file2:
             file2.writelines(str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 
