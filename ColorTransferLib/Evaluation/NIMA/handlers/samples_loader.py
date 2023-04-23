@@ -1,5 +1,5 @@
 
-from utils.utils import load_json
+from ..utils.utils import load_json
 
 
 def load_samples(samples_file):

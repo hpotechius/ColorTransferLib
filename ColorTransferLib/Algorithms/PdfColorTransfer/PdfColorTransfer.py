@@ -19,6 +19,9 @@ import os
 os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
 from oct2py import octave, Oct2Py
 
+import sys
+sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
+
 from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.Math import get_random_3x3rotation_matrix
 from ColorTransferLib.Utils.Math import device_mul_mat3x3_vec3
@@ -271,25 +274,24 @@ class PdfColorTransfer:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    #src = Img(file_path="/home/potechius/Downloads/cf.jpg")
-    #src = Img(file_path="/home/potechius/Downloads/psource_new.png")
-    #ref = Img(file_path="/home/potechius/Downloads/preference_new.png")
-    src_name = "512_interior-02_dithering-4"
-    ref_name = "512_abstract-08_dithering-4"
+    src = Img(file_path="/media/potechius/Active_Disk/SORTING/scotland_house.png")
+    ref = Img(file_path="/media/potechius/Active_Disk/SORTING/scotland_plain.png")
 
-    src = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/"+src_name+".png")
-    ref = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/"+ref_name+".png")
+    # src_name = "512_interior-02_dithering-4"
+    # ref_name = "512_abstract-08_dithering-4"
+    # src = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/"+src_name+".png")
+    # ref = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/"+ref_name+".png")
 
-    with open("/home/potechius/Projects/ColorTransferLib/ColorTransferLib/Options/PdfColorTransfer.json", 'r') as f:
+    with open("/home/potechius/Projects/VSCode/ColorTransferLib/ColorTransferLib/Options/PdfColorTransfer.json", 'r') as f:
         options = json.load(f)
         opt = BaseOptions(options)
 
     out = PDF.apply(src, ref, opt)
     out["object"].write("/home/potechius/Downloads/result.png")
 
-    file_name = "/home/potechius/Downloads/"+src_name+"__to__"+ref_name+".png"
-    ou = np.concatenate((src.get_raw(), ref.get_raw(), out["object"].get_raw()), axis=1) 
-    cv2.imwrite(file_name, cv2.cvtColor(ou, cv2.COLOR_BGR2RGB)*255)
+    # file_name = "/home/potechius/Downloads/"+src_name+"__to__"+ref_name+".png"
+    # ou = np.concatenate((src.get_raw(), ref.get_raw(), out["object"].get_raw()), axis=1) 
+    # cv2.imwrite(file_name, cv2.cvtColor(ou, cv2.COLOR_BGR2RGB)*255)
 
 
 PDF = PdfColorTransfer

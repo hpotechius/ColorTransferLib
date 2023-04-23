@@ -907,8 +907,6 @@ class FuzzyColorCategoryTransfer:
             for color, idx in zip(color_cats_src[c], color_cats_src_ids[c]):
                 hsv_cart_src[idx] = color
 
-
-
         # Histogram Matching
         #hsv_cart_src = FCCT.histogram_matching(hsv_cart_src, hsv_cart_ref)
 
@@ -1114,8 +1112,6 @@ class FuzzyColorCategoryTransfer:
             #transferred_rotated = np.power(transferred_rotated, 1 / soft_m) - stretch
             output = np.einsum('ikl,ik->il', mat_rot_inv_tile, transferred_rotated - stretch)
 
-
-
             # dist_x = np.linalg.norm(transferred_rotated_x - src_rotated[:,0])
             # dist_y = np.linalg.norm(transferred_rotated_y - src_rotated[:,1])
             # dist_z = np.linalg.norm(transferred_rotated_z - src_rotated[:,2])
@@ -1125,116 +1121,7 @@ class FuzzyColorCategoryTransfer:
             output[:2] = output[:2] - 255
             device_src = np.clip(output, -255, 255)
 
-        print("DONE")
-
         return device_src.astype("float32")
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # D - calculate transform direction
-    # T - Translation
-    # ------------------------------------------------------------------------------------------------------------------   
-    @staticmethod
-    def __apply_DT(color_cats_src, color_cats_src_ids, color_translation, color_terms):
-        output_ids = np.empty([0, 1])
-        output_colors = np.empty([0, 3])
-        for idx, c in enumerate(color_terms):
-            if np.asarray(color_cats_src[c]).shape[0] != 0:
-                # save sorted ids for reversion of sorting 
-                output_ids = np.concatenate((output_ids, np.asarray(color_cats_src_ids[c])[:, np.newaxis]))
-                translated = np.add(np.asarray(color_cats_src[c]), color_translation[c])
-                output_colors = np.concatenate((output_colors, translated))
-        sort = np.argsort(output_ids, axis=0)
-        sorted_colors = output_colors[sort]
-        return sorted_colors
-    # ------------------------------------------------------------------------------------------------------------------
-    # D - calculate transform direction
-    # T - Translation
-    # M - Membership
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def __apply_DTM(src_color, color_terms, src_membership, color_translation):   
-        output_colors = src_color[:,0,:]
-        for idx, c in enumerate(color_terms):
-            translated = np.concatenate((src_membership[:,idx][:,np.newaxis],src_membership[:,idx][:,np.newaxis],src_membership[:,idx][:,np.newaxis]), axis=1) * color_translation[c]
-            output_colors = np.add(output_colors, translated)
-        sorted_colors = output_colors[:, np.newaxis, :]
-        return sorted_colors
-    
-    # ------------------------------------------------------------------------------------------------------------------
-    # D - calculate transform direction
-    # T - Translation
-    # M - Membership
-    # R - Rotation
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def __apply_DTMR(color_cats_src, color_cats_src_ids, color_cats_src_mem, color_translation, color_rotation, src_centers, color_terms):   
-        output_ids = np.empty([0, 1])
-        output_colors = np.empty([0, 3])
-        for idx, c in enumerate(color_terms):
-            # save sorted ids for reversion of sorting 
-            output_ids = np.concatenate((output_ids, np.asarray(color_cats_src_ids[c])[:, np.newaxis]))
-
-            rotated_temp = np.add(np.asarray(color_cats_src[c]), -src_centers[c])
-            rotated_temp = color_rotation[c].dot(rotated_temp.T).T
-            rotated_temp = np.add(rotated_temp, src_centers[c])
-
-            output_colors_sub = rotated_temp
-            for ci, cz in enumerate(color_terms):
-                weighted_translation = np.asarray(color_translation[cz]) * np.concatenate((np.asarray(color_cats_src_mem[c])[:,ci][:,np.newaxis],np.asarray(color_cats_src_mem[c])[:,ci][:,np.newaxis],np.asarray(color_cats_src_mem[c])[:,ci][:,np.newaxis]), axis=1)
-                output_colors_sub = np.add(output_colors_sub, weighted_translation)
-            # print(np.asarray(color_cats_src[c]).shape)
-            # print(np.asarray(color_cats_src_mem[c]).shape)
-            # print(np.asarray(color_cats_src[c])[0])
-            # print(np.asarray(color_cats_src_mem[c])[0])
-            # print(weighted_translation[0])
-            # exit()
-            #translated = np.add(np.asarray(color_cats_src[c]), weighted_translation)
-
-            output_colors = np.concatenate((output_colors, output_colors_sub))
-        sort = np.argsort(output_ids, axis=0)
-        sorted_colors = output_colors[sort]
-        return sorted_colors
-
-
-        # output_colors = src_color[:,0,:]
-        # for idx, c in enumerate(color_terms):
-        #     rotated_temp = np.add(output_colors, -src_centers[c])
-        #     rotated_temp = color_rotation[c].dot(rotated_temp.T).T
-        #     rotated_temp = np.add(rotated_temp, src_centers[c])
-        
-        #     translated = np.concatenate((src_membership[:,idx][:,np.newaxis],src_membership[:,idx][:,np.newaxis],src_membership[:,idx][:,np.newaxis]), axis=1) * color_translation[c]
-        #     # print(color_translation[c].shape)
-        #     # print(color_rotation[c].shape)
-        #     # print(translated.shape)
-        #     # exit()
-        #     output_colors = np.add(output_colors, translated)
-        # sorted_colors = output_colors[:, np.newaxis, :]
-        # return sorted_colors
-    
-    # ------------------------------------------------------------------------------------------------------------------
-    # D - calculate transform direction
-    # T - Translation
-    # M - Membership
-    # R - Rotation
-    # S - Scaling
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def __apply_DTMRS(src_color, color_terms, src_membership, color_translation, color_rotation, color_scaling, src_centers):   
-        output_colors = src_color[:,0,:]
-        for idx, c in enumerate(color_terms):
-            rotated_temp = np.add(output_colors, -src_centers[c])
-            rotated_temp = color_rotation[c].dot(rotated_temp.T).T
-            scaled_temp = scaled_temp * color_scaling[c]
-            rotated_temp = np.add(output_colors, src_centers[c])
-        
-            translated = np.concatenate((src_membership[:,idx][:,np.newaxis],src_membership[:,idx][:,np.newaxis],src_membership[:,idx][:,np.newaxis]), axis=1) * color_translation[c]
-            # print(color_translation[c].shape)
-            # print(color_rotation[c].shape)
-            # print(translated.shape)
-            # exit()
-            output_colors = np.add(output_colors, translated)
-        sorted_colors = output_colors[:, np.newaxis, :]
-        return sorted_colors    
 
     # ------------------------------------------------------------------------------------------------------------------
     #

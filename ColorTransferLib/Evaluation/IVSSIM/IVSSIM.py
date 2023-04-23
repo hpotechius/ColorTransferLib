@@ -29,7 +29,7 @@ import time
 # Range [-1, 1]
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-class SSIM:
+class IVSSIM:
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # CONSTRUCTOR
@@ -37,25 +37,6 @@ class SSIM:
     # ------------------------------------------------------------------------------------------------------------------
     def __init__(self):
         pass
-
-    # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def apply(src, ref):
-        mssim = ssim(src.get_raw(), ref.get_raw(), channel_axis=2, data_range=1.0, gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
-
-
-        # mssim_rr = ssim(src.get_raw()[:,:,0], ref.get_raw()[:,:,0], gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
-        # mssim_gg = ssim(src.get_raw()[:,:,1], ref.get_raw()[:,:,1], gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
-        # mssim_bb = ssim(src.get_raw()[:,:,2], ref.get_raw()[:,:,2], gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
-        # mssim_rgb = 1/3 * mssim_rr + 1/3 * mssim_gg + 1/3 * mssim_bb
-
-        # print(mssim)
-        # print(mssim_rgb)
-        # exit()
-        return round(mssim, 4)
-
 
     # ------------------------------------------------------------------------------------------------------------------
     #
@@ -78,22 +59,11 @@ class SSIM:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply2(src, ref):
-        # testarr = np.array([[[4,2],[3,2],[4,2],[3,2]],
-        #                     [[2,2],[1,2],[2,2],[1,2]],
-        #                     [[4,2],[3,2],[4,2],[3,2]],
-        #                     [[2,2],[1,2],[2,2],[1,2]]])
+    def ssim(src, ref):
+        kernel_gaus = IVSSIM.iso2Dgauss()
 
-        # ou = np.lib.stride_tricks.sliding_window_view(testarr, (3,3,2))
-        # print(ou)
-        # print(ou.shape)
-
-        # exit()
-
-        kernel_gaus = SSIM.iso2Dgauss()
-
-        src_img = src.get_raw()
-        ref_img = ref.get_raw()
+        src_img = src
+        ref_img = ref
 
         k1 = 0.01
         k2 = 0.03
@@ -121,37 +91,8 @@ class SSIM:
         sig_ref = np.zeros_like(ref_img)
         cov = np.zeros_like(src_img)
 
-        # Version 1
-        # start_time = time.time()
-        # for y in range(src_img.shape[0]):
-        #     for x in range(src_img.shape[1]):
-        #         for c in range(3):
-        #             wind_src = src_pad[y:y+11, x:x+11, c]
-        #             wind_ref = ref_pad[y:y+11, x:x+11, c]
-        #             sig_src[y, x, c] = np.sum(kernel_gaus * (wind_src - np.full((11, 11), mu_src[y,x,c])) ** 2) ** 0.5
-        #             sig_ref[y, x, c] = np.sum(kernel_gaus * (wind_ref - np.full((11, 11), mu_ref[y,x,c])) ** 2) ** 0.5
-        #             cov[y, x, c] = np.sum(kernel_gaus * (wind_src - np.full((11, 11), mu_src[y,x,c])) * (wind_ref - np.full((11, 11), mu_ref[y,x,c])))
-        # print(time.time()-start_time)
-
-        # Version 2
-        # start_time = time.time()
-        # kernel_gaus_3d = np.concatenate((np.expand_dims(kernel_gaus, 2), np.expand_dims(kernel_gaus, 2), np.expand_dims(kernel_gaus, 2)), 2)
-        # for y in range(src_img.shape[0]):
-        #     for x in range(src_img.shape[1]):
-        #         wind_src = src_pad[y:y+11, x:x+11, :]
-        #         wind_ref = ref_pad[y:y+11, x:x+11, :]
-
-        #         mu_src_win = np.tile(mu_src[y, x], (11, 11, 1))
-        #         mu_ref_win = np.tile(mu_ref[y, x], (11, 11, 1))
-
-        #         sig_src[y, x] = np.sum(kernel_gaus_3d * (wind_src - mu_src_win) ** 2, axis=(0,1)) ** 0.5
-        #         sig_ref[y, x] = np.sum(kernel_gaus_3d * (wind_ref - mu_ref_win) ** 2, axis=(0,1)) ** 0.5
-        #         cov[y, x] = np.sum(kernel_gaus_3d * (wind_src - mu_src_win) * (wind_ref - mu_ref_win), axis=(0,1))
-        # print(time.time()-start_time)
-
         # Version 3
         # src_pad_ext.shape = (512, 512, 1, 11, 11, 3)
-        start_time = time.time()
         src_pad_ext = np.lib.stride_tricks.sliding_window_view(src_pad, (11,11,3)).squeeze()
         ref_pad_ext = np.lib.stride_tricks.sliding_window_view(ref_pad, (11,11,3)).squeeze()
 
@@ -172,7 +113,6 @@ class SSIM:
         sig_src = np.sum(kernel_gaus_3d_ext * src_pad_ext_norm ** 2, axis=(2,3)) ** 0.5
         sig_ref = np.sum(kernel_gaus_3d_ext * ref_pad_ext_norm ** 2, axis=(2,3)) ** 0.5
         cov = np.sum(kernel_gaus_3d_ext * src_pad_ext_norm * ref_pad_ext_norm, axis=(2,3))
-        print(time.time()-start_time)
  
         l = (2 * mu_src * mu_ref + c1) / (mu_src ** 2 + mu_ref ** 2 + c1)
         c = (2 * sig_src * sig_ref + c2) / (sig_src ** 2 + sig_ref ** 2 + c2)
@@ -182,61 +122,158 @@ class SSIM:
         mssim = np.sum(ssim_local, axis=(0,1)) / M
         mssim = mssim[0] * w_r + mssim[1] * w_g + mssim[2] * w_b
 
-        print(mssim)
+        return l, c, s
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def gradient_img(img):
+        img_h, img_w, img_c = img.shape
+        edge_mag = np.zeros((img_h, img_w, 0))
+        for c in range(3):
+            grad_x = cv2.Sobel(img[:,:,c], cv2.CV_32F, 1, 0, ksize=3, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
+            grad_y = cv2.Sobel(img[:,:,c], cv2.CV_32F, 0, 1, ksize=3, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
+            sobel_mag = np.sqrt(grad_x ** 2 + grad_y ** 2)
+            edge_mag = np.concatenate((edge_mag, np.expand_dims(sobel_mag, 2)), 2)
+        return edge_mag
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # R1 regions: preserved edge pixel region
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def R1_region(ssim_loc, src_edge, ref_edge, T1):
+        #ssim_r1 = ()
+        R1 = ()
+        for c in range(3):
+            R1_c = ssim_loc[:,:,c][(src_edge[:,:,c] > T1) & (ref_edge[:,:,c] > T1)]
+            # if c == 0:
+            #     print(R1_c.shape)
+            #ssim_r1_c = np.sum(R1_c) / R1_c.shape[0]
+            #ssim_r1 = ssim_r1 + (ssim_r1_c,)
+            R1 = R1 + (R1_c,)
+        #return ssim_r1
+        return R1
 
-        rr = SSIM.ssimGPT(src.get_raw()[:,:,0], ref.get_raw()[:,:,0])
-        gg = SSIM.ssimGPT(src.get_raw()[:,:,1], ref.get_raw()[:,:,1])
-        bb = SSIM.ssimGPT(src.get_raw()[:,:,2], ref.get_raw()[:,:,2])
-        ff = 1/3 * rr + 1/3 * gg + 1/3 * bb
-        print(ff)
 
-        ret = ssim(src.get_raw()[:,:,0], ref.get_raw()[:,:,0], data_range=1.0, gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
-        get = ssim(src.get_raw()[:,:,1], ref.get_raw()[:,:,1], data_range=1.0, gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
-        bet = ssim(src.get_raw()[:,:,2], ref.get_raw()[:,:,2], data_range=1.0, gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
-        mssim2 = 1/3 * ret + 1/3 * get + 1/3 * bet
-        print(mssim2)
+    # ------------------------------------------------------------------------------------------------------------------
+    # R2 regions: changed edge pixel region
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def R2_region(ssim_loc, src_edge, ref_edge, T1):
+        #ssim_r2 = ()
+        R2 = ()
+        for c in range(3):
+            R2_c = ssim_loc[:,:,c][(src_edge[:,:,c] > T1) & (ref_edge[:,:,c] <= T1) | 
+                                   (ref_edge[:,:,c] > T1) & (src_edge[:,:,c] <= T1)]
+            # if c == 0:
+            #     print(R2_c.shape)
+            #ssim_r2_c = np.sum(R2_c) / R2_c.shape[0]
+            #ssim_r2 = ssim_r2 + (ssim_r2_c,)
+            R2 = R2 + (R2_c,)
+        #return ssim_r2
+        return R2
 
+    # ------------------------------------------------------------------------------------------------------------------
+    # R3 regions: Smooth region
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def R3_region(ssim_loc, src_edge, ref_edge, T1, T2):
+        #ssim_r3 = ()
+        R3 = ()
+        for c in range(3):
+            R3_c = ssim_loc[:,:,c][(src_edge[:,:,c] < T2) & (ref_edge[:,:,c] > T1)]
+            # if c == 0:
+            #     print(R3_c.shape)
+            #ssim_r3_c = np.sum(R3_c) / R3_c.shape[0]
+            #ssim_r3 = ssim_r3 + (ssim_r3_c,)
+            R3 = R3 + (R3_c,)
+        #return ssim_r3
+        return R3
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # R4 regions: Rexture region
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def R4_region(ssim_loc, src_edge, ref_edge, T1, T2):
+        #ssim_r4 = ()
+        R4 = ()
+        for c in range(3):
+            # R4_c = ssim_loc[:,:,c][(src_edge[:,:,c] <= T1) & 
+            #                        ((ref_edge[:,:,c] <= T1) | 
+            #                        ((src_edge[:,:,c] > T1) & (src_edge[:,:,c] >= T2))) ]
+            R4_c = ssim_loc[:,:,c][~((src_edge[:,:,c] > T1) & (ref_edge[:,:,c] > T1)) &
+                                   ~((src_edge[:,:,c] > T1) & (ref_edge[:,:,c] <= T1) | (ref_edge[:,:,c] > T1) & (src_edge[:,:,c] <= T1)) &
+                                   ~((src_edge[:,:,c] < T2) & (ref_edge[:,:,c] > T1))]
+            # if c == 0:
+            #     print(R4_c.shape)
+            #ssim_r4_c = np.sum(R4_c) / R4_c.shape[0]
+            #ssim_r4 = ssim_r4 + (ssim_r4_c,)
+            R4 = R4 + (R4_c,)
+        # print("Total: " + str(262144))
+        # print("R4: " + str(189189))
+        #return ssim_r4
+        return R4
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def apply(src, ref):
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+
+        alp = bet = gam = 1.0
+
+        l, c, s = IVSSIM.ssim(src_img, ref_img)
+        ssim_local = l ** alp * c ** bet * s ** gam
+
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+
+        # apply Sobel filter for each channel
+        src_edge_mag = IVSSIM.gradient_img(src_img)
+        ref_edge_mag = IVSSIM.gradient_img(ref_img)
+
+        T1 = 0.12 * np.max(src_edge_mag)
+        T2 = 0.06 * np.max(src_edge_mag)
+
+        
+        R1 = IVSSIM.R1_region(ssim_local, src_edge_mag, ref_edge_mag, T1)
+        R2 = IVSSIM.R2_region(ssim_local, src_edge_mag, ref_edge_mag, T1)
+        R3 = IVSSIM.R3_region(ssim_local, src_edge_mag, ref_edge_mag, T1, T2)
+        R4 = IVSSIM.R4_region(ssim_local, src_edge_mag, ref_edge_mag, T1, T2)
+
+        # setting of weights
+        #           w1      w2      w3      w4
+        # if R1={}  0.00    0.50    0.25    0.25
+        # if R2={}  0.50    0.00    0.25    0.25
+        # else      0.25    0.25    0.25    0.25
+        ivssim_val = np.zeros(3)
+        w3 = w4 = 0.25
+        for c in range(3):
+            if R1[c].shape[0] == 0:
+                 w1 = 0.0
+                 w2 = 0.5
+            elif R2[c].shape[0] == 0:
+                 w1 = 0.5
+                 w2 = 0.0
+            else:
+                 w1 = 0.25
+                 w2 = 0.25
+        
+            ivssim_val[c] = np.sum(R1[c]) / R1[c].shape[0] * w1 \
+                          + np.sum(R2[c]) / R2[c].shape[0] * w2 \
+                          + np.sum(R3[c]) / R3[c].shape[0] * w3 \
+                          + np.sum(R4[c]) / R4[c].shape[0] * w4
+
+        w_r = w_g = w_b = 1.0/3.0
+        mivssim = ivssim_val[0] * w_r + ivssim_val[1] * w_g + ivssim_val[2] * w_b
+            
+        print(mivssim)
         exit()
-        return round(mssim, 4)
 
-    @staticmethod
-    def gaussian_kernel(sigma):
-        # Größe des Filters
-        size = 2 * np.ceil(3 * sigma) + 1
-        x, y = np.meshgrid(np.arange(-size / 2 + 0.5, size / 2 + 0.5), np.arange(-size / 2 + 0.5, size / 2 + 0.5))
-        kernel = np.exp(-(x ** 2 + y ** 2) / (2 * sigma ** 2))
-        return kernel / np.sum(kernel)
-    @staticmethod
-    def ssimGPT(img1, img2, k1=0.01, k2=0.03, win_size=11, L=1.0, sigma=1.5):
-        # Stufenweite des Histogramms
-        C1 = (k1 * L) ** 2
-        C2 = (k2 * L) ** 2
-
-        # Gaussfilter
-        kernel = SSIM.gaussian_kernel(sigma)
-        window = kernel / np.sum(kernel)
-
-        # Mittelwert
-        mu1 = signal.convolve2d(img1, window, mode='same', boundary='symm')
-        mu2 = signal.convolve2d(img2, window, mode='same', boundary='symm')
-
-        # Quadrat der Mittelwerte
-        mu1_sq = mu1 ** 2
-        mu2_sq = mu2 ** 2
-        mu1_mu2 = mu1 * mu2
-
-        # Varianz und Kovarianz
-        sigma1_sq = signal.convolve2d(img1 ** 2, window, mode='same', boundary='symm') - mu1_sq
-        sigma2_sq = signal.convolve2d(img2 ** 2, window, mode='same', boundary='symm') - mu2_sq
-        sigma12 = signal.convolve2d(img1 * img2, window, mode='same', boundary='symm') - mu1_mu2
-
-        # SSIM-Formel
-        numerator = (2 * mu1_mu2 + C1) * (2 * sigma12 + C2)
-        denominator = (mu1_sq + mu2_sq + C1) * (sigma1_sq + sigma2_sq + C2)
-        ssim_map = numerator / denominator
-
-        # Durchschnittlicher SSIM-Wert
-        return np.mean(ssim_map)
+        return round(0, 4)
+    
 # ------------------------------------------------------------------------------------------------------------------
 #
 # ------------------------------------------------------------------------------------------------------------------ 
@@ -259,11 +296,11 @@ def main():
         src = Image(array=src_img)
         ref = Image(array=ref_img)
         out = Image(array=out_img)
-        ssim = SSIM.apply2(src, ref)
+        ssim = IVSSIM.apply(src, out)
 
         eval_arr.append(ssim)
 
-        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/ssim.txt","a") as file2:
+        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/gssim.txt","a") as file2:
             file2.writelines(str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 

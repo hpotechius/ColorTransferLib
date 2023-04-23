@@ -11,15 +11,20 @@ import numpy as np
 from numba import cuda
 import math
 import time
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 
 import os
+import sys
 os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
+
+sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
+
 from oct2py import octave, Oct2Py
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 import cv2
+import json
 from copy import deepcopy
 from ColorTransferLib.Utils.Helper import check_compatibility
+from ColorTransferLib.ImageProcessing.Image import Image as Img
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -128,3 +133,30 @@ class TpsColorTransfer:
         }
 
         return output
+    
+# ------------------------------------------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------------------------------------------ 
+def main():
+    src = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/closeup/512_closeup-02_dithering-4.png")
+    ref = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/512_abstract-08.png")
+    out = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/512_abstract-08.png")
+    #src = Img(file_path="/media/potechius/Active_Disk/SORTING/RES/source.png")
+    #ref = Img(file_path="/media/potechius/Active_Disk/SORTING/RES/reference.png")
+    #src = Img(file_path="/media/potechius/Active_Disk/SORTING/RES/psource_new.png")
+    #ref = Img(file_path="/media/potechius/Active_Disk/SORTING/RES/preference_new.png")
+
+    with open("/home/potechius/Projects/VSCode/ColorTransferLib/ColorTransferLib/Options/TpsColorTransfer.json", 'r') as f:
+        options = json.load(f)
+        opt = BaseOptions(options)
+
+    out = TpsColorTransfer.apply(src, ref, opt)
+    #out["object"].write("/media/potechius/Active_Disk/SORTING/RES/result_histomatch.png")
+
+    file_name = "/home/potechius/Downloads/test.png"
+    ou = np.concatenate((src.get_raw(), ref.get_raw(), out["object"].get_raw()), axis=1) 
+    cv2.imwrite(file_name, cv2.cvtColor(ou, cv2.COLOR_BGR2RGB)*255)
+
+
+if __name__ == "__main__":
+    main()

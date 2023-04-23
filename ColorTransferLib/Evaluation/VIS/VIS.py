@@ -16,7 +16,7 @@ import math
 import numpy as np
 from scipy import signal
 from ColorTransferLib.ImageProcessing.Image import Image
-import pysaliency
+#import pysaliency
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------

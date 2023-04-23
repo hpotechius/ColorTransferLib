@@ -2,7 +2,7 @@
 import os
 import numpy as np
 import tensorflow as tf
-from utils import utils
+from ..utils import utils
 
 class TestDataGenerator(tf.keras.utils.Sequence):
     '''inherits from Keras Sequence base object, allows to use multiprocessing in .fit_generator'''

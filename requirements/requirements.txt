@@ -27,7 +27,6 @@ retry
 vector-quantize-pytorch
 linear_attention_transformer
 cmake
-dlib
 faiss-gpu
 phasepack
 pyfftw
@@ -35,5 +34,7 @@ lpips
 torchmetrics
 libsvm
 Cython
-pysaliency
 pyiqa
+dlib
+pysaliency
+pyhull
