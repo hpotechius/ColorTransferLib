@@ -191,11 +191,7 @@ class VIS:
 
         VIS_val = VIS.VIS(S_val, VS_m)
 
-        print(VIS_val)
-        #cv2.imwrite("/home/potechius/Downloads/sal2.png",src_schaar*255)
-
-        exit()
-        return round(0, 4)
+        return round(VIS_val, 4)
 
   
 # ------------------------------------------------------------------------------------------------------------------
@@ -220,11 +216,12 @@ def main():
         src = Image(array=src_img)
         ref = Image(array=ref_img)
         out = Image(array=out_img)
-        ssim = VIS.apply(src, src)
+        ssim = VIS.apply(src, out)
+        print(ssim)
 
         eval_arr.append(ssim)
 
-        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/ssim.txt","a") as file2:
+        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/vsi.txt","a") as file2:
             file2.writelines(str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 

@@ -26,7 +26,7 @@ from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from ColorTransferLib.ImageProcessing.Image import Image as Img
 from copy import deepcopy
 #from ColorTransferLib.Utils.Helper import check_compatibility
-from .FaissKNeighbors import FaissKNeighbors
+from FaissKNeighbors import FaissKNeighbors
 from pyhull.convex_hull import ConvexHull
 from sklearn.decomposition import PCA
 from scipy.spatial.transform import Rotation as R
@@ -204,7 +204,7 @@ class FuzzyColorCategoryTransfer:
         #     val = 0
         # else:
         # weighting if the radius in order to get the HSV-cone
-        radius_weighting = 255.0 / z
+        radius_weighting = 255.0 / (z + 0.00001) 
 
 
         # hue has to be converted to degrees
@@ -252,6 +252,7 @@ class FuzzyColorCategoryTransfer:
     def get_transfer_direction(CV_src, CV_ref, EVV_src, EVV_ref):
         predefined_pairs = [
             #("White", "White"), ("Grey","Grey"), ("Black","Black"), ("Purple", "Pink"), ("Green", "Green"), ("Blue", "Blue")
+            ("Blue", "Grey"), ("White","Blue"), ("Orange","Green"), ("Brown", "Yellow")
         ]
 
         volumes_src = []
@@ -670,6 +671,8 @@ class FuzzyColorCategoryTransfer:
     def transform_weighted(points, memberships, transform):
         points_temp = copy.deepcopy(points)
         points_out = copy.deepcopy(points)
+
+
         for cx in FCCT.color_terms:
             # check if category contains points
             if points_temp[cx].shape[0] == 0:
@@ -766,6 +769,9 @@ class FuzzyColorCategoryTransfer:
         # color_cats_src_mem color_cats_src_ids {"Red": np.array([...]), "Yellow": np.array([...])}
         # -- contains per point 11 values with probabilities
         color_cats_src, color_cats_src_ids, color_cats_src_mem, color_cats_ref, color_cats_ref_ids, color_cats_ref_mem = FCCT.fuzzy_knn(colors, labels, hsv_cart_src, hsv_cart_ref)
+
+        # save image with main clustering
+        # TODO
         
         # VISUALIZATION 01
         """
@@ -884,17 +890,63 @@ class FuzzyColorCategoryTransfer:
         # get the 11 transformation matrices
         affine_transform = {"Red":[],"Yellow":[],"Green":[],"Blue":[],"Black":[],"White":[],"Grey":[],"Orange":[],"Brown":[],"Pink":[],"Purple":[]}
         for c in FCCT.color_terms:
+            #affine_transform[c] = translation_matrix[c] @ rotation_matrix[c]
             affine_transform[c] = scaling_matrix[c] @ translation_matrix[c] @ rotation_matrix[c]
 
+
+        # readjust weights so category with highest probability has more impact 
+        # Original: [0.5, 0.3, 0.2] -> After adjustment: [0.75, 0.15, 0.1]
+        # Note: The highest value is always scaled by log_2(x+1)^scale_factor 
+        # Note: Scale factor has to in the range [0.0, 1.0] -> 0.1 describes a strong scaling
+        scale_factor = 0.3
+        for c in FCCT.color_terms:
+            continue
+            if color_cats_src_mem[c].shape[0] == 0:
+                continue
+
+            # print(color_cats_src_mem[c][0])
+            # print(np.sum(color_cats_src_mem[c][0]))
+            # print("\n")
+
+            max_mem = np.max(color_cats_src_mem[c], axis=1)
+            max_pos = color_cats_src_mem[c].argmax(axis=1)
+            
+            new_max_mem = np.log(max_mem + 1) ** scale_factor
+
+            # the value will downscale all the other probabilities to get a total prob. of 1
+            # Eps is for stabilization
+            eps = 0.00001
+            rest_probs = (np.sum(color_cats_src_mem[c], axis=1) - max_mem + eps) / (1.0 - new_max_mem + eps)
+            rest_probs = np.repeat(rest_probs[:, np.newaxis], 11, axis=1)
+            color_cats_src_mem[c] /= rest_probs
+
+            # print(color_cats_src_mem[c][0])
+            # print(np.sum(color_cats_src_mem[c][0]))
+            # print("\n")
+
+
+            # upscale max value
+            for i in range(color_cats_src_mem[c].shape[0]):
+                color_cats_src_mem[c][i][max_pos[i]] = new_max_mem[i]
+
+
+            # print(color_cats_src_mem[c][0])
+            # print(np.sum(color_cats_src_mem[c][0]))
+            # print("\n")
+
+            #print(max_mem[0])
+            #print(max_pos[0])
+           # print(new_max_mem[0])
+            #exit()
 
         #color_cats_src= FCCT.transform(color_cats_src, affine_transform)
         color_cats_src= FCCT.transform_weighted(color_cats_src, color_cats_src_mem, affine_transform)
 
         # Histogram Matching per category
-        # for elem_src, elem_ref in class_pairs:
-        #     if color_cats_src[elem_src[0]].shape[0] == 0:
-        #         continue
-        #     color_cats_src[elem_src[0]] = FCCT.histogram_matching(color_cats_src[elem_src[0]], color_cats_ref[elem_ref[0]])
+        for elem_src, elem_ref in class_pairs:
+            if color_cats_src[elem_src[0]].shape[0] == 0 or color_cats_ref[elem_ref[0]].shape[0] == 0:
+                continue
+            color_cats_src[elem_src[0]] = FCCT.histogram_matching(color_cats_src[elem_src[0]], color_cats_ref[elem_ref[0]])
 
 
         #color_cats_src = FCCT.applyTransformation(class_pairs, color_cats_src, rotation_matrix, translation_matrix, scaling_matrix)
@@ -910,28 +962,32 @@ class FuzzyColorCategoryTransfer:
         # Histogram Matching
         #hsv_cart_src = FCCT.histogram_matching(hsv_cart_src, hsv_cart_ref)
 
-        # # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
-        # octave.addpath(octave.genpath('.'))
-        # #octave.addpath(octave.genpath('module/Algorithms/TpsColorTransfer/L2RegistrationForCT'))
-        # octave.eval('pkg load image')
-        # octave.eval('pkg load statistics')
-        # octave.eval("dir")
-
-
-    
         rgb_out = FCCT.HSV2cartRGB(hsv_cart_src)
 
-        #rgb_out = octave.regrain(rgb_out_orig * 255, rgb_out * 255) / 255
+
+
         # INFO Histogram Matching in RGB gives better results than in HSV
-        rgb_out = np.expand_dims(FCCT.histogram_matching(rgb_out[:,0,:]*255, ref.get_colors()[:,0,:]*255), 1) / 255
-        print(rgb_out.shape)
+        #rgb_out = np.expand_dims(FCCT.histogram_matching(rgb_out[:,0,:]*255, ref.get_colors()[:,0,:]*255), 1) / 255
         """
         FCCT.write_colors_as_PC(hsv_cart_src, rgb_out[:,0,:], "/home/potechius/Downloads/FCCT_Tests/00_out_points_2.ply")
         """
 
 
-        output_colors = np.clip(rgb_out, 0, 1)
+
+        out_res = rgb_out.reshape(256, 256, 3).astype(np.float32)
+
+        # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
+        octave.addpath(octave.genpath('.'))
+        octave.eval('pkg load image')
+        octave.eval('pkg load statistics')
+        octave.eval("dir")
+        out_raw = octave.regrain(src.get_raw() * 255, out_res * 255, 1.0) / 255
+
+        out_res = out_raw.reshape(256 * 256, 3).astype(np.float32)
+
+        output_colors = np.clip(out_res, 0, 1)
         out_img.set_colors(output_colors)
+
 
         output = {
             "status_code": 0,
@@ -1203,14 +1259,18 @@ class FuzzyColorCategoryTransfer:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    src = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/256_interior-02.png")
-    ref = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/256_interior-03.png")
+    src = Img(file_path="/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/nature/256_nature-03.png")
+    ref = Img(file_path="/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/nature/256_nature-06.png")
+    # src = Img(file_path="/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/city/256_city-05.png")
+    # ref = Img(file_path="/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/city/256_city-04.png")
+
     #src = Img(file_path="/media/potechius/Active_Disk/SORTING/RES/source.png")
     #ref = Img(file_path="/media/potechius/Active_Disk/SORTING/RES/reference.png")
     #src = Img(file_path="/media/potechius/Active_Disk/SORTING/RES/psource_new.png")
     #ref = Img(file_path="/media/potechius/Active_Disk/SORTING/RES/preference_new.png")
     out = FCCT.apply(src, ref, None)
-    out["object"].write("/media/potechius/Active_Disk/SORTING/RES/result_histomatch.png")
+    #out["object"].write("/media/potechius/Active_Disk/SORTING/RES/result_histomatch.png")
+    out["object"].write("/home/potechius/Downloads/result.png")
 
 
 

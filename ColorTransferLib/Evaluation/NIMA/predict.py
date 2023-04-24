@@ -1,12 +1,6 @@
 
 import os
 import glob
-import json
-import argparse
-import torch
-from .utils.utils import calc_mean_score, save_json
-from .handlers.model_builder import Nima
-from .handlers.data_generator import TestDataGenerator
 import tensorflow as tf
 import torch.nn.functional as F
 

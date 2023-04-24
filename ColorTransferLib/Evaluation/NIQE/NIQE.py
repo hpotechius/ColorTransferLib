@@ -62,7 +62,7 @@ class NIQE:
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
     file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "GLO"
+    ALG = "BCC"
     total_tests = 0
     eval_arr = []
     for line in file1.readlines():
@@ -80,10 +80,9 @@ def main():
         out = Image(array=out_img)
         mse = NIQE.apply(out)
         print(mse)
-        exit()
         eval_arr.append(mse)
 
-        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/nima.txt","a") as file2:
+        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/niqe.txt","a") as file2:
             file2.writelines(str(round(mse,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 

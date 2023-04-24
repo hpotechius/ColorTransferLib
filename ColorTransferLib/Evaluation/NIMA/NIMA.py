@@ -13,10 +13,9 @@ import os
 import numpy as np
 import json
 from ColorTransferLib.ImageProcessing.Image import Image
-from .predict import image_file_to_json, predict, image_dir_to_json
-from .utils.utils import calc_mean_score, save_json
-from .handlers.model_builder import Nima
-from .handlers.data_generator import TestDataGenerator
+from predict import predict
+from utils.utils import calc_mean_score
+from handlers.model_builder import Nima
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -82,8 +81,6 @@ def main():
         src = Image(array=src_img)
         out = Image(array=out_img)
         mse = NIMA.apply(out)
-        print(mse)
-        exit()
         eval_arr.append(mse)
 
         with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/nima.txt","a") as file2:
