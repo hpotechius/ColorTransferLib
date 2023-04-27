@@ -14,7 +14,7 @@ import numpy as np
 from scipy import signal
 from ColorTransferLib.ImageProcessing.Image import Image
 from libsvm import svm
-from brisquequality import test_measure_BRISQUE
+from .brisquequality import test_measure_BRISQUE
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------

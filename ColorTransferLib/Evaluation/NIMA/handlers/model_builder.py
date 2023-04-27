@@ -3,7 +3,8 @@ import importlib
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dropout, Dense
 from tensorflow.keras.optimizers import Adam
-from ..utils.losses import earth_movers_distance
+#from ..utils.losses import earth_movers_distance
+from ColorTransferLib.Evaluation.NIMA.utils.losses import earth_movers_distance
 
 
 class Nima:

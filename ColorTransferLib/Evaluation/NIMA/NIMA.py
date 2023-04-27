@@ -11,11 +11,15 @@ import cv2
 import math
 import os
 import numpy as np
+from numba import cuda 
 import json
+import tensorflow as tf
+import sys
+sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
-from predict import predict
-from utils.utils import calc_mean_score
-from handlers.model_builder import Nima
+from .predict import predict
+from .utils.utils import calc_mean_score
+from .handlers.model_builder import Nima
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -24,7 +28,7 @@ from handlers.model_builder import Nima
 #
 # Source: https://github.com/idealo/image-quality-assessment
 #
-# Range []
+# Range [1, 10] Best: 10
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class NIMA:
@@ -57,21 +61,35 @@ class NIMA:
         predictions = predict(nima.nima_model, img)
         nim = calc_mean_score(predictions[0])
 
+        tf.keras.backend.clear_session()
+
         return round(nim, 4)
 
 # ------------------------------------------------------------------------------------------------------------------
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "GLO"
+    file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
+    ALG = "BCC"
     total_tests = 0
     eval_arr = []
+
+    # check if entries already exist
+    # exf = []
+    # with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/nima.txt","r") as exfile:
+    #     for line in exfile.readlines():
+    #         _, exf_src, exf_ref = line.strip().split(" ")
+    #         exf.append((exf_src + ".png", exf_ref + ".png"))
+
     for line in file1.readlines():
         total_tests += 1
         print(total_tests)
         s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+
+        # if (s_p, r_p) in exf:
+        #     continue
+
+        outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
         print(outfile_name)
         img_tri = cv2.imread(outfile_name)
         src_img = img_tri[:,:512,:]
@@ -81,9 +99,10 @@ def main():
         src = Image(array=src_img)
         out = Image(array=out_img)
         mse = NIMA.apply(out)
+        print(mse)
         eval_arr.append(mse)
 
-        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/nima.txt","a") as file2:
+        with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/nima.txt","a") as file2:
             file2.writelines(str(round(mse,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 
