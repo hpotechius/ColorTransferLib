@@ -47,7 +47,16 @@ class HI:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    fuu = ["GLO", "FUZ", "TPS", "PDF", "MKL", "HIS", "NST", "CAM", "DPT", "RHG", "BCC"]
+    src = Image(file_path="/home/potechius/Downloads/source.png")
+    ref = Image(file_path="/home/potechius/Downloads/reference.png")
+    out = Image(file_path="/home/potechius/Downloads/result.png")
+    hint = HI.apply(out, ref)
+    print(hint)
+    exit()
+
+
+    #fuu = ["GLO", "FUZ", "TPS", "PDF", "MKL", "HIS", "NST", "CAM", "DPT", "RHG", "BCC"]
+    fuu = ["FCM"]
     for ALG in fuu:
         print(ALG)
         file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")

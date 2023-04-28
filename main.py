@@ -22,7 +22,7 @@ from ColorTransferLib.ColorTransfer import ColorTransfer
 from ColorTransferLib.Utils.Math import get_random_3x3rotation_matrix
 from ColorTransferLib.Evaluation.SSIM.SSIM import SSIM
 from ColorTransferLib.Evaluation.PSNR.PSNR import PSNR
-from ColorTransferLib.Evaluation.HI.HI import HistogramIntersection
+from ColorTransferLib.Evaluation.HI.HI import HI
 from ColorTransferLib.Evaluation.PerceptualMetric.PerceptualMetric import PerceptualMetric
 import cv2
 import tensorflow_probability as tfp
@@ -115,14 +115,18 @@ if __name__ == '__main__':
             "BasicColorCategoryTransfer",
             "FuzzyColorCategoryTransfer"]
 
-    ct_approach = "DeepPhotoStyleTransfer"
+    ct_approach = "PdfColorTransfer"
     ct_input = "img-img"
 
-    # src_img = '/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/256_abstract-01.png'
-    # ref_img = '/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/256_abstract-08.png'
-    # output = img2img_test(src_img, ref_img, ct_approach)
-    # cv2.imwrite("/home/potechius/Downloads/out_dithering-16.png", cv2.cvtColor(output["object"].get_raw(), cv2.COLOR_BGR2RGB)*255)
-    # exit()
+
+
+
+
+    src_img = '/home/potechius/Downloads/source.png'
+    ref_img = '/home/potechius/Downloads/reference.png'
+    output = img2img_test(src_img, ref_img, ct_approach)
+    cv2.imwrite("/home/potechius/Downloads/pdf.png", cv2.cvtColor(output["object"].get_raw(), cv2.COLOR_BGR2RGB)*255)
+    exit()
 
     # files_256 = []
     # files_512 = []

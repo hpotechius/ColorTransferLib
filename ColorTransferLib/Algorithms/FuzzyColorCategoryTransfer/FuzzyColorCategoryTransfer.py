@@ -17,6 +17,9 @@ import os
 os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
 from oct2py import octave, Oct2Py
 
+import sys
+sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
+
 import csv
 import copy
 import itertools
@@ -26,7 +29,7 @@ from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from ColorTransferLib.ImageProcessing.Image import Image as Img
 from copy import deepcopy
 #from ColorTransferLib.Utils.Helper import check_compatibility
-from .FaissKNeighbors import FaissKNeighbors
+from ColorTransferLib.Algorithms.FuzzyColorCategoryTransfer.FaissKNeighbors import FaissKNeighbors
 from pyhull.convex_hull import ConvexHull
 from sklearn.decomposition import PCA
 from scipy.spatial.transform import Rotation as R
@@ -249,18 +252,18 @@ class FuzzyColorCategoryTransfer:
     # Note: White, Grey and Black will be transformed to White, Grey and Black
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def get_transfer_direction(CV_src, CV_ref, EVV_src, EVV_ref):
+    def get_transfer_direction(CV_src, CV_ref, EVV_src, EVV_ref, color_cats_src, color_cats_ref):
         predefined_pairs = [
             #("White", "White"), ("Grey","Grey"), ("Black","Black"), ("Purple", "Pink"), ("Green", "Green"), ("Blue", "Blue")
-            ("Blue", "Grey"), ("White","Blue"), ("Orange","Green"), ("Brown", "Yellow")
+            #("Green", "Green"), ("Brown","Brown"), ("Red","Red"), ("Black","Black"), ("Grey","Orange"), ("Yellow","Yellow")
         ]
 
         volumes_src = []
         volumes_ref = []
         for c in FCCT.color_terms:
-            # (Color, Volume, Center, Eigenvectors, Eigenvalues)
-            volumes_src.append((c, CV_src[c][1], CV_src[c][0], EVV_src[c][0], EVV_src[c][1]))
-            volumes_ref.append((c, CV_ref[c][1], CV_ref[c][0], EVV_ref[c][0], EVV_ref[c][1]))
+            # (Color, Volume, Center, Eigenvectors, Eigenvalues, #Points)
+            volumes_src.append((c, CV_src[c][1], CV_src[c][0], EVV_src[c][0], EVV_src[c][1], color_cats_src[c].shape[0]))
+            volumes_ref.append((c, CV_ref[c][1], CV_ref[c][0], EVV_ref[c][0], EVV_ref[c][1], color_cats_ref[c].shape[0]))
 
         # create class pairs for white-white, grey-grey and black-black
         class_pairs_wgb = []
@@ -279,9 +282,14 @@ class FuzzyColorCategoryTransfer:
         col_src = list(filter(lambda x : x[0] not in [a for a, _ in predefined_pairs], volumes_src))
         col_ref = list(filter(lambda x : x[0] not in [b for _, b in predefined_pairs], volumes_ref))
 
-        sorted_volumes_src = sorted(col_src, key=lambda x: x[1])
-        sorted_volumes_ref = sorted(col_ref, key=lambda x: x[1])
-        class_pairs = [[s, r] for s, r in zip(sorted_volumes_src,sorted_volumes_ref)]
+        #sorted_volumes_src = sorted(col_src, key=lambda x: x[1])
+        #sorted_volumes_ref = sorted(col_ref, key=lambda x: x[1])
+        sorted_volumes_src = sorted(col_src, key=lambda x: x[5])
+        sorted_volumes_ref = sorted(col_ref, key=lambda x: x[5])
+
+
+        # TODO: Number of points will be removed
+        class_pairs = [[s[:5], r[:5]] for s, r in zip(sorted_volumes_src,sorted_volumes_ref)]
         return class_pairs_wgb + class_pairs
     
     # ------------------------------------------------------------------------------------------------------------------
@@ -388,6 +396,11 @@ class FuzzyColorCategoryTransfer:
                                         [0.0, 1.0, 0.0, translation[1]],
                                         [0.0, 0.0, 1.0, translation[2]],
                                         [0.0, 0.0, 0.0, 1.0]])
+
+            # translation_mat = np.array([[1.0, 0.0, 0.0, translation[0]],
+            #                             [0.0, 1.0, 0.0, translation[1]],
+            #                             [0.0, 0.0, 1.0, 0.0],
+            #                             [0.0, 0.0, 0.0, 1.0]])
 
             trans[src_col] = translation_mat
         return trans
@@ -678,9 +691,7 @@ class FuzzyColorCategoryTransfer:
             if points_temp[cx].shape[0] == 0:
                 continue
 
-
             cat_temp = np.zeros_like(points_out[cx])
-
 
             # iterate over each transformation matrix (11 in total)
             for c in FCCT.color_terms:
@@ -724,282 +735,6 @@ class FuzzyColorCategoryTransfer:
         points_out = points_out[:,:3]
         return points_out
     
-    # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def apply(src, ref, opt):
-        start_time = time.time()
-
-        # check if method is compatible with provided source and reference objects
-        #output = check_compatibility(src, ref, FCCT.compatibility)
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": None
-        }
-
-        # Preprocessing: Convert colorspace from RGB to HSV
-        hsv_cart_src = FCCT.RGB2cartHSV(src.get_colors())
-        hsv_cart_ref = FCCT.RGB2cartHSV(ref.get_colors())
-        rgb_out_orig = deepcopy(src.get_colors()) 
-        out_img = deepcopy(src)
-
-
-        # rgb_src = FCCT.HSV2cartRGB(hsv_cart_src)
-        # output_colors = np.clip(rgb_src, 0, 1)
-        # out_img.set_colors(output_colors)
-        # out_img.write("/home/potechius/Downloads/result.png")
-        # exit()
-
-        # VISUALIZATION 00
-        """
-        FCCT.write_colors_as_PC(hsv_cart_src, src.get_colors()[:,0,:],"/home/potechius/Downloads/FCCT_Tests/00_src_points.ply")
-        FCCT.write_colors_as_PC(hsv_cart_ref, ref.get_colors()[:,0,:],"/home/potechius/Downloads/FCCT_Tests/00_ref_points.ply")
-        """
-
-        # Read Color Dataset in HSV color space
-        colors, labels = FCCT.get_colormapping_dataset("Models/BasicColorCategoryTransfer/colormapping.csv")
-
-        # Apply Fuzzy KNN
-        # color_cats_src = {"Red": np.array([...]), "Yellow": np.array([...])} 
-        # -- Contains pixel colors
-        # color_cats_src_ids {"Red": np.array([...]), "Yellow": np.array([...])}
-        # -- contains positions within the original color array, i.e. src.get_colors()
-        # color_cats_src_mem color_cats_src_ids {"Red": np.array([...]), "Yellow": np.array([...])}
-        # -- contains per point 11 values with probabilities
-        color_cats_src, color_cats_src_ids, color_cats_src_mem, color_cats_ref, color_cats_ref_ids, color_cats_ref_mem = FCCT.fuzzy_knn(colors, labels, hsv_cart_src, hsv_cart_ref)
-
-        # save image with main clustering
-        # TODO
-        
-        # VISUALIZATION 01
-        """
-        for c in FCCT.color_terms:
-            colorv = FCCT.color_samples[c]
-            # check if any points belong to this category
-            if color_cats_src[c].shape[0] != 0:
-                rep = np.tile(colorv, (color_cats_src[c].shape[0],1))
-                FCCT.write_colors_as_PC(color_cats_src[c], rep,"/home/potechius/Downloads/FCCT_Tests/01_src_KNN/01_src_points_" + c + ".ply")
-            if color_cats_ref[c].shape[0] != 0:
-                rep = np.tile(colorv, (color_cats_ref[c].shape[0],1))
-                FCCT.write_colors_as_PC(color_cats_ref[c], rep,"/home/potechius/Downloads/FCCT_Tests/01_ref_KNN/01_ref_points_" + c + ".ply")
-        """
-
-        # Convex Hull Calculation
-        # CH_src["Red"] -> (mesh, validity)
-        # mesh: the convex hull as triangle mesh
-        # validity: True if a convex hull is computed
-        CH_src = FCCT.__calc_convex_hulls(color_cats_src)
-        CH_ref = FCCT.__calc_convex_hulls(color_cats_ref)
-
-        # VISUALIZATION 02
-        """
-        for c in FCCT.color_terms:
-            colorv = FCCT.color_samples[c]
-            if CH_src[c][1]:
-                FCCT.__write_convex_hull_mesh(mesh=CH_src[c][0],
-                                              path="/home/potechius/Downloads/FCCT_Tests/02_src_CH/02_src_CH_"+c+".ply", 
-                                              color=colorv)
-            if CH_ref[c][1]:
-                FCCT.__write_convex_hull_mesh(mesh=CH_ref[c][0],
-                                              path="/home/potechius/Downloads/FCCT_Tests/02_ref_CH/02_ref_CH_"+c+".ply", 
-                                              color=colorv)
-        """
-
-        # Estimate Transfer Directions based on volume
-        # Note: White, Grey and Black will only be transferred to the same color
-        CV_src = FCCT.__calc_bary_center_volume(CH_src)
-        CV_ref = FCCT.__calc_bary_center_volume(CH_ref)
-
-        # Calculate Eigenvectors and -values
-        EVV_src = FCCT.getEigen(CH_src)
-        EVV_ref = FCCT.getEigen(CH_ref)
-
-        # get transfer directions
-        class_pairs = FCCT.get_transfer_direction(CV_src, CV_ref, EVV_src, EVV_ref)
-
-        # Print Transfer Directions and volumes
-        for elem in class_pairs:
-            print(elem[0][0] + " - " + elem[1][0])
-            print(str(elem[0][1]) + " - " + str(elem[1][1]))
-            print("\n")
-
-        # Apply Rotation and Translation
-        #color_cats_src = FCCT.rotation(class_pairs, color_cats_src)
-        rotation_matrix = FCCT.get_rotation_matrix(class_pairs)
-
-        # VISUALIZATION 03
-        """
-        CH_src = FCCT.__calc_convex_hulls(FCCT.transform(color_cats_src, rotation_matrix))
-        for c in FCCT.color_terms:
-            colorv = FCCT.color_samples[c]
-            if CH_src[c][1]:
-                FCCT.__write_convex_hull_mesh(mesh=CH_src[c][0],
-                                              path="/home/potechius/Downloads/FCCT_Tests/03_src_CH_rotated/03_src_CH_rotated_"+c+".ply", 
-                                              color=colorv)
-        exit()
-        """
-
-        # ReCalculate center and volume of rotated source
-        #CH_src_new = FCCT.__calc_convex_hulls(color_cats_src)
-        #CV_src_new = FCCT.__calc_bary_center_volume(CH_src_new)
-        
-        # Apply Translation
-        color_cats_src_temp = FCCT.transform(color_cats_src, rotation_matrix)
-
-        CH_src_new = FCCT.__calc_convex_hulls(color_cats_src_temp)
-        CV_src_new = FCCT.__calc_bary_center_volume(CH_src_new)
-        
-        #color_cats_src = FCCT.translation(class_pairs, color_cats_src, CV_src_new)
-        translation_matrix = FCCT.get_translation_matrix(class_pairs, CV_src_new)
-
-        # Scaling
-        #color_cats_src = FCCT.scaling(class_pairs, color_cats_src, color_cats_ref)
-
-        color_cats_src_temp = FCCT.transform(color_cats_src_temp, translation_matrix)    
-
-        # VISUALIZATION 04
-        """
-        CH_src = FCCT.__calc_convex_hulls(color_cats_src_temp)
-        for c in FCCT.color_terms:
-            colorv = FCCT.color_samples[c]
-            if CH_src[c][1]:
-                FCCT.__write_convex_hull_mesh(mesh=CH_src[c][0],
-                                              path="/home/potechius/Downloads/FCCT_Tests/04_src_CH_translated/04_src_CH_translated_"+c+".ply", 
-                                              color=colorv)
-        exit()
-        """
-
-        scaling_matrix = FCCT.get_scaling_matrix(class_pairs, color_cats_src_temp, color_cats_ref)
-        #color_cats_src = FCCT.scaling(class_pairs, color_cats_src_temp, color_cats_ref)
-
-        color_cats_src_temp = FCCT.transform(color_cats_src_temp, scaling_matrix)
-
-        # VISUALIZATION 05
-        """
-        CH_src = FCCT.__calc_convex_hulls(color_cats_src)
-        for c in FCCT.color_terms:
-            colorv = FCCT.color_samples[c]
-            if CH_src[c][1]:
-                FCCT.__write_convex_hull_mesh(mesh=CH_src[c][0],
-                                              path="/home/potechius/Downloads/FCCT_Tests/05_src_CH_scaled/05_src_CH_scaled_"+c+".ply", 
-                                              color=colorv)
-        """
-
-        # get the 11 transformation matrices
-        affine_transform = {"Red":[],"Yellow":[],"Green":[],"Blue":[],"Black":[],"White":[],"Grey":[],"Orange":[],"Brown":[],"Pink":[],"Purple":[]}
-        for c in FCCT.color_terms:
-            #affine_transform[c] = translation_matrix[c] @ rotation_matrix[c]
-            affine_transform[c] = scaling_matrix[c] @ translation_matrix[c] @ rotation_matrix[c]
-
-
-        # readjust weights so category with highest probability has more impact 
-        # Original: [0.5, 0.3, 0.2] -> After adjustment: [0.75, 0.15, 0.1]
-        # Note: The highest value is always scaled by log_2(x+1)^scale_factor 
-        # Note: Scale factor has to in the range [0.0, 1.0] -> 0.1 describes a strong scaling
-        scale_factor = 0.3
-        for c in FCCT.color_terms:
-            continue
-            if color_cats_src_mem[c].shape[0] == 0:
-                continue
-
-            # print(color_cats_src_mem[c][0])
-            # print(np.sum(color_cats_src_mem[c][0]))
-            # print("\n")
-
-            max_mem = np.max(color_cats_src_mem[c], axis=1)
-            max_pos = color_cats_src_mem[c].argmax(axis=1)
-            
-            new_max_mem = np.log(max_mem + 1) ** scale_factor
-
-            # the value will downscale all the other probabilities to get a total prob. of 1
-            # Eps is for stabilization
-            eps = 0.00001
-            rest_probs = (np.sum(color_cats_src_mem[c], axis=1) - max_mem + eps) / (1.0 - new_max_mem + eps)
-            rest_probs = np.repeat(rest_probs[:, np.newaxis], 11, axis=1)
-            color_cats_src_mem[c] /= rest_probs
-
-            # print(color_cats_src_mem[c][0])
-            # print(np.sum(color_cats_src_mem[c][0]))
-            # print("\n")
-
-
-            # upscale max value
-            for i in range(color_cats_src_mem[c].shape[0]):
-                color_cats_src_mem[c][i][max_pos[i]] = new_max_mem[i]
-
-
-            # print(color_cats_src_mem[c][0])
-            # print(np.sum(color_cats_src_mem[c][0]))
-            # print("\n")
-
-            #print(max_mem[0])
-            #print(max_pos[0])
-           # print(new_max_mem[0])
-            #exit()
-
-        #color_cats_src= FCCT.transform(color_cats_src, affine_transform)
-        color_cats_src= FCCT.transform_weighted(color_cats_src, color_cats_src_mem, affine_transform)
-
-        # Histogram Matching per category
-        for elem_src, elem_ref in class_pairs:
-            if color_cats_src[elem_src[0]].shape[0] == 0 or color_cats_ref[elem_ref[0]].shape[0] == 0:
-                continue
-            color_cats_src[elem_src[0]] = FCCT.histogram_matching(color_cats_src[elem_src[0]], color_cats_ref[elem_ref[0]])
-
-
-        #color_cats_src = FCCT.applyTransformation(class_pairs, color_cats_src, rotation_matrix, translation_matrix, scaling_matrix)
-        
-        #-------------------------------------------
-
-        # write mesh
-
-        for c in FCCT.color_terms:
-            for color, idx in zip(color_cats_src[c], color_cats_src_ids[c]):
-                hsv_cart_src[idx] = color
-
-        # Histogram Matching
-        #hsv_cart_src = FCCT.histogram_matching(hsv_cart_src, hsv_cart_ref)
-
-        rgb_out = FCCT.HSV2cartRGB(hsv_cart_src)
-
-
-
-        # INFO Histogram Matching in RGB gives better results than in HSV
-        #rgb_out = np.expand_dims(FCCT.histogram_matching(rgb_out[:,0,:]*255, ref.get_colors()[:,0,:]*255), 1) / 255
-        """
-        FCCT.write_colors_as_PC(hsv_cart_src, rgb_out[:,0,:], "/home/potechius/Downloads/FCCT_Tests/00_out_points_2.ply")
-        """
-
-
-
-        out_res = rgb_out.reshape(256, 256, 3).astype(np.float32)
-
-        # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
-        octave.addpath(octave.genpath('.'))
-        octave.eval('pkg load image')
-        octave.eval('pkg load statistics')
-        octave.eval("dir")
-        out_raw = octave.regrain(src.get_raw() * 255, out_res * 255, 1.0) / 255
-
-        out_res = out_raw.reshape(256 * 256, 3).astype(np.float32)
-
-        output_colors = np.clip(out_res, 0, 1)
-        out_img.set_colors(output_colors)
-
-
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": out_img,
-            "process_time": time.time() - start_time
-        }
-
-        return output
-
-
-
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------ 
@@ -1092,7 +827,7 @@ class FuzzyColorCategoryTransfer:
         c_range = int(stretch * 2 + 1)
 
         for t in range(10):
-            print(t)
+            #print(t)
             sci_mat = R.random()#random_state=5)
             mat_rot = sci_mat.as_matrix()
             mat_rot_inv = sci_mat.inv().as_matrix()
@@ -1255,12 +990,309 @@ class FuzzyColorCategoryTransfer:
 
         # exit()
 
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def apply(src, ref, opt):
+        start_time = time.time()
+
+        # check if method is compatible with provided source and reference objects
+        #output = check_compatibility(src, ref, FCCT.compatibility)
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None
+        }
+
+        # Preprocessing: Convert colorspace from RGB to HSV
+        hsv_cart_src = FCCT.RGB2cartHSV(src.get_colors())
+        hsv_cart_ref = FCCT.RGB2cartHSV(ref.get_colors())
+        rgb_out_orig = deepcopy(src.get_colors()) 
+        out_img = deepcopy(src)
+
+
+        # rgb_src = FCCT.HSV2cartRGB(hsv_cart_src)
+        # output_colors = np.clip(rgb_src, 0, 1)
+        # out_img.set_colors(output_colors)
+        # out_img.write("/home/potechius/Downloads/result.png")
+        # exit()
+
+        # VISUALIZATION 00
+        """
+        FCCT.write_colors_as_PC(hsv_cart_src, src.get_colors()[:,0,:],"/home/potechius/Downloads/FCCT_Tests/00_src_points.ply")
+        FCCT.write_colors_as_PC(hsv_cart_ref, ref.get_colors()[:,0,:],"/home/potechius/Downloads/FCCT_Tests/00_ref_points.ply")
+        """
+
+        # Read Color Dataset in HSV color space
+        colors, labels = FCCT.get_colormapping_dataset("Models/BasicColorCategoryTransfer/colormapping.csv")
+
+        # Apply Fuzzy KNN
+        # color_cats_src = {"Red": np.array([...]), "Yellow": np.array([...])} 
+        # -- Contains pixel colors
+        # color_cats_src_ids {"Red": np.array([...]), "Yellow": np.array([...])}
+        # -- contains positions within the original color array, i.e. src.get_colors()
+        # color_cats_src_mem color_cats_src_ids {"Red": np.array([...]), "Yellow": np.array([...])}
+        # -- contains per point 11 values with probabilities
+        color_cats_src, color_cats_src_ids, color_cats_src_mem, color_cats_ref, color_cats_ref_ids, color_cats_ref_mem = FCCT.fuzzy_knn(colors, labels, hsv_cart_src, hsv_cart_ref)
+
+        # save image with main clustering
+        """
+        for c in FCCT.color_terms:
+            for idx in color_cats_src_ids[c]:
+                hsv_cart_src[idx] = FCCT.color_samples[c]
+            for idx in color_cats_ref_ids[c]:
+                hsv_cart_ref[idx] = FCCT.color_samples[c]
+
+        hsv_cart_src = np.clip(hsv_cart_src, 0, 1)
+        out_img.set_colors(hsv_cart_src)
+        out_img.write("/home/potechius/Downloads/src_clustering.png")
+
+        hsv_cart_ref = np.clip(hsv_cart_ref, 0, 1)
+        ref.set_colors(hsv_cart_ref)
+        ref.write("/home/potechius/Downloads/ref_clustering.png")
+        exit()
+        """
+    
+        
+        # VISUALIZATION 01
+        """
+        for c in FCCT.color_terms:
+            colorv = FCCT.color_samples[c]
+            # check if any points belong to this category
+            if color_cats_src[c].shape[0] != 0:
+                rep = np.tile(colorv, (color_cats_src[c].shape[0],1))
+                FCCT.write_colors_as_PC(color_cats_src[c], rep,"/home/potechius/Downloads/FCCT_Tests/01_src_KNN/01_src_points_" + c + ".ply")
+            if color_cats_ref[c].shape[0] != 0:
+                rep = np.tile(colorv, (color_cats_ref[c].shape[0],1))
+                FCCT.write_colors_as_PC(color_cats_ref[c], rep,"/home/potechius/Downloads/FCCT_Tests/01_ref_KNN/01_ref_points_" + c + ".ply")
+        """
+
+        # Convex Hull Calculation
+        # CH_src["Red"] -> (mesh, validity)
+        # mesh: the convex hull as triangle mesh
+        # validity: True if a convex hull is computed
+        CH_src = FCCT.__calc_convex_hulls(color_cats_src)
+        CH_ref = FCCT.__calc_convex_hulls(color_cats_ref)
+
+        # VISUALIZATION 02
+        """
+        for c in FCCT.color_terms:
+            colorv = FCCT.color_samples[c]
+            if CH_src[c][1]:
+                FCCT.__write_convex_hull_mesh(mesh=CH_src[c][0],
+                                              path="/home/potechius/Downloads/FCCT_Tests/02_src_CH/02_src_CH_"+c+".ply", 
+                                              color=colorv)
+            if CH_ref[c][1]:
+                FCCT.__write_convex_hull_mesh(mesh=CH_ref[c][0],
+                                              path="/home/potechius/Downloads/FCCT_Tests/02_ref_CH/02_ref_CH_"+c+".ply", 
+                                              color=colorv)
+        """
+
+        # Estimate Transfer Directions based on volume
+        # Note: White, Grey and Black will only be transferred to the same color
+        CV_src = FCCT.__calc_bary_center_volume(CH_src)
+        CV_ref = FCCT.__calc_bary_center_volume(CH_ref)
+
+        # Calculate Eigenvectors and -values
+        EVV_src = FCCT.getEigen(CH_src)
+        EVV_ref = FCCT.getEigen(CH_ref)
+
+        # get transfer directions
+        class_pairs = FCCT.get_transfer_direction(CV_src, CV_ref, EVV_src, EVV_ref, color_cats_src, color_cats_ref)
+
+        # Print Transfer Directions and volumes
+        for elem in class_pairs:
+            print(elem[0][0] + " - " + elem[1][0])
+            print(str(elem[0][1]) + " - " + str(elem[1][1]))
+            print("\n")
+
+        # Apply Rotation and Translation
+        #color_cats_src = FCCT.rotation(class_pairs, color_cats_src)
+        rotation_matrix = FCCT.get_rotation_matrix(class_pairs)
+
+        # VISUALIZATION 03
+        """
+        CH_src = FCCT.__calc_convex_hulls(FCCT.transform(color_cats_src, rotation_matrix))
+        for c in FCCT.color_terms:
+            colorv = FCCT.color_samples[c]
+            if CH_src[c][1]:
+                FCCT.__write_convex_hull_mesh(mesh=CH_src[c][0],
+                                              path="/home/potechius/Downloads/FCCT_Tests/03_src_CH_rotated/03_src_CH_rotated_"+c+".ply", 
+                                              color=colorv)
+        exit()
+        """
+
+        # ReCalculate center and volume of rotated source
+        #CH_src_new = FCCT.__calc_convex_hulls(color_cats_src)
+        #CV_src_new = FCCT.__calc_bary_center_volume(CH_src_new)
+        
+        # Apply Translation
+        color_cats_src_temp = FCCT.transform(color_cats_src, rotation_matrix)
+
+        CH_src_new = FCCT.__calc_convex_hulls(color_cats_src_temp)
+        CV_src_new = FCCT.__calc_bary_center_volume(CH_src_new)
+        
+        #color_cats_src = FCCT.translation(class_pairs, color_cats_src, CV_src_new)
+        translation_matrix = FCCT.get_translation_matrix(class_pairs, CV_src_new)
+
+        # Scaling
+        #color_cats_src = FCCT.scaling(class_pairs, color_cats_src, color_cats_ref)
+
+        color_cats_src_temp = FCCT.transform(color_cats_src_temp, translation_matrix)    
+
+        # VISUALIZATION 04
+        """
+        CH_src = FCCT.__calc_convex_hulls(color_cats_src_temp)
+        for c in FCCT.color_terms:
+            colorv = FCCT.color_samples[c]
+            if CH_src[c][1]:
+                FCCT.__write_convex_hull_mesh(mesh=CH_src[c][0],
+                                              path="/home/potechius/Downloads/FCCT_Tests/04_src_CH_translated/04_src_CH_translated_"+c+".ply", 
+                                              color=colorv)
+        exit()
+        """
+
+        scaling_matrix = FCCT.get_scaling_matrix(class_pairs, color_cats_src_temp, color_cats_ref)
+        #color_cats_src = FCCT.scaling(class_pairs, color_cats_src_temp, color_cats_ref)
+
+        color_cats_src_temp = FCCT.transform(color_cats_src_temp, scaling_matrix)
+
+        # VISUALIZATION 05
+        """
+        CH_src = FCCT.__calc_convex_hulls(color_cats_src)
+        for c in FCCT.color_terms:
+            colorv = FCCT.color_samples[c]
+            if CH_src[c][1]:
+                FCCT.__write_convex_hull_mesh(mesh=CH_src[c][0],
+                                              path="/home/potechius/Downloads/FCCT_Tests/05_src_CH_scaled/05_src_CH_scaled_"+c+".ply", 
+                                              color=colorv)
+        """
+
+        # get the 11 transformation matrices
+        affine_transform = {"Red":[],"Yellow":[],"Green":[],"Blue":[],"Black":[],"White":[],"Grey":[],"Orange":[],"Brown":[],"Pink":[],"Purple":[]}
+        for c in FCCT.color_terms:
+            affine_transform[c] = np.eye(4)
+            #affine_transform[c] = rotation_matrix[c]
+            #affine_transform[c] = translation_matrix[c] @ rotation_matrix[c]
+            #affine_transform[c] = scaling_matrix[c] @ rotation_matrix[c]
+            #affine_transform[c] = scaling_matrix[c] @ translation_matrix[c] @ rotation_matrix[c]
+
+
+        # readjust weights so category with highest probability has more impact 
+        # Original: [0.5, 0.3, 0.2] -> After adjustment: [0.75, 0.15, 0.1]
+        # Note: The highest value is always scaled by log_2(x+1)^scale_factor 
+        # Note: Scale factor has to in the range [0.0, 1.0] -> 0.1 describes a strong scaling
+        scale_factor = 0.3
+        for c in FCCT.color_terms:
+            continue
+            if color_cats_src_mem[c].shape[0] == 0:
+                continue
+
+            # print(color_cats_src_mem[c][0])
+            # print(np.sum(color_cats_src_mem[c][0]))
+            # print("\n")
+
+            max_mem = np.max(color_cats_src_mem[c], axis=1)
+            max_pos = color_cats_src_mem[c].argmax(axis=1)
+            
+            new_max_mem = np.log(max_mem + 1) ** scale_factor
+
+            # the value will downscale all the other probabilities to get a total prob. of 1
+            # Eps is for stabilization
+            eps = 0.00001
+            rest_probs = (np.sum(color_cats_src_mem[c], axis=1) - max_mem + eps) / (1.0 - new_max_mem + eps)
+            rest_probs = np.repeat(rest_probs[:, np.newaxis], 11, axis=1)
+            color_cats_src_mem[c] /= rest_probs
+
+            # print(color_cats_src_mem[c][0])
+            # print(np.sum(color_cats_src_mem[c][0]))
+            # print("\n")
+
+
+            # upscale max value
+            for i in range(color_cats_src_mem[c].shape[0]):
+                color_cats_src_mem[c][i][max_pos[i]] = new_max_mem[i]
+
+
+            # print(color_cats_src_mem[c][0])
+            # print(np.sum(color_cats_src_mem[c][0]))
+            # print("\n")
+
+            #print(max_mem[0])
+            #print(max_pos[0])
+           # print(new_max_mem[0])
+            #exit()
+
+        #color_cats_src= FCCT.transform(color_cats_src, affine_transform)
+        color_cats_src= FCCT.transform_weighted(color_cats_src, color_cats_src_mem, affine_transform)
+
+        # Histogram Matching per category
+        for elem_src, elem_ref in class_pairs:
+            if color_cats_src[elem_src[0]].shape[0] <= 3 or color_cats_ref[elem_ref[0]].shape[0] <= 3:
+                continue
+            color_cats_src[elem_src[0]] = FCCT.histogram_matching(color_cats_src[elem_src[0]], color_cats_ref[elem_ref[0]])
+
+
+        #color_cats_src = FCCT.applyTransformation(class_pairs, color_cats_src, rotation_matrix, translation_matrix, scaling_matrix)
+        
+        #-------------------------------------------
+
+        # write mesh
+
+        for c in FCCT.color_terms:
+            for color, idx in zip(color_cats_src[c], color_cats_src_ids[c]):
+                hsv_cart_src[idx] = color
+
+        # Histogram Matching
+        #hsv_cart_src = FCCT.histogram_matching(hsv_cart_src, hsv_cart_ref)
+
+        rgb_out = FCCT.HSV2cartRGB(hsv_cart_src)
+
+
+
+        # INFO Histogram Matching in RGB gives better results than in HSV
+        rgb_out = np.expand_dims(FCCT.histogram_matching(rgb_out[:,0,:]*255, ref.get_colors()[:,0,:]*255), 1) / 255
+        """
+        FCCT.write_colors_as_PC(hsv_cart_src, rgb_out[:,0,:], "/home/potechius/Downloads/FCCT_Tests/00_out_points_2.ply")
+        """
+
+
+
+        orig_h, orig_w, orig_c = src.get_raw().shape
+        out_res = rgb_out.reshape(orig_h, orig_w, orig_c).astype(np.float32)
+        # out_res = rgb_out.reshape(256, 256, 3).astype(np.float32)
+
+        
+        octave.addpath(octave.genpath('.'))
+        octave.eval('pkg load image')
+        octave.eval('pkg load statistics')
+        octave.eval("dir")
+        out_raw = octave.regrain(src.get_raw() * 255, out_res * 255, 100.0) / 255
+        
+
+        #out_res = out_raw.reshape(256 * 256, 3).astype(np.float32)
+        out_res = out_raw.reshape(orig_h * orig_w, orig_c).astype(np.float32)
+
+        output_colors = np.clip(out_res, 0, 1)
+        out_img.set_colors(output_colors)
+
+
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img,
+            "process_time": time.time() - start_time
+        }
+
+        return output
+
 # ------------------------------------------------------------------------------------------------------------------
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    src = Img(file_path="/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/nature/256_nature-03.png")
-    ref = Img(file_path="/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/nature/256_nature-06.png")
+    src = Img(file_path="/home/potechius/Downloads/source.png")
+    ref = Img(file_path="/home/potechius/Downloads/reference.png")
     # src = Img(file_path="/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/city/256_city-05.png")
     # ref = Img(file_path="/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/city/256_city-04.png")
 
