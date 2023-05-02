@@ -115,18 +115,18 @@ if __name__ == '__main__':
             "BasicColorCategoryTransfer",
             "FuzzyColorCategoryTransfer"]
 
-    ct_approach = "PdfColorTransfer"
+    ct_approach = "FuzzyColorCategoryTransfer"
     ct_input = "img-img"
 
 
 
 
 
-    src_img = '/home/potechius/Downloads/source.png'
-    ref_img = '/home/potechius/Downloads/reference.png'
-    output = img2img_test(src_img, ref_img, ct_approach)
-    cv2.imwrite("/home/potechius/Downloads/pdf.png", cv2.cvtColor(output["object"].get_raw(), cv2.COLOR_BGR2RGB)*255)
-    exit()
+    # src_img = '/home/potechius/Downloads/source.png'
+    # ref_img = '/home/potechius/Downloads/reference.png'
+    # output = img2img_test(src_img, ref_img, ct_approach)
+    # cv2.imwrite("/home/potechius/Downloads/pdf.png", cv2.cvtColor(output["object"].get_raw(), cv2.COLOR_BGR2RGB)*255)
+    # exit()
 
     # files_256 = []
     # files_512 = []
@@ -134,7 +134,7 @@ if __name__ == '__main__':
     # files_2048 = []
     # files_4096 = []
     # files_8192 = []
-    # for path, subdirs, files in os.walk("/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset"):
+    # for path, subdirs, files in os.walk("/home/potechius/Downloads/Datasets/ACM-MM-Evaluation-Dataset"):
     #     for name in files:
     #         if name.split("_")[0] == "256":
     #             files_256.append(path + "/" + name)
@@ -149,13 +149,13 @@ if __name__ == '__main__':
     #         elif name.split("_")[0] == "8192":
     #             files_8192.append(path + "/" + name)
 
-    # file1 = open("/home/hpadmin/Downloads/testset_evaluation_512.txt","w")
+    # file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt","w")
     # eval_list = []
     # counter = 1
     # while True:
     #     print(counter)
-    #     src_img = random.choice(files_512).replace('/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/', '')
-    #     ref_img = random.choice(files_512).replace('/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/', '')
+    #     src_img = random.choice(files_512).replace('/home/potechius/Downloads/Datasets/ACM-MM-Evaluation-Dataset/', '')
+    #     ref_img = random.choice(files_512).replace('/home/potechius/Downloads/Datasets/ACM-MM-Evaluation-Dataset/', '')
     #     if src_img + ref_img in eval_list:
     #         continue
     #     eval_list.append(src_img + ref_img)
@@ -171,9 +171,9 @@ if __name__ == '__main__':
     total_tests = 0
 
     size = "512"
-    ALG = "DPT"
+    ALG = "FCM"
     #file1 = open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/testset_"+size+".txt")
-    file1 = open("/media/NAS/Datasets/PAPER_METRIC/testset_evaluation_512.txt")
+    file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
     #for i in range(total_tests):
     for line in file1.readlines():
         total_tests += 1
@@ -181,8 +181,8 @@ if __name__ == '__main__':
         # src_img = random.choice(files_2048)
         # ref_img = random.choice(files_2048)
         s_p, r_p = line.strip().split(" ")
-        src_img = '/media/NAS/Datasets/PAPER_METRIC/ACM-MM-Evaluation-Dataset/' + s_p
-        ref_img = '/media/NAS/Datasets/PAPER_METRIC/ACM-MM-Evaluation-Dataset/' + r_p
+        src_img = '/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/' + s_p
+        ref_img = '/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/' + r_p
         #src_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/256_interior-07_dithering-4.png'
         #ref_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/256_abstract-03_dithering-4.png'
         #src_img = "/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/4096_abstract-02.png"
@@ -214,6 +214,11 @@ if __name__ == '__main__':
             print("Unsupported types or type combination")
             exit(1)
 
+        file_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+        print(file_name)
+        if os.path.isfile(file_name):
+            continue
+
         ct = ColorTransfer(src, ref, ct_approach)
         output = ct.apply()
 
@@ -226,8 +231,7 @@ if __name__ == '__main__':
 
         if ct_input == "img-img" or ct_input == "img-pc":
             #file_name = "/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/"+ALG+"-"+size+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-            file_name = "/media/NAS/Datasets/PAPER_METRIC/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-            print(file_name)
+            #file_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
             ou = np.concatenate((src.get_raw(), ref.get_raw(), output["object"].get_raw()), axis=1) 
             cv2.imwrite(file_name, cv2.cvtColor(ou, cv2.COLOR_BGR2RGB)*255)
 
