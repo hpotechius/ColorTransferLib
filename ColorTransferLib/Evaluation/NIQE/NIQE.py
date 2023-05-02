@@ -12,6 +12,8 @@ import math
 import os
 import numpy as np
 import json
+import sys
+sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
 import pyiqa
 import torch
@@ -61,6 +63,20 @@ class NIQE:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
+    with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/PDF/niqe.txt","r") as file2:
+        cc = 0
+        summ = 0
+        for line in file2.readlines():
+            tim = float(line.strip().split(" ")[0])
+            if math.isinf(tim) or math.isnan(tim):
+                continue
+            summ += tim
+            cc += 1
+        summ /= cc
+        print(cc)
+        print(summ)
+    exit()  
+
     file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
     ALG = "BCC"
     total_tests = 0

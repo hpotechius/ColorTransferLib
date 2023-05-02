@@ -26,13 +26,12 @@ from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from ColorTransferLib.ImageProcessing.Image import Image as Img
 from copy import deepcopy
 #from ColorTransferLib.Utils.Helper import check_compatibility
-from .FaissKNeighbors import FaissKNeighbors
-
-from .Transform import Transform
-from .Export import Export
-from .HistogramMatching import HistogramMatching
-from .ColorClustering import ColorClustering
-from .ColorSpace import ColorSpace
+from FaissKNeighbors import FaissKNeighbors
+from Transform import Transform
+from Export import Export
+from HistogramMatching import HistogramMatching
+from ColorClustering import ColorClustering
+from ColorSpace import ColorSpace
 
 from pyhull.convex_hull import ConvexHull
 from sklearn.decomposition import PCA
@@ -207,7 +206,13 @@ class FuzzyColorCategoryTransfer:
         exit()
         """
     
-        
+        color_cats_ref = ColorSpace.CAT_cartesian_to_polar(color_cats_db)
+        for c in FCCT.color_terms:
+            colorv = FCCT.color_samples[c]
+            if color_cats_ref[c].shape[0] != 0:
+                rep = np.tile(colorv, (color_cats_ref[c].shape[0],1))
+                Export.write_colors_as_PC(color_cats_ref[c], rep,"/home/potechius/Downloads/FCCT_Tests/db_" + c + ".ply")
+        exit()
         # VISUALIZATION 01
         """
         color_cats_src = ColorSpace.CAT_cartesian_to_polar(color_cats_src)
@@ -591,13 +596,13 @@ class FuzzyColorCategoryTransfer:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    #src = Img(file_path="/media/potechius/Active_Disk/FCM_TEST/source.png")
-    #ref = Img(file_path="/media/potechius/Active_Disk/FCM_TEST/reference.png")
-    src = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/512_interior-08_dithering-4.png")
-    ref = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/512_abstract-04_dithering-16.png")
+    src = Img(file_path="/media/potechius/Active_Disk/FCM_TEST/source.png")
+    ref = Img(file_path="/media/potechius/Active_Disk/FCM_TEST/reference.png")
+    #src = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/512_interior-08_dithering-4.png")
+    #ref = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/512_abstract-04_dithering-16.png")
 
     out = FCCT.apply(src, ref, None)
-    out["object"].write("/media/potechius/Active_Disk/FCM_TEST/resultX.png")
+    out["object"].write("/media/potechius/Active_Disk/FCM_TEST/result.png")
 
     hi = FCCT.histogramintersection(ref, out["object"])
     print(hi)
