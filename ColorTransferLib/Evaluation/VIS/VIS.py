@@ -19,6 +19,9 @@ import sys
 sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
 #import pysaliency
+from multiprocessing import Process, Pool, Manager, Semaphore
+from threading import Thread
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -38,6 +41,21 @@ from ColorTransferLib.ImageProcessing.Image import Image
 #
 # Good to know:
 # https://ajcr.net/Basic-guide-to-einsum/
+
+
+class VisThread(Thread):
+    def __init__(self, src, out):
+        Thread.__init__(self)
+        self.vis = 0.0
+        self.src = src
+        self.out = out
+
+    def run(self):
+        self.vis = VIS.apply(self.src, self.out)
+
+    def stop(self):
+        raise Exception("Terminate")
+
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class VIS:
@@ -49,6 +67,9 @@ class VIS:
     def __init__(self):
         pass
 
+
+
+
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -58,16 +79,17 @@ class VIS:
         # Necessary to run "gbvs_install" once on a new system
         octave.addpath(octave.genpath('.'))
         #octave.addpath(octave.genpath('module/Algorithms/TpsColorTransfer/L2RegistrationForCT'))
+        octave.eval("warning('off','Octave:shadowed-function')")
         octave.eval('pkg load image')
         octave.eval('pkg load statistics')
-        octave.eval("dir")
+        #octave.eval("dir")
 
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def VS(img):
-        outp = octave.gbvs((img * 255).astype("uint8"))
+        outp = octave.gbvs_fast((img * 255).astype("uint8"))
         sal_map = outp["master_map_resized"]
         return sal_map
     
@@ -201,16 +223,29 @@ class VIS:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
+    ALG = "MKL"
+  
+    # check if entries already exist
+    # exf = []
+    # with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/vis.txt","r") as exfile:
+    #     for line in exfile.readlines():
+    #         _, exf_src, exf_ref = line.strip().split(" ")
+    #         exf.append((exf_src + ".png", exf_ref + ".png"))
+
     file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "GLO"
     total_tests = 0
     eval_arr = []
     for line in file1.readlines():
         total_tests += 1
         print(total_tests)
         s_p, r_p = line.strip().split(" ")
+
         outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
         print(outfile_name)
+
+        # if (s_p, r_p) in exf:
+        #    continue
+
         img_tri = cv2.imread(outfile_name)
         src_img = img_tri[:,:512,:]
         ref_img = img_tri[:,512:1024,:]
@@ -219,12 +254,31 @@ def main():
         src = Image(array=src_img)
         ref = Image(array=ref_img)
         out = Image(array=out_img)
+
+        # t = VisThread(src, out)
+        # t.start()
+
+        # cou = 0
+        # while t.is_alive():
+        #     time.sleep(1)
+        #     cou += 1
+        #     print(cou)
+        #     if cou == 3:
+        #         t.stop()
+        #         ssim = float("nan")
+        #         break
+
+        # print("jjj")
+        # exit()
+        # if cou != 60:
+        #     ssim = t.vis
+
         ssim = VIS.apply(src, out)
         print(ssim)
 
         eval_arr.append(ssim)
 
-        with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/vsi.txt","a") as file2:
+        with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/vis.txt","a") as file2:
             file2.writelines(str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 

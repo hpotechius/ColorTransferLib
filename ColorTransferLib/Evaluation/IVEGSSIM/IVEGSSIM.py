@@ -334,7 +334,7 @@ def main2():
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
     file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "PDF"
+    ALG = "BCC"
     total_tests = 0
     eval_arr = []
 
