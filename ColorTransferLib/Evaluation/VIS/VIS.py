@@ -223,7 +223,7 @@ class VIS:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    ALG = "MKL"
+    ALG = "GLO"
   
     # check if entries already exist
     # exf = []
@@ -254,24 +254,6 @@ def main():
         src = Image(array=src_img)
         ref = Image(array=ref_img)
         out = Image(array=out_img)
-
-        # t = VisThread(src, out)
-        # t.start()
-
-        # cou = 0
-        # while t.is_alive():
-        #     time.sleep(1)
-        #     cou += 1
-        #     print(cou)
-        #     if cou == 3:
-        #         t.stop()
-        #         ssim = float("nan")
-        #         break
-
-        # print("jjj")
-        # exit()
-        # if cou != 60:
-        #     ssim = t.vis
 
         ssim = VIS.apply(src, out)
         print(ssim)

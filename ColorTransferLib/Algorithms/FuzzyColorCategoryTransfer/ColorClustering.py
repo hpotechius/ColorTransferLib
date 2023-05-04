@@ -1,7 +1,7 @@
 import csv
 import numpy as np
-from ColorSpace import ColorSpace
-from FaissKNeighbors import FaissKNeighbors
+from .ColorSpace import ColorSpace
+from .FaissKNeighbors import FaissKNeighbors
 import open3d as o3d
 from pyhull.convex_hull import ConvexHull
 from sklearn.decomposition import PCA

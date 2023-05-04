@@ -26,12 +26,12 @@ from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from ColorTransferLib.ImageProcessing.Image import Image as Img
 from copy import deepcopy
 #from ColorTransferLib.Utils.Helper import check_compatibility
-from FaissKNeighbors import FaissKNeighbors
-from Transform import Transform
-from Export import Export
-from HistogramMatching import HistogramMatching
-from ColorClustering import ColorClustering
-from ColorSpace import ColorSpace
+from .FaissKNeighbors import FaissKNeighbors
+from .Transform import Transform
+from .Export import Export
+from .HistogramMatching import HistogramMatching
+from .ColorClustering import ColorClustering
+from .ColorSpace import ColorSpace
 
 from pyhull.convex_hull import ConvexHull
 from sklearn.decomposition import PCA
