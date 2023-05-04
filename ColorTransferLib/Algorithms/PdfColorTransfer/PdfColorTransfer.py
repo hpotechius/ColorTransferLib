@@ -14,6 +14,8 @@ import time
 import os
 import json
 import cv2
+import copy
+from scipy.optimize import minimize_scalar
 
 import os
 os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
@@ -31,11 +33,12 @@ from mpl_toolkits import mplot3d
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation as R
+from skimage.exposure import match_histograms
 
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from copy import deepcopy
 from ColorTransferLib.ImageProcessing.Image import Image as Img
-
+from scipy.interpolate import interp1d
 
 
 THREADSPERBLOCK = (32, 32)
@@ -130,15 +133,22 @@ class PdfColorTransfer:
             print(t)
             sci_mat = R.random()#random_state=5)
             mat_rot = sci_mat.as_matrix()
+
             mat_rot_inv = sci_mat.inv().as_matrix()
 
              # [2] Create random 3x3 rotation matrix
             mat_rot_tile = np.tile(mat_rot,(src_color.shape[0], 1, 1))
             mat_rot_inv_tile = np.tile(mat_rot_inv,(src_color.shape[0], 1, 1))
 
+            #print(device_ref[0])
             # [3] Rotate source and reference colors with random rotation matrix
-            src_rotated = np.einsum('ikl,ik->il', mat_rot_tile, device_src)
-            ref_rotated = np.einsum('ikl,ik->il', mat_rot_tile, device_ref)
+            src_rotated = np.einsum('ilk,ik->il', mat_rot_tile, device_src)
+            ref_rotated = np.einsum('ilk,ik->il', mat_rot_tile, device_ref)
+
+            # print(device_src[0])
+            # print(mat_rot_tile[0])
+            # print(src_rotated[0])
+            # exit()
 
             # [4] Get 1D marginal
             src_marg_x = src_rotated[:,0]
@@ -147,6 +157,8 @@ class PdfColorTransfer:
             ref_marg_x = ref_rotated[:,0]
             ref_marg_y = ref_rotated[:,1]
             ref_marg_z = ref_rotated[:,2]
+
+            eps = 0.0
 
             # [5] Calculate 1D pdf for range [-255, 255] which has to be shifted to [0, 884] (without stretching) in order
             # to allow indexing. The points can be rotated into another octant, therefore the range has to be extended from
@@ -162,14 +174,24 @@ class PdfColorTransfer:
 
 
             # [6] Calculate cumulative 1D pdf
-            src_cum_marg_x = np.cumsum(src_cum_marg_x)
-            src_cum_marg_y = np.cumsum(src_cum_marg_y)
-            src_cum_marg_z = np.cumsum(src_cum_marg_z)
+            # TODO Why is eps necessary???
+            src_cum_marg_x = np.cumsum(src_cum_marg_x+eps)
+            src_cum_marg_y = np.cumsum(src_cum_marg_y+eps)
+            src_cum_marg_z = np.cumsum(src_cum_marg_z+eps)
 
-            ref_cum_marg_x = np.cumsum(ref_cum_marg_x)
-            ref_cum_marg_y = np.cumsum(ref_cum_marg_y)
-            ref_cum_marg_z = np.cumsum(ref_cum_marg_z)
+            ref_cum_marg_x = np.cumsum(ref_cum_marg_x+eps)
+            ref_cum_marg_y = np.cumsum(ref_cum_marg_y+eps)
+            ref_cum_marg_z = np.cumsum(ref_cum_marg_z+eps)
 
+
+            src_cum_marg_x = np.clip(src_cum_marg_x, 0, 1)
+            src_cum_marg_y = np.clip(src_cum_marg_y, 0, 1)
+            src_cum_marg_z = np.clip(src_cum_marg_z, 0, 1)
+
+
+            ref_cum_marg_x = np.clip(ref_cum_marg_x, 0, 1)
+            ref_cum_marg_y = np.clip(ref_cum_marg_y, 0, 1)
+            ref_cum_marg_z = np.clip(ref_cum_marg_z, 0, 1)
 
             # Create LUT
             lut_x = np.zeros(c_range)
@@ -192,13 +214,16 @@ class PdfColorTransfer:
             # Adapt src values
             transferred_rotated_x = lut_x[src_marg_x.astype("int64") + stretch]
             transferred_rotated_y = lut_y[src_marg_y.astype("int64") + stretch]
-            transferred_rotated_z = lut_z[src_marg_z.astype("int64") + stretch]
+            transferred_rotated_z = lut_z[src_marg_z.astype("int64") + stretch]            
+            # transferred_rotated_x = lut_x[np.clip(src_marg_x.astype("int64") + stretch, 0, c_range-1)]
+            # transferred_rotated_y = lut_y[np.clip(src_marg_y.astype("int64") + stretch, 0, c_range-1)]
+            # transferred_rotated_z = lut_z[np.clip(src_marg_z.astype("int64") + stretch, 0, c_range-1)]
             transferred_rotated = np.concatenate((transferred_rotated_x[:,np.newaxis], transferred_rotated_y[:,np.newaxis]), axis=1)
             transferred_rotated = np.concatenate((transferred_rotated, transferred_rotated_z[:,np.newaxis]), axis=1)
 
             # [7] Rotate Back
             #transferred_rotated = np.power(transferred_rotated, 1 / soft_m) - stretch
-            output = np.einsum('ikl,ik->il', mat_rot_inv_tile, transferred_rotated - stretch)
+            output = np.einsum('ilk,ik->il', mat_rot_inv_tile, transferred_rotated - stretch)
 
 
 
@@ -225,6 +250,94 @@ class PdfColorTransfer:
 
         return output
     
+   # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def apply2(src, ref, opt):
+        start_time = time.time()
+        # check if method is compatible with provided source and reference objects
+        #output = Helper.check_compatibility(src, ref, PdfColorTransfer.compatibility)
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None
+        }
+
+
+        # Preprocessing
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        # [1] Change range from [0.0, 1.0] to [0, 255] and copy source and reference to GPU and create output
+        device_src = src_color.squeeze()
+        device_ref = ref_color.squeeze()
+
+        for t in range(opt.iterations):
+            print(t)
+            sci_mat = R.random()#random_state=5)
+            mat_rot = sci_mat.as_matrix()
+
+            mat_rot_inv = sci_mat.inv().as_matrix()
+
+             # [2] Create random 3x3 rotation matrix
+            mat_rot_tile = np.tile(mat_rot,(src_color.shape[0], 1, 1))
+            mat_rot_inv_tile = np.tile(mat_rot_inv,(src_color.shape[0], 1, 1))
+
+            #print(device_ref[0])
+            # [3] Rotate source and reference colors with random rotation matrix
+            src_rotated = np.einsum('ilk,ik->il', mat_rot_tile, device_src)
+            ref_rotated = np.einsum('ilk,ik->il', mat_rot_tile, device_ref)
+
+
+            eps = 1e-6
+
+            src_rotated_temp = copy.deepcopy(src_rotated)
+            for i in range(3):
+                inp_src = src_rotated[:,i]
+                inp_ref = ref_rotated[:,i]
+
+                datamin = np.min([inp_src, inp_ref]) - eps
+                datamax = np.max([inp_src, inp_ref]) + eps
+                u = np.linspace(datamin, datamax, 300)
+
+                # Compute the histograms for each color channel
+                hist_src, _ = np.histogram(inp_src.flatten(), u)
+                hist_ref, _ = np.histogram(inp_ref.flatten(), u)
+
+                #  Compute the CDFs for each color channel
+                input_cdf_r = np.cumsum(hist_src + eps)
+                input_cdf_r = input_cdf_r / input_cdf_r[-1]
+                ref_cdf_r = np.cumsum(hist_ref + eps)
+                ref_cdf_r = ref_cdf_r / ref_cdf_r[-1]
+
+                # Compute the mapping function for each color channel
+                mapping = np.interp(input_cdf_r, ref_cdf_r, range(299))
+
+                f_interp = interp1d(u[:-1], mapping, kind='linear', bounds_error=False, fill_value=(mapping[0], mapping[-1]))
+
+                inp_interp = f_interp(inp_src)
+                src_rotated_temp[:,i] = (inp_interp - 1) / (300 - 1) * (datamax - datamin) + datamin
+
+            # [7] Rotate Back
+            # relaxation = 1.0
+            # shift = src_rotated_temp - src_rotated
+            # device_src = np.einsum('ilk,ik->il', mat_rot_inv_tile, shift)
+            # device_src = relaxation * device_src + src_rotated
+            device_src = np.einsum('ilk,ik->il', mat_rot_inv_tile, src_rotated_temp)
+        
+        device_src = np.clip(device_src, 0, 1)
+        out_img.set_colors(device_src[:,np.newaxis,:])
+
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img,
+            "process_time": time.time() - start_time
+        }
+
+        return output
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -274,19 +387,24 @@ class PdfColorTransfer:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    src = Img(file_path="/media/potechius/Active_Disk/SORTING/scotland_house.png")
-    ref = Img(file_path="/media/potechius/Active_Disk/SORTING/scotland_plain.png")
+    PDF.generate_rotations(3, 1)
+    exit()
+    #src = Img(file_path="/media/potechius/Active_Disk/SORTING/scotland_house.png")
+    #ref = Img(file_path="/media/potechius/Active_Disk/SORTING/scotland_plain.png")
 
-    # src_name = "512_interior-02_dithering-4"
-    # ref_name = "512_abstract-08_dithering-4"
-    # src = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/"+src_name+".png")
-    # ref = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/"+ref_name+".png")
+    src_name = "abstract/512_abstract-00"
+    ref_name = "abstract/512_abstract-05_dithering-4"
+    # src_name = "abstract/512_abstract-03_dithering-16"
+    # ref_name = "interior/512_interior-05_dithering-16"
+    src = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/"+src_name+".png")
+    ref = Img(file_path="/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/"+ref_name+".png")
 
-    with open("/home/potechius/Projects/VSCode/ColorTransferLib/ColorTransferLib/Options/PdfColorTransfer.json", 'r') as f:
+    with open("/home/potechius/Projects/ColorTransferLib/ColorTransferLib/Options/PdfColorTransfer.json", 'r') as f:
         options = json.load(f)
         opt = BaseOptions(options)
 
-    out = PDF.apply(src, ref, opt)
+    #out = PDF.apply_matlab(src, ref, opt)
+    out = PDF.apply2(src, ref, opt)
     out["object"].write("/home/potechius/Downloads/result.png")
 
     # file_name = "/home/potechius/Downloads/"+src_name+"__to__"+ref_name+".png"

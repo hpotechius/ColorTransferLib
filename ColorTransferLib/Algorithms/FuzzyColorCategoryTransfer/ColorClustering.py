@@ -10,6 +10,7 @@ import copy
 class ColorClustering():
 
     color_terms = np.array(["Red", "Yellow", "Green", "Blue", "Black", "White", "Grey", "Orange", "Brown", "Pink", "Purple"])
+    color_terms_id = {"Red":0, "Yellow":1, "Green":2, "Blue":3, "Black":4, "White":5, "Grey":6, "Orange":7, "Brown":8, "Pink":9, "Purple":10}
 
     # this variable is only used for rendering, not for the actual algorithm
     color_samples = {
@@ -143,9 +144,18 @@ class ColorClustering():
         color_cats_ids = {"Red":[],"Yellow":[],"Green":[],"Blue":[],"Black":[],"White":[],"Grey":[],"Orange":[],"Brown":[],"Pink":[],"Purple":[]}
 
         for i, (pred, color, mem) in enumerate(zip(predictions, colors, membership)):
-            color_cats[ColorClustering.color_terms[int(pred)]].append(color)
-            color_cats_mem[ColorClustering.color_terms[int(pred)]].append(mem)
-            color_cats_ids[ColorClustering.color_terms[int(pred)]].append(i)
+            # if ColorClustering.color_terms[int(pred)] == "Purple":
+            #     print(mem)
+            # get highest probabilty for sorting
+            pos = np.argmax(mem)
+            color_cats[ColorClustering.color_terms[int(pos)]].append(color)
+            color_cats_mem[ColorClustering.color_terms[int(pos)]].append(mem)
+            color_cats_ids[ColorClustering.color_terms[int(pos)]].append(i)
+
+            # color_cats[ColorClustering.color_terms[int(pred)]].append(color)
+            # color_cats_mem[ColorClustering.color_terms[int(pred)]].append(mem)
+            # color_cats_ids[ColorClustering.color_terms[int(pred)]].append(i)
+        #exit()
 
         # converst the color lists to arrays
         for col in ColorClustering.color_terms:
@@ -160,18 +170,19 @@ class ColorClustering():
     # Note: White, Grey and Black will be transformed to White, Grey and Black
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def get_transfer_direction(CV_src, CV_ref, EVV_src, EVV_ref, color_cats_src, color_cats_ref):
+    def get_transfer_direction(CV_src, CV_ref, color_cats_src, color_cats_ref):
         predefined_pairs = [
             #("White", "White"), ("Grey","Grey"), ("Black","Black"), ("Purple", "Pink"), ("Green", "Green"), ("Blue", "Blue")
             #("Green", "Green"), ("Brown","Brown"), ("Red","Red"), ("Black","Black"), ("Grey","Orange"), ("Yellow","Yellow")
+            #("Grey", "Red")
         ]
 
         volumes_src = []
         volumes_ref = []
         for c in ColorClustering.color_terms:
-            # (Color, Volume, Center, Eigenvectors, Eigenvalues, #Points)
-            volumes_src.append((c, CV_src[c][1], CV_src[c][0], EVV_src[c][0], EVV_src[c][1], color_cats_src[c].shape[0]))
-            volumes_ref.append((c, CV_ref[c][1], CV_ref[c][0], EVV_ref[c][0], EVV_ref[c][1], color_cats_ref[c].shape[0]))
+            # (Color, Volume, Center, #Points)
+            volumes_src.append((c, CV_src[c][1], CV_src[c][0], color_cats_src[c].shape[0]))
+            volumes_ref.append((c, CV_ref[c][1], CV_ref[c][0], color_cats_ref[c].shape[0]))
 
         # create class pairs for white-white, grey-grey and black-black
         class_pairs_wgb = []
@@ -192,13 +203,35 @@ class ColorClustering():
 
         #sorted_volumes_src = sorted(col_src, key=lambda x: x[1])
         #sorted_volumes_ref = sorted(col_ref, key=lambda x: x[1])
-        sorted_volumes_src = sorted(col_src, key=lambda x: x[5])
-        sorted_volumes_ref = sorted(col_ref, key=lambda x: x[5])
+        sorted_volumes_src = sorted(col_src, key=lambda x: x[3])
+        sorted_volumes_ref = sorted(col_ref, key=lambda x: x[3])
 
+        # combine src and ref to class pair
+        class_pairs = [[s, r] for s, r in zip(sorted_volumes_src,sorted_volumes_ref)]
+
+
+        # combine predefined class pairs with calculated
+        class_pairs = class_pairs_wgb + class_pairs
 
         # TODO: Number of points will be removed
-        class_pairs = [[s[:5], r[:5]] for s, r in zip(sorted_volumes_src,sorted_volumes_ref)]
-        return class_pairs_wgb + class_pairs
+        class_pairs = [[s[:3], r[:3]] for s, r in class_pairs]
+
+
+
+        # remove pairs with zero volume
+        class_pairs = [cc for cc in class_pairs if cc[0][1] != 0.0 and cc[1][1] != 0.0]
+        # contains all source categories which can't be transferred
+        # invalid_src = [cc[0][0] for cc in class_pairs if cc[0][1] == 0.0 or cc[1][1] == 0.0]
+        # print(invalid_src)
+        #exit()
+
+        # for c1, c2 in class_pairs:
+        #     print(c1[0] + " - " + c2[0])
+        #     print(str(c1[1]) + " - " + str(c2[1]))
+
+        # exit()
+
+        return class_pairs
 
     # ------------------------------------------------------------------------------------------------------------------
     #
@@ -243,7 +276,13 @@ class ColorClustering():
                 mass_center = vol_center / mesh_volume
                 CV[c] = (mass_center, mesh_volume)
         return CV
-    
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------  
+    # def updateCenters(class_pairs, CV_src_new, CV_ref_new):
+    #     CV = {"Red":[],"Yellow":[],"Green":[],"Blue":[],"Black":[],"White":[],"Grey":[],"Orange":[],"Brown":[],"Pink":[],"Purple":[]}
+    #     for c in ColorClustering.color_terms:
+    #         class_pairs[0][]
 
     # ------------------------------------------------------------------------------------------------------------------
     #
@@ -298,3 +337,90 @@ class ColorClustering():
                 eigenvalues_src = [0.0, 0.0, 0.0]
             EVV[c] = (eigenvectors_src, eigenvalues_src)
         return EVV
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # Update membership matrix
+    # 
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def updateMembership(color_cats_src_mem, color_cats_ref_mem, class_pairs):
+        # get all colors which are not in source anymore
+        not_in_src = ["Red", "Yellow", "Green", "Blue", "Black", "White", "Grey", "Orange", "Brown", "Pink", "Purple"]
+        not_in_ref = ["Red", "Yellow", "Green", "Blue", "Black", "White", "Grey", "Orange", "Brown", "Pink", "Purple"]
+        for c1, c2 in class_pairs:
+            not_in_src.remove(c1[0])
+            not_in_ref.remove(c2[0])
+
+        print(not_in_src)
+        print(not_in_ref)
+
+        # set all probabilites for categories which are not in source to 0
+        for col in ColorClustering.color_terms:
+            for no in not_in_src:
+                if color_cats_src_mem[col].shape[0] == 0:
+                    continue
+                color_cats_src_mem[col][:, ColorClustering.color_terms_id[no]] *= 0
+            for no in not_in_ref:
+                if color_cats_ref_mem[col].shape[0] == 0:
+                    continue
+                color_cats_ref_mem[col][:, ColorClustering.color_terms_id[no]] *= 0
+
+
+        # rescale probabilities per point to restore sum of one
+        for col in ColorClustering.color_terms:
+            if color_cats_src_mem[col].shape[0] == 0:
+                continue
+            sum_per_point = np.sum(color_cats_src_mem[col], axis=1)
+            scale_factor = np.reciprocal(sum_per_point + 0.0000001)
+            scale_factor_mat = np.repeat(np.expand_dims(scale_factor, 1), 11, axis=1)
+            color_cats_src_mem[col] *= scale_factor_mat
+
+        for col in ColorClustering.color_terms:
+            if color_cats_ref_mem[col].shape[0] == 0:
+                continue
+            sum_per_point = np.sum(color_cats_ref_mem[col], axis=1)
+            scale_factor = np.reciprocal(sum_per_point + 0.0000001)
+            scale_factor_mat = np.repeat(np.expand_dims(scale_factor, 1), 11, axis=1)
+            color_cats_ref_mem[col] *= scale_factor_mat
+
+        return color_cats_src_mem, color_cats_ref_mem
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # 
+    # 
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def updateKNN(color_cats_src, color_cats_ref, color_cats_src_ids, color_cats_ref_ids, color_cats_src_mem, color_cats_ref_mem):
+        color_cats_src_new = {"Red":[],"Yellow":[],"Green":[],"Blue":[],"Black":[],"White":[],"Grey":[],"Orange":[],"Brown":[],"Pink":[],"Purple":[]}
+        color_cats_ref_new = {"Red":[],"Yellow":[],"Green":[],"Blue":[],"Black":[],"White":[],"Grey":[],"Orange":[],"Brown":[],"Pink":[],"Purple":[]}
+        color_cats_src_ids_new = {"Red":[],"Yellow":[],"Green":[],"Blue":[],"Black":[],"White":[],"Grey":[],"Orange":[],"Brown":[],"Pink":[],"Purple":[]}
+        color_cats_ref_ids_new = {"Red":[],"Yellow":[],"Green":[],"Blue":[],"Black":[],"White":[],"Grey":[],"Orange":[],"Brown":[],"Pink":[],"Purple":[]}
+        color_cats_src_mem_new = {"Red":[],"Yellow":[],"Green":[],"Blue":[],"Black":[],"White":[],"Grey":[],"Orange":[],"Brown":[],"Pink":[],"Purple":[]}
+        color_cats_ref_mem_new = {"Red":[],"Yellow":[],"Green":[],"Blue":[],"Black":[],"White":[],"Grey":[],"Orange":[],"Brown":[],"Pink":[],"Purple":[]}
+    
+        for c in ColorClustering.color_terms:
+            for point, idx, membership in zip(color_cats_src[c], color_cats_src_ids[c], color_cats_src_mem[c]):
+                new_col_id = np.argmax(membership)
+                new_col = ColorClustering.color_terms[new_col_id]
+                # if c == "Purple":
+                #     print(new_col)
+                color_cats_src_new[new_col].append(point)
+                color_cats_src_ids_new[new_col].append(idx)
+                color_cats_src_mem_new[new_col].append(membership)
+            for point, idx, membership in zip(color_cats_ref[c], color_cats_ref_ids[c], color_cats_ref_mem[c]):
+                new_col_id = np.argmax(membership)
+                new_col = ColorClustering.color_terms[new_col_id]
+                color_cats_ref_new[new_col].append(point)
+                color_cats_ref_ids_new[new_col].append(idx)
+                color_cats_ref_mem_new[new_col].append(membership)
+
+        # convert lists to array
+        for c in ColorClustering.color_terms:
+            color_cats_src_new[c] = np.asarray(color_cats_src_new[c])
+            color_cats_ref_new[c] = np.asarray(color_cats_ref_new[c])
+            color_cats_src_ids_new[c] = np.asarray(color_cats_src_ids_new[c])
+            color_cats_ref_ids_new[c] = np.asarray(color_cats_ref_ids_new[c])
+            color_cats_src_mem_new[c] = np.asarray(color_cats_src_mem_new[c])
+            color_cats_ref_mem_new[c] = np.asarray(color_cats_ref_mem_new[c])
+
+        return color_cats_src_new, color_cats_ref_new, color_cats_src_ids_new, color_cats_ref_ids_new, color_cats_src_mem_new, color_cats_ref_mem_new

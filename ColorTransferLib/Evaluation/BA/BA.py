@@ -11,7 +11,7 @@ import cv2
 import math
 import numpy as np
 import sys
-sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
+sys.path.insert(0, '/home/potechius/Projects/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -65,7 +65,8 @@ class BA:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    fuu = ["GLO", "FUZ", "TPS", "PDF", "MKL", "HIS", "NST", "CAM", "DPT", "RHG", "BCC"]
+    #fuu = ["GLO", "FUZ", "TPS", "PDF", "MKL", "HIS", "NST", "CAM", "DPT", "RHG", "BCC"]
+    fuu = ["FCM"]
     for ALG in fuu:
         print(ALG)
         file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
@@ -74,7 +75,7 @@ def main():
         eval_arr = []
         for line in file1.readlines():
             total_tests += 1
-            #print(total_tests)
+            print(total_tests)
             s_p, r_p = line.strip().split(" ")
             outfile_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
             #print(outfile_name)
@@ -87,8 +88,7 @@ def main():
             ref = Image(array=ref_img)
             out = Image(array=out_img)
             ba = BA.apply(ref, out)
-            #print(ba)
-            #exit()
+            print(ba)
             eval_arr.append(ba)
 
             with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/ba.txt","a") as file2:

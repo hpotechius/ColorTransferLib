@@ -11,7 +11,7 @@ import cv2
 import math
 import numpy as np
 import sys
-sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
+sys.path.insert(0, '/home/potechius/Projects/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -58,7 +58,8 @@ class Corr:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    fuu = ["GLO", "FUZ", "TPS", "PDF", "MKL", "HIS", "NST", "CAM", "DPT", "RHG", "BCC"]
+    #fuu = ["GLO", "FUZ", "TPS", "PDF", "MKL", "HIS", "NST", "CAM", "DPT", "RHG", "BCC"]
+    fuu = ["FCM"]
     for ALG in fuu:
         print(ALG)
         file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
@@ -67,7 +68,7 @@ def main():
         eval_arr = []
         for line in file1.readlines():
             total_tests += 1
-            #print(total_tests)
+            print(total_tests)
             s_p, r_p = line.strip().split(" ")
             outfile_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
             #print(outfile_name)
@@ -80,7 +81,7 @@ def main():
             ref = Image(array=ref_img)
             out = Image(array=out_img)
             corr = Corr.apply(ref, out)
-            #print(corr)
+            print(corr)
             eval_arr.append(corr)
 
             with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/corr.txt","a") as file2:

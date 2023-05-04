@@ -11,7 +11,7 @@ import cv2
 import math
 import numpy as np
 import sys
-#sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
+sys.path.insert(0, '/home/potechius/Projects/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -47,12 +47,12 @@ class HI:
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    src = Image(file_path="/home/potechius/Downloads/source.png")
-    ref = Image(file_path="/home/potechius/Downloads/reference.png")
-    out = Image(file_path="/home/potechius/Downloads/result.png")
-    hint = HI.apply(out, ref)
-    print(hint)
-    exit()
+    # src = Image(file_path="/home/potechius/Downloads/source.png")
+    # ref = Image(file_path="/home/potechius/Downloads/reference.png")
+    # out = Image(file_path="/home/potechius/Downloads/result.png")
+    # hint = HI.apply(out, ref)
+    # print(hint)
+    # exit()
 
 
     #fuu = ["GLO", "FUZ", "TPS", "PDF", "MKL", "HIS", "NST", "CAM", "DPT", "RHG", "BCC"]
@@ -65,7 +65,7 @@ def main():
         eval_arr = []
         for line in file1.readlines():
             total_tests += 1
-            #print(total_tests)
+            print(total_tests)
             s_p, r_p = line.strip().split(" ")
             outfile_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
             #print(outfile_name)
@@ -78,7 +78,7 @@ def main():
             ref = Image(array=ref_img)
             out = Image(array=out_img)
             hint = HI.apply(ref, out)
-            #print(hint)
+            print(hint)
             eval_arr.append(hint)
 
             with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/hi.txt","a") as file2:

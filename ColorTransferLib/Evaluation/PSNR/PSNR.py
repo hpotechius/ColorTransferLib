@@ -78,7 +78,7 @@ def main():
 
 
     file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "RHG"
+    ALG = "FCM"
     total_tests = 0
     eval_arr = []
     for line in file1.readlines():
