@@ -242,7 +242,7 @@ class SSIM:
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
     file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "GLO"
+    ALG = "FCM"
     total_tests = 0
     eval_arr = []
     for line in file1.readlines():
@@ -259,7 +259,7 @@ def main():
         src = Image(array=src_img)
         ref = Image(array=ref_img)
         out = Image(array=out_img)
-        ssim = SSIM.apply2(src, ref)
+        ssim = SSIM.apply(src, out)
 
         eval_arr.append(ssim)
 

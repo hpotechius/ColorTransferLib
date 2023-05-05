@@ -86,15 +86,15 @@ def img2img_test(src_path, ref_path, ct_approach):
 # ------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    #src_img = "/home/hpadmin/Downloads/psource.png"
-    #ref_img = "/home/hpadmin/Downloads/preference.png"
+    src_img = "/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/nature/512_nature-00_dithering-4.png"
+    ref_img = "/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/512_abstract-02.png"
+    src = Image(file_path=src_img)
+    ref = Image(file_path=ref_img)
+    ct = ColorTransfer(src, ref, "FuzzyColorCategoryTransfer")
+    output = ct.apply()
 
-    #pm = PerceptualMetric()
-    #pm.apply(src, ref)
-    #exit()
-
-    #src = Image(file_path=src_img)
-    #ref = Image(file_path=ref_img)
+    output["object"].write("/home/potechius/Downloads/test.png")
+    exit()
     #cstat = HistogramIntersection.apply(src, ref)
     #print(cstat)
     #exit()
@@ -170,10 +170,10 @@ if __name__ == '__main__':
     times_arr = []
     total_tests = 0
 
-    size = "512"
+    size = "2048"
     ALG = "FCM"
-    #file1 = open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/testset_"+size+".txt")
-    file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
+    file1 = open("/media/potechius/Active_Disk/Tests/Process_Time_Evaluation/testset_"+size+".txt")
+    #file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
     #for i in range(total_tests):
     for line in file1.readlines():
         total_tests += 1
@@ -183,12 +183,6 @@ if __name__ == '__main__':
         s_p, r_p = line.strip().split(" ")
         src_img = '/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/' + s_p
         ref_img = '/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/' + r_p
-        #src_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/256_interior-07_dithering-4.png'
-        #ref_img = '/media/hpadmin/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/abstract/256_abstract-03_dithering-4.png'
-        #src_img = "/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/4096_abstract-02.png"
-        #ref_img = "/home/potechius/Downloads/ACM-MM-Evaluation-Dataset/abstract/4096_abstract-02.png"
-        #src_img = "/home/potechius/Pictures/Screenshots/src.png"
-        #ref_img = "/home/potechius/Pictures/Screenshots/ref.png"
 
         ref_pc = "data/pointclouds/athen_postprocessed_simp.ply"
         src_pc = "data/pointclouds/Wappentier_blue.ply"
@@ -214,10 +208,10 @@ if __name__ == '__main__':
             print("Unsupported types or type combination")
             exit(1)
 
-        file_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        print(file_name)
-        if os.path.isfile(file_name):
-            continue
+        # file_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+        # print(file_name)
+        # if os.path.isfile(file_name):
+        #     continue
 
         ct = ColorTransfer(src, ref, ct_approach)
         output = ct.apply()
@@ -230,13 +224,13 @@ if __name__ == '__main__':
             exit()
 
         if ct_input == "img-img" or ct_input == "img-pc":
-            #file_name = "/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/"+ALG+"-"+size+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+            file_name = "/media/potechius/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/"+ALG+"-"+size+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
             #file_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
             ou = np.concatenate((src.get_raw(), ref.get_raw(), output["object"].get_raw()), axis=1) 
             cv2.imwrite(file_name, cv2.cvtColor(ou, cv2.COLOR_BGR2RGB)*255)
 
-            # with open("/media/hpadmin/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/process_time_"+size+".txt","a") as file2:
-            #     file2.writelines(str(round(output["process_time"],3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
+            with open("/media/potechius/Active_Disk/Tests/Process_Time_Evaluation/"+ALG+"/process_time_"+size+".txt","a") as file2:
+                file2.writelines(str(round(output["process_time"],3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
             #output["object"].write(file_name)
             #output.show()

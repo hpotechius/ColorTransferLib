@@ -261,33 +261,40 @@ class IVSSIM:
                  w1 = 0.25
                  w2 = 0.25
         
-            ivssim_val[c] = np.sum(R1[c]) / R1[c].shape[0] * w1 \
-                          + np.sum(R2[c]) / R2[c].shape[0] * w2 \
-                          + np.sum(R3[c]) / R3[c].shape[0] * w3 \
-                          + np.sum(R4[c]) / R4[c].shape[0] * w4
+            ivssim_val[c] = 0
+            if R1[c].shape[0] != 0:
+                ivssim_val[c] += np.sum(R1[c]) / R1[c].shape[0] * w1
+            if R2[c].shape[0] != 0:
+                ivssim_val[c] += np.sum(R2[c]) / R2[c].shape[0] * w2
+            if R3[c].shape[0] != 0:
+                ivssim_val[c] += np.sum(R3[c]) / R3[c].shape[0] * w3
+            if R4[c].shape[0] != 0:
+                ivssim_val[c] += np.sum(R4[c]) / R4[c].shape[0] * w4
+
+            #ivssim_val[c] = np.sum(R1[c]) / R1[c].shape[0] * w1 \
+            #              + np.sum(R2[c]) / R2[c].shape[0] * w2 \
+            #              + np.sum(R3[c]) / R3[c].shape[0] * w3 \
+            #              + np.sum(R4[c]) / R4[c].shape[0] * w4
 
         w_r = w_g = w_b = 1.0/3.0
         mivssim = ivssim_val[0] * w_r + ivssim_val[1] * w_g + ivssim_val[2] * w_b
             
-        print(mivssim)
-        exit()
-
-        return round(0, 4)
+        return round(mivssim, 4)
     
 # ------------------------------------------------------------------------------------------------------------------
 #
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
-    file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "GLO"
+    file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
+    ALG = "FCM"
     total_tests = 0
     eval_arr = []
     for line in file1.readlines():
         total_tests += 1
         print(total_tests)
         s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        print(outfile_name)
+        outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
+        #print(outfile_name)
         img_tri = cv2.imread(outfile_name)
         src_img = img_tri[:,:512,:]
         ref_img = img_tri[:,512:1024,:]
@@ -297,10 +304,11 @@ def main():
         ref = Image(array=ref_img)
         out = Image(array=out_img)
         ssim = IVSSIM.apply(src, out)
+        print(ssim)
 
         eval_arr.append(ssim)
 
-        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/gssim.txt","a") as file2:
+        with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/ivssim.txt","a") as file2:
             file2.writelines(str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
 
 

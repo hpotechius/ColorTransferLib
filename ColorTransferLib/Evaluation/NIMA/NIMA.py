@@ -70,7 +70,7 @@ class NIMA:
 # ------------------------------------------------------------------------------------------------------------------ 
 def main():
     file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "BCC"
+    ALG = "FCM"
     total_tests = 0
     eval_arr = []
 
