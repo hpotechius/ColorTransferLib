@@ -49,7 +49,8 @@ class CF:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(img):
+    def apply(*args):
+        img = args[2]
         rg, yb = CF.rgb2rgyb(img.get_raw() * 255)
 
         mu_rg = np.mean(rg)

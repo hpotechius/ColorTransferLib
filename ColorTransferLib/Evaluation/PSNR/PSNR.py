@@ -36,7 +36,9 @@ class PSNR:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref):
+    def apply(*args):
+        src = args[0]
+        ref = args[2]
         src_img = src.get_raw()
         ref_img = ref.get_raw()
 

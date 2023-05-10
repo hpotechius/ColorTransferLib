@@ -1,4 +1,4 @@
-from .ColorTransfer import ColorTransfer
+from .ColorTransfer import ColorTransfer, ColorTransferEvaluation
 
 from . import Algorithms
 from . import ImageProcessing

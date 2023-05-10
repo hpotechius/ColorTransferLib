@@ -41,7 +41,9 @@ class MSSSIM:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref):
+    def apply(*args):
+        src = args[0]
+        ref = args[2]
         #mssim = ssim(src.get_raw(), ref.get_raw(), channel_axis=2, data_range=1.0, gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
         ms_ssim = MultiScaleStructuralSimilarityIndexMeasure(data_range=1.0)
         ten_src = torch.from_numpy(src.get_raw())

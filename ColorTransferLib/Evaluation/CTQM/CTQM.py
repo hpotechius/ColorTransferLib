@@ -66,6 +66,8 @@ class CTQM:
         src_img = src
         ref_img = ref
 
+        hi, wi = src_img.shape
+
         k1 = 0.01
         k2 = 0.03
         L = 1.0
@@ -101,7 +103,7 @@ class CTQM:
         mu_ref_win_ext = np.tile(mu_ref_win, (1, 1, 11, 11))
 
         kernel_gaus = np.expand_dims(kernel_gaus, (0,1))
-        kernel_gaus_ext = np.tile(kernel_gaus, (512, 512, 1, 1))
+        kernel_gaus_ext = np.tile(kernel_gaus, (hi, wi, 1, 1))
 
         src_pad_ext_norm = src_pad_ext - mu_src_win_ext
         ref_pad_ext_norm = ref_pad_ext - mu_ref_win_ext
@@ -278,7 +280,10 @@ class CTQM:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref, out):
+    def apply(*args):
+        src = args[0]
+        ref = args[1]
+        out = args[2]
         # RGB to CIELab
         src_lab = cv2.cvtColor(src.get_raw(), cv2.COLOR_RGB2LAB)
         ref_lab = cv2.cvtColor(ref.get_raw(), cv2.COLOR_RGB2LAB)

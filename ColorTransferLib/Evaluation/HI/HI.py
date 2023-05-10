@@ -35,7 +35,10 @@ class HI:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref, bins=[10,10,10]):
+    def apply(*args):
+        src = args[1]
+        ref = args[2]
+        bins=[10,10,10]
         histo1 = src.get_color_statistic_3D(bins=bins, normalized=True)
         histo2 = ref.get_color_statistic_3D(bins=bins, normalized=True)
         minimum = np.minimum(histo1, histo2)

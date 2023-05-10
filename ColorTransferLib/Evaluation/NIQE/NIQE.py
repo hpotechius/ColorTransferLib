@@ -42,7 +42,8 @@ class NIQE:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(img):
+    def apply(*args):
+        img = args[2]
         img = img.get_raw()
 
         img_ten = torch.from_numpy(img)
@@ -51,7 +52,8 @@ class NIQE:
         img_ten = img_ten.unsqueeze(0)
 
         #print(pyiqa.list_models())
-        device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+        #device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+        device = "cpu"
         iqa_metric = pyiqa.create_metric('niqe', device=device)
         score_nr = iqa_metric(img_ten)
 

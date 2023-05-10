@@ -65,6 +65,8 @@ class GSSIM:
         src_img = src
         ref_img = ref
 
+        hi, wi, ci = src_img.shape
+
         k1 = 0.01
         k2 = 0.03
         L = 1.0
@@ -106,7 +108,7 @@ class GSSIM:
         kernel_gaus_3d = np.concatenate((np.expand_dims(kernel_gaus, 2), np.expand_dims(kernel_gaus, 2), np.expand_dims(kernel_gaus, 2)), 2)
 
         kernel_gaus_3d = np.expand_dims(kernel_gaus_3d, (0,1))
-        kernel_gaus_3d_ext = np.tile(kernel_gaus_3d, (512, 512, 1, 1, 1))
+        kernel_gaus_3d_ext = np.tile(kernel_gaus_3d, (hi, wi, 1, 1, 1))
 
         src_pad_ext_norm = src_pad_ext - mu_src_win_ext
         ref_pad_ext_norm = ref_pad_ext - mu_ref_win_ext
@@ -128,7 +130,9 @@ class GSSIM:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref):
+    def apply(*args):
+        src = args[0]
+        ref = args[2]
         src_img = src.get_raw()
         ref_img = ref.get_raw()
 
@@ -136,9 +140,13 @@ class GSSIM:
 
         src_img = src.get_raw()
         ref_img = ref.get_raw()
+
+        src_h, src_w, src_c = src_img.shape
+        ref_h, ref_w, ref_c = ref_img.shape
+
         # apply Sobel filter for each channel
-        src_edge_mag = np.zeros((512, 512, 0))
-        ref_edge_mag = np.zeros((512, 512, 0))
+        src_edge_mag = np.zeros((src_h, src_w, 0))
+        ref_edge_mag = np.zeros((ref_h, ref_w, 0))
         for c in range(3):
             src_grad_x = cv2.Sobel(src_img[:,:,c], cv2.CV_32F, 1, 0, ksize=3, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
             src_grad_y = cv2.Sobel(src_img[:,:,c], cv2.CV_32F, 0, 1, ksize=3, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)

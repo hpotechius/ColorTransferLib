@@ -66,6 +66,8 @@ class IVEGSSIM:
         src_img = src
         ref_img = ref
 
+        hi, wi, ci = src_img.shape
+
         k1 = 0.01
         k2 = 0.03
         L = 1.0
@@ -107,7 +109,7 @@ class IVEGSSIM:
         kernel_gaus_3d = np.concatenate((np.expand_dims(kernel_gaus, 2), np.expand_dims(kernel_gaus, 2), np.expand_dims(kernel_gaus, 2)), 2)
 
         kernel_gaus_3d = np.expand_dims(kernel_gaus_3d, (0,1))
-        kernel_gaus_3d_ext = np.tile(kernel_gaus_3d, (512, 512, 1, 1, 1))
+        kernel_gaus_3d_ext = np.tile(kernel_gaus_3d, (hi, wi, 1, 1, 1))
 
         src_pad_ext_norm = src_pad_ext - mu_src_win_ext
         ref_pad_ext_norm = ref_pad_ext - mu_ref_win_ext
@@ -219,7 +221,9 @@ class IVEGSSIM:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref):
+    def apply(*args):
+        src = args[0]
+        ref = args[2]
         src_img = src.get_raw()
         ref_img = ref.get_raw()
 

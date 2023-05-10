@@ -44,7 +44,8 @@ class NIMA:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(img):
+    def apply(*args):
+        img = args[2]
         img.resize(224, 224)
         img = img.get_raw()
 

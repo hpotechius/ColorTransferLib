@@ -8,13 +8,10 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 from skimage.metrics import structural_similarity as ssim
-from torchmetrics import StructuralSimilarityIndexMeasure
 import cv2
 import math
 import numpy as np
 from scipy import signal
-import sys
-sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
 import time
 #import pysaliency
@@ -42,7 +39,9 @@ class SSIM:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref):
+    def apply(*args):
+        src = args[0]
+        ref = args[2]
         mssim = ssim(src.get_raw(), ref.get_raw(), channel_axis=2, data_range=1.0, gaussian_weights=True, sigma=1.5, use_sample_covariance=False)
 
 
@@ -199,6 +198,9 @@ class SSIM:
         exit()
         return round(mssim, 4)
 
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def gaussian_kernel(sigma):
         # Größe des Filters
@@ -206,6 +208,10 @@ class SSIM:
         x, y = np.meshgrid(np.arange(-size / 2 + 0.5, size / 2 + 0.5), np.arange(-size / 2 + 0.5, size / 2 + 0.5))
         kernel = np.exp(-(x ** 2 + y ** 2) / (2 * sigma ** 2))
         return kernel / np.sum(kernel)
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def ssimGPT(img1, img2, k1=0.01, k2=0.03, win_size=11, L=1.0, sigma=1.5):
         # Stufenweite des Histogramms
@@ -237,6 +243,7 @@ class SSIM:
 
         # Durchschnittlicher SSIM-Wert
         return np.mean(ssim_map)
+    
 # ------------------------------------------------------------------------------------------------------------------
 #
 # ------------------------------------------------------------------------------------------------------------------ 

@@ -50,7 +50,8 @@ class BRISQUE:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(out):
+    def apply(*args):
+        out = args[2]
         img = out.get_raw()
 
         img_ten = torch.from_numpy(img)

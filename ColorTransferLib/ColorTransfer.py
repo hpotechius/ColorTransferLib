@@ -8,20 +8,19 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 import importlib
-from copy import deepcopy
 import sys
-
 import json
 import os
 
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
-
 from ColorTransferLib.Utils.Helper import get_methods, get_metrics
 
 available_methods = get_methods()
 available_metrics = get_metrics()
 for m in available_methods:
     exec(m + " = getattr(importlib.import_module('ColorTransferLib.Algorithms."+m+"."+m+"'), '"+m+"')")
+for m in available_metrics:
+    exec(m + " = getattr(importlib.import_module('ColorTransferLib.Evaluation."+m+"."+m+"'), '"+m+"')")
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -49,11 +48,9 @@ class ColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     def __init__(self, src, ref, approach):
         self.__src = src
-        #self.__src_type = src.get_type()
         self.__ref = ref
-        #self.__ref_type = ref.get_type()
 
-        self.__out = None#deepcopy(src)
+        self.__out = None
         self.__approach = approach
 
         with open(os.path.dirname(os.path.abspath(__file__)) + "/Options/" + approach + ".json", 'r') as f:
@@ -111,3 +108,31 @@ class ColorTransfer:
     @staticmethod
     def get_available_metrics():
         return available_metrics
+
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+# Proxy class for all color transfer evlauation metric within this project. This class allows the call of the algorithms with
+# different kind of input data without preprocessing.
+#
+#
+# The following approaches are currently supported:
+# global - 2001 - Color Transfer between Images
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+class ColorTransferEvaluation():
+    # ------------------------------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
+    # CONSTRUCTOR
+    # ------------------------------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
+    def __init__(self, src, ref, out):
+        self.__src = src
+        self.__ref = ref
+        self.__out = out
+
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    def apply(self, approach):
+        self.__out = globals()[approach].apply(self.__src, self.__ref, self.__out)
+        return self.__out
