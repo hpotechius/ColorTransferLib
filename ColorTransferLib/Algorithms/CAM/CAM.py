@@ -47,6 +47,9 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 #   Identifier: CAM
 #   Link: https://doi.org/10.48550/arXiv.2106.13920
 #   Source: https://github.com/mahmoudnafifi/color-aware-style-transfer
+#
+# Implementation Details:
+#   in ComputeHistogram add small value to prevent division by zero when using images with small color depth
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class CAM:

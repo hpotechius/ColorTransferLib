@@ -173,7 +173,7 @@ class ColorClustering():
     def get_transfer_direction(CV_src, CV_ref, color_cats_src, color_cats_ref):
         predefined_pairs = [
             #("White", "White"), ("Grey","Grey"), ("Black","Black"), ("Purple", "Pink"), ("Green", "Green"), ("Blue", "Blue")
-            #("Green", "Green"), ("Brown","Brown"), ("Red","Red"), ("Black","Black"), ("Grey","Orange"), ("Yellow","Yellow")
+            ("Green", "Green"), ("Brown","Brown"), ("Red","Red"), ("Black","Black"), ("Grey","Orange"), ("Yellow","Yellow")
             #("Grey", "Red")
         ]
 

@@ -10,19 +10,40 @@ Please see the LICENSE file that should have been included as part of this packa
 import cv2
 import math
 import numpy as np
-import sys
-sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
 import phasepack.phasecong as PC
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# Structural similarity index measure (SSIM)
-# Measuring the perceived quality of an image regarding an original (uncompressed and distortion-free) image.
+# Based on the paper:
+#   Title: FSIM: A Feature Similarity Index for Image Quality Assessment
+#   Author: Lin Zhang, Lei Zhang, Xuanqin Mou, David Zhang
+#   Published in: IEEE Transactions on Image Processing 
+#   Year of Publication: 2011
 #
-# Source: Image quality assessment: from error visibility to structural similarity
+# Abstract:
+#   Image quality assessment (IQA) aims to use computational models to measure the image quality consistently with 
+#   subjective evaluations. The well-known structural similarity index brings IQA from pixel- to structure-based stage. 
+#   In this paper, a novel feature similarity (FSIM) index for full reference IQA is proposed based on the fact that 
+#   human visual system (HVS) understands an image mainly according to its low-level features. Specifically, the phase 
+#   congruency (PC), which is a dimensionless measure of the significance of a local structure, is used as the primary 
+#   feature in FSIM. Considering that PC is contrast invariant while the contrast information does affect HVS' 
+#   perception of image quality, the image gradient magnitude (GM) is employed as the secondary feature in FSIM. PC and 
+#   GM play complementary roles in characterizing the image local quality. After obtaining the local quality map, we 
+#   use PC again as a weighting function to derive a single quality score. Extensive experiments performed on six 
+#   benchmark IQA databases demonstrate that FSIM can achieve much higher consistency with the subjective evaluations 
+#   than state-of-the-art IQA metrics.
+
+# Info:
+#   Name: Feature Similarity Index
+#   Shortname: FSIM
+#   Identifier: FSIM
+#   Link: https://doi.org/10.1109/TIP.2011.2109730
+#   Range: [0, 1]
 #
-# Range [-1, 1]
+# Implementation Details:
+#   For calculating the phase congruency, the 'phasepack'-library from https://github.com/alimuldal/phasepack was used, 
+#   which uses a butterworth filter instead of a gaussian.
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class FSIM:

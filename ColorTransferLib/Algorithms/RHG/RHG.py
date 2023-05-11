@@ -43,6 +43,9 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 #   Identifier: RHG
 #   Link: https://doi.org/10.1109/CVPR46437.2021.00785
 #   Sources: https://github.com/mahmoudnafifi/HistoGAN
+#
+# Implementation Details:
+#   model: Universal rehistoGAN v0, internal down and upsampling
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class RHG:

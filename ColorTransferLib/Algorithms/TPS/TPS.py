@@ -51,6 +51,12 @@ from ColorTransferLib.ImageProcessing.Image import Image as Img
 #   Identifier: TPS
 #   Link: https://doi.org/10.1016/j.cviu.2019.02.002
 #   Source: https://github.com/groganma/gmm-colour-transfer
+#
+# Implementation Details:
+#   Usage of Octave to run the Matlab-Scripts
+#   Clustering is done using KMeans because MVQ does not work in Octave
+#   Internal image resizing (mg applyK-Means.m) to 300x350px for clustering
+#   Remove largescale and TolCon option in gmmregrbfl2.m because unrecognized
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class TPS:

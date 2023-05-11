@@ -15,12 +15,24 @@ from ColorTransferLib.ImageProcessing.Image import Image
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# Peak Signal-to-Noise Ratio (PSNR)
-# ...
+# Based on the paper:
+#   Title: -
+#   Author: -
+#   Published in: -
+#   Year of Publication: -
 #
-# Source: ...
+# Abstract:
+#   -
+
+# Info:
+#   Name: Peak Signal-to-Noise Ratio
+#   Shortname: PSNR
+#   Identifier: PSNR
+#   Link: -
+#   Range: [0, inf] with higher values indicates better quality
 #
-# Range: []
+# Implementation Details:
+#   if source and output are identical, the PSNR will be not considered for the evaluation
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class PSNR:

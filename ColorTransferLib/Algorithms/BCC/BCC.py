@@ -45,6 +45,9 @@ from .FaissKNeighbors import FaissKNeighbors
 #
 # Misc:
 #   RayCasting: http://www.open3d.org/docs/latest/tutorial/geometry/ray_casting.html
+#
+# Implementation Details:
+#   The number of colors per category has to be at least 4 with unique position in order to generate a convex hull.
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class BCC:

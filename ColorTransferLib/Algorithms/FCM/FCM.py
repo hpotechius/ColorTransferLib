@@ -182,7 +182,18 @@ class FCM:
         # calculates also centers for each category
         # --------------------------------------------------------------------------------------------------------------
         colors, labels, color_cats_db = ColorClustering.get_colormapping_dataset("Models/FCM/colormapping.csv")
-
+        # VISUALIZATION 00
+        # color database
+        """
+        #color_cats_ref = ColorSpace.CAT_cartesian_to_polar(color_cats_db)
+        color_cats_ref = ColorSpace.CAT_HSV2cartRGB(color_cats_db)
+        for c in FCM.color_terms:
+            colorv = FCM.color_samples[c]
+            if color_cats_ref[c].shape[0] != 0:
+                rep = np.tile(colorv, (color_cats_ref[c].shape[0],1))
+                Export.write_colors_as_PC(color_cats_ref[c], rep,"/home/potechius/Downloads/CS/RGB/db_" + c + ".ply")
+        exit()
+        """
         # --------------------------------------------------------------------------------------------------------------
         # Apply Fuzzy KNN
         # color_cats_src = {"Red": np.array([...]), "Yellow": np.array([...])} 
@@ -213,14 +224,7 @@ class FCM:
         ref.write("/home/potechius/Downloads/FCM_Test/ref_clustering.png")
         #exit()
         """
-        """
-        color_cats_ref = ColorSpace.CAT_cartesian_to_polar(color_cats_db)
-        for c in FCCT.color_terms:
-            colorv = FCCT.color_samples[c]
-            if color_cats_ref[c].shape[0] != 0:
-                rep = np.tile(colorv, (color_cats_ref[c].shape[0],1))
-                Export.write_colors_as_PC(color_cats_ref[c], rep,"/home/potechius/Downloads/FCCT_Tests/db_" + c + ".ply")
-        """
+
         # VISUALIZATION 01
         # Point Clouds with color coding
         """

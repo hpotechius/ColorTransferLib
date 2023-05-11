@@ -20,15 +20,37 @@ from ColorTransferLib.ImageProcessing.Image import Image
 from .predict import predict
 from .utils.utils import calc_mean_score
 from .handlers.model_builder import Nima
-
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# ... (NIMA)
-# 
+# Based on the paper:
+#   Title: NIMA: Neural Image Assessment
+#   Author: Hossein Talebi, Peyman Milanfar
+#   Published in: IEEE Transactions on Image Processing
+#   Year of Publication: 2018
 #
-# Source: https://github.com/idealo/image-quality-assessment
+# Abstract:
+#   Automatically learned quality assessment for images has recently become a hot topic due to its usefulness in a wide 
+#   variety of applications, such as evaluating image capture pipelines, storage techniques, and sharing media. Despite 
+#   the subjective nature of this problem, most existing methods only predict the mean opinion score provided by data 
+#   sets, such as AVA and TID2013. Our approach differs from others in that we predict the distribution of human opinion 
+#   scores using a convolutional neural network. Our architecture also has the advantage of being significantly simpler 
+#   than other methods with comparable performance. Our proposed approach relies on the success (and retraining) of 
+#   proven, state-of-the-art deep object recognition networks. Our resulting network can be used to not only score 
+#   images reliably and with high correlation to human perception, but also to assist with adaptation and optimization 
+#   of photo editing/enhancement algorithms in a photographic pipeline. All this is done without need for a “golden” 
+#   reference image, consequently allowing for single-image, semantic- and perceptually-aware, no-reference quality 
+#   assessment.
 #
-# Range [1, 10] Best: 10
+# Info:
+#   Name: Neural Image Assessment
+#   Shortname: NIMA
+#   Identifier: NIMA
+#   Link: https://doi.org/10.1109/TIP.2018.2831899
+#   Source: https://github.com/idealo/image-quality-assessment
+#   Range: [0, 10] with 10 = best quality
+#
+# Implementation Details:
+#   Usage of MobileNet
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class NIMA:

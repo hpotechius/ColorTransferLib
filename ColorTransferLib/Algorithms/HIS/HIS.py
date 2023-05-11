@@ -49,6 +49,9 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 #   Identifier: HIS
 #   Link: https://doi.org/10.1007/s00371-020-01921-6
 #   Sources: https://github.com/codeslake/Color_Transfer_Histogram_Analogy
+#
+# Implementation Details:
+#   Restriction of max 700x700px was removed
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class HIS:

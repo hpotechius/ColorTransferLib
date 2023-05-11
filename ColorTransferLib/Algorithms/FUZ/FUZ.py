@@ -41,6 +41,12 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 #   Identifier: FUZ
 #   Link: https://doi.org/10.1109/FSKD.2010.5569560
 #
+# Implementation Details:
+#   Number of Clusters: 3
+#   Fuzzier: 2.0
+#   Max Iterations: 100
+#   Error: 1e-04
+#
 # TODO: Fix lab color transfer
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------

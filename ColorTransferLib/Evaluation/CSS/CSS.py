@@ -19,15 +19,32 @@ from ColorTransferLib.ImageProcessing.Image import Image
 import time
 #import pysaliency
 from multiprocessing import Process, Pool, Manager, Semaphore
-
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# Colorfulness Structure Similarity (CSS)
-# 
+# Based on the paper:
+#   Title: Selective color transfer with multi-source images
+#   Author: Yao Xiang, Beiji Zou, Hong Li
+#   Published in: Pattern Recognition Letters
+#   Year of Publication: 2009
 #
-# Source: Selective color transfer with multi-source images
+# Abstract:
+#   A novel method is proposed to transfer selective colors from a set of source images to a target image. An improved 
+#   EM method is presented to model regional color distribution of the target image by Gaussian Mixture Model (GMM), 
+#   then, trained by this model, appropriate reference colors are automatically selected from the given source images 
+#   to color each target region. The generated compelling results prove that our proposed method is applicable to 
+#   colorize grayscale images and color transfer between chromatic images. A new objective metric considering 
+#   colorfulness and structural similarity is also proposed to evaluate the quality of the transferred image, which 
+#   verifies good performance of our method.
 #
-# Range [..]
+# Info:
+#   Name: Colorfulness Structure Similarity
+#   Shortname: CSS
+#   Identifier: CSS
+#   Link: https://doi.org/10.1016/j.patrec.2009.01.004
+#   Range: [0, 1] with 1 = best quality
+#
+# Implementation Details:
+#   we stick to the original kernel size of 11x11 for the GSSIM
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class CSS:

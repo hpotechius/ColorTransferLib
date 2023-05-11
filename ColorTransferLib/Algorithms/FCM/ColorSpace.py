@@ -134,4 +134,14 @@ class ColorSpace():
         rgb = cv2.cvtColor(np.expand_dims(hsv_polar, axis=1), cv2.COLOR_HSV2RGB_FULL)
 
         return rgb
-    
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def CAT_HSV2cartRGB(hsv_colors):
+        hsv_colors_copy = copy.deepcopy(hsv_colors)
+        for c in ColorSpace.color_terms:
+            if hsv_colors_copy[c].shape[0] == 0:
+                continue
+            hsv_colors_copy[c] = ColorSpace.HSV2cartRGB(hsv_colors_copy[c]).squeeze() * 255
+        return hsv_colors_copy

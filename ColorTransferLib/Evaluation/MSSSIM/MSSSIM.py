@@ -20,12 +20,29 @@ from torchmetrics import MultiScaleStructuralSimilarityIndexMeasure
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# Structural similarity index measure (SSIM)
-# Measuring the perceived quality of an image regarding an original (uncompressed and distortion-free) image.
+# Based on the paper:
+#   Title: Multi-scale Structural Similarity for Image Quality Assessment
+#   Author: Zhou Wang, Eero P. Simoncelli, Alan C. Bovik
+#   Published in: IEEE Asilomar Conference on Signals, Systems and Computers
+#   Year of Publication: 2003
 #
-# Source: Image quality assessment: from error visibility to structural similarity
+# Abstract:
+#   The structural similarity image quality assessment approach is based on the assumption that the human visual system 
+#   is highly adapted for extracting structural information from the scene, and therefore a measure of structural 
+#   similarity can provide a good approximation to perceived image quality. This paper proposes a novel multi-scale 
+#   structural similarity method, which supplies more flexibility than single-scale methods in incorporating the 
+#   variations of image resolution and viewing condition. Experimental comparisons demonstrate the effectiveness of the 
+#   proposed method.
 #
-# Range [-1, 1]
+# Info:
+#   Name: Multi-scale Structural Similarity
+#   Shotname: MS-SSIM
+#   Identifier: MSSSIM
+#   Link: https://doi.org/10.1109/ACSSC.2003.1292216
+#   Range: [0, 1]
+#
+# Implementation Details:
+#   implementation from torchmetrics
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class MSSSIM:

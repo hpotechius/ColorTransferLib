@@ -49,6 +49,9 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 #
 # Misc:
 #   Note: the neural_style.py is adapted to support TensorFLow 2
+#
+# Implementation Details:
+#   optimizer = ADAM, mbecause L-BFGS not working on TF2
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class NST:

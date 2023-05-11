@@ -19,15 +19,35 @@ from ColorTransferLib.ImageProcessing.Image import Image
 import time
 #import pysaliency
 from multiprocessing import Process, Pool, Manager, Semaphore
-
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# Color Transfer Quality Measure (CTQM)
-# ...
-
-# Source: Novel multi-color transfer algorithms and quality measure
+# Based on the paper:
+#   Title: Novel multi-color transfer algorithms and quality measure
+#   Author: Karen Panetta, Long Bao, Sos Agaian
+#   Published in: IEEE Transactions on Consumer Electronics
+#   Year of Publication: 2016
 #
-# Range [...]
+# Abstract:
+#   In this paper, two new image multi-color transfer algorithms for still images and image sequences are proposed. 
+#   These methods can be used to capture the artistic ambience or "mood" of the source image and transfer that same 
+#   color ambience to the target image. The performance and effectiveness of these new algorithms are demonstrated 
+#   through simulations and comparisons to other state of the art methods, including Alla's, Reinhard's and Pitie's 
+#   methods. These algorithms are straight-forward, automatic, and suitable for various practical recoloring 
+#   applications, including coloring, color correction, animation and color restoration for imaging tools and consumer 
+#   products. This work is also useful for fast implementation of special effects for the entertainment industry and 
+#   reduces manual labor costs for these types of tasks. Another contribution of this paper is the introduction of a 
+#   new color transfer quality measure. The new measure is highly consistent with human perception, even compared to 
+#   other current color transfer quality measures such as Xiao's measure and Xiang's measure.
+#
+# Info:
+#   Name: Color Transfer Quality Measure
+#   Shortname: CTQM
+#   Identifier: CTQM
+#   Link: https://doi.org/10.1109/TCE.2016.7613196
+#   Range: [0, ??]
+#
+# Implementation Details:
+#   nan values can appear -> are ignored for evaluation
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class CTQM:

@@ -10,16 +10,31 @@ Please see the LICENSE file that should have been included as part of this packa
 import cv2
 import math
 import numpy as np
-import sys
-sys.path.insert(0, '/home/potechius/Projects/ColorTransferLib/')
-from ColorTransferLib.ImageProcessing.Image import Image
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# HistogramIntersection (HI)
-# ...
+# Based on the paper:
+#   Title: -
+#   Author: -
+#   Published in: - 
+#   Year of Publication: -
 #
-# Source: https://docs.opencv.org/3.4/d8/dc8/tutorial_histogram_comparison.html
+# Abstract:
+#   -
+
+# Info:
+#   Name: Histogram Intersection
+#   Shortname: HI
+#   Identifier: HI
+#   Link: -
+#   Range: [0, 1] with 1 = perfect similarity
+#
+# Misc:
+#   Formula from https://docs.opencv.org/3.4/d8/dc8/tutorial_histogram_comparison.html
+#
+# Implementation Details:
+#   usage of $10x10x10$ bins
+#   in RGB color space
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class HI:
