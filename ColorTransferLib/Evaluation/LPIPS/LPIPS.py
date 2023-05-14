@@ -93,7 +93,7 @@ class LPIPS:
 
         sys.stdout = old_stdout # reset old stdout
         
-        return float(lp)
+        return round(float(lp), 4)
 
 # ------------------------------------------------------------------------------------------------------------------
 #

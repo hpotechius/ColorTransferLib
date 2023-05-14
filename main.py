@@ -213,20 +213,23 @@ def createEvaluationFile(dataset_path, out_file, num_tests):
 # ------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     # NOTE Temporary
-    # src = Image(file_path="/home/potechius/Downloads/dithering_test/512_interior-02_dithering-16.png")
-    # ref = Image(file_path="/home/potechius/Downloads/dithering_test/512_abstract-07.png")
-    # out = Image(file_path="/home/potechius/Downloads/dithering_test/result_FCM_gauss.png")
+    # src = Image(file_path="/home/potechius/Downloads/TEST2/source.png")
+    # ref = Image(file_path="/home/potechius/Downloads/TEST2/reference.png")
+    # out = Image(file_path="/home/potechius/Downloads/TEST2/result_denoising_KNN.png")
 
     # cte = ColorTransferEvaluation(src, ref, out)
-    # eva_out = cte.apply("HI")
-    # print("HI: " + str(eva_out))
+    # eva_out = cte.apply("IVEGSSIM")
+    # print("SSIM: " + str(eva_out))
     # exit()
+
     #img_orig = cv2.imread("/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/512_interior-02.png")
     #img_small = cv2.imread("/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/interior/512_interior-02_dithering-256.png")
 
-    src_path = "/home/potechius/Downloads/FCM_FINAL/source.png"
     #out_path = "/home/potechius/Downloads/drive-download-20230511T071650Z-001/512_interior-02_dithering-16_gaussian.png"
-    ref_path = "/home/potechius/Downloads/FCM_FINAL/reference.png"
+    src_path = "/home/potechius/Downloads/TEST2/source.png"
+    ref_path = "/home/potechius/Downloads/TEST2/reference.png"
+    #src_path = "/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/closeup/512_closeup-01.png"
+    #ref_path = "/media/potechius/Active_Disk/Datasets/ACM-MM-Evaluation-Dataset/nature/512_nature-06.png"
     # appr = ["GLO","FUZ","TPS","PDF","MKL","HIS","NST","CAM","DPT","RHG","BCC","FCM"]
     # for app in appr:
     #img = cv2.imread("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+app+"/512_abstract-02__to__512_interior-07.png")
@@ -236,7 +239,13 @@ if __name__ == '__main__':
     if status_code == -1:
         print("Color Transfer Failed")
     else:
-        cv2.imwrite("/home/potechius/Downloads/FCM_FINAL/result_X.png", cv2.cvtColor(out_obj.get_raw(), cv2.COLOR_BGR2RGB)*255)
+        src = Image(file_path=src_path)
+        ref = Image(file_path=ref_path)
+        cte = ColorTransferEvaluation(src, ref, out_obj)
+        eva_out = cte.apply("IVEGSSIM")
+        print("IVEGSSIM: " + str(eva_out))
+        #cv2.imwrite("/home/potechius/Downloads/TEST2/result_rotation_KNN.png", cv2.cvtColor(out_obj.get_raw(), cv2.COLOR_BGR2RGB)*255)
+        cv2.imwrite("/home/potechius/Downloads/XCV.png", cv2.cvtColor(out_obj.get_raw(), cv2.COLOR_BGR2RGB)*255)
 
     exit()
 

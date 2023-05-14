@@ -149,7 +149,7 @@ class FSIM:
         # 6. FSIM
         fsim_val = FSIM.fsim_idx(src_pc2d_y, ref_pc2d_y, SL_y, S_C)
 
-        return fsim_val
+        return round(fsim_val, 4)
 
     # ------------------------------------------------------------------------------------------------------------------
     #

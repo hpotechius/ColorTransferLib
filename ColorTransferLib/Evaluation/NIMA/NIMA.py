@@ -13,9 +13,8 @@ import os
 import numpy as np
 from numba import cuda 
 import json
+import copy
 import tensorflow as tf
-import sys
-sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
 from .predict import predict
 from .utils.utils import calc_mean_score
@@ -68,8 +67,9 @@ class NIMA:
     @staticmethod
     def apply(*args):
         img = args[2]
-        img.resize(224, 224)
-        img = img.get_raw()
+        imcopy = copy.deepcopy(img)
+        imcopy.resize(224, 224)
+        imcopy = imcopy.get_raw()
 
         img_format = "png"
         base_model_name = "MobileNet"
@@ -81,7 +81,7 @@ class NIMA:
         nima.nima_model.load_weights(weights_file)
 
         # get predictions
-        predictions = predict(nima.nima_model, img)
+        predictions = predict(nima.nima_model, imcopy)
         nim = calc_mean_score(predictions[0])
 
         tf.keras.backend.clear_session()

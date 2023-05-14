@@ -11,6 +11,7 @@ import importlib
 import sys
 import json
 import os
+import copy
 
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from ColorTransferLib.Utils.Helper import get_methods, get_metrics
@@ -102,12 +103,7 @@ class ColorTransfer:
             av_methods.append(av_m)
         return av_methods
 
-    # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def get_available_metrics():
-        return available_metrics
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -134,5 +130,14 @@ class ColorTransferEvaluation():
     #
     # ------------------------------------------------------------------------------------------------------------------
     def apply(self, approach):
-        self.__out = globals()[approach].apply(self.__src, self.__ref, self.__out)
-        return self.__out
+        ss = copy.deepcopy(self.__src)
+        rr = copy.deepcopy(self.__ref)
+        oo = copy.deepcopy(self.__out)
+        self.__outeval = globals()[approach].apply(ss, rr, oo)
+        return self.__outeval
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def get_available_metrics():
+        return available_metrics

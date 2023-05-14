@@ -164,6 +164,11 @@ class FCM:
         rgb_out_orig = deepcopy(src.get_colors()) 
         out_img = deepcopy(src)
 
+
+        # NOTE
+        #Export.write_colors_as_PC(hsv_cart_src, src_cpy.get_colors().squeeze(), "/home/potechius/Downloads/TEST2/source.ply")
+        #exit()
+
         # rgb_src = FCCT.HSV2cartRGB(hsv_cart_src)
         # output_colors = np.clip(rgb_src, 0, 1)
         # out_img.set_colors(output_colors)
@@ -492,12 +497,13 @@ class FCM:
                                               color=colorv)
         """
 
-        color_cats_src = Transform.transform_weighted_rotation(color_cats_src, color_cats_src_mem, rotation_angles)
-        color_cats_src = Transform.transform_weighted_translation(color_cats_src, color_cats_src_mem, translation_sat, 1)
+        #color_cats_src = Transform.transform_weighted_rotation(color_cats_src, color_cats_src_mem, rotation_angles)
+        #color_cats_src = Transform.transform_weighted_translation(color_cats_src, color_cats_src_mem, translation_sat, 1)
+        # OLD
         #color_cats_src = Transform.transform_weighted_translation(color_cats_src, color_cats_src_mem, translation_val, 2)
 
-        # color_cats_src = Transform.transform_rotation(color_cats_src, color_cats_src_mem, rotation_angles)
-        # color_cats_src = Transform.transform_translation(color_cats_src, color_cats_src_mem, translation_sat, 1)
+        color_cats_src = Transform.transform_rotation(color_cats_src, color_cats_src_mem, rotation_angles)
+        #color_cats_src = Transform.transform_translation(color_cats_src, color_cats_src_mem, translation_sat, 1)
         # color_cats_src = Transform.transform_translation(color_cats_src, color_cats_src_mem, translation_val, 2)
 
         CH_src = ColorClustering.calc_convex_hulls(color_cats_src)
@@ -506,18 +512,18 @@ class FCM:
         CV_ref = ColorClustering.calc_bary_center_volume(CH_ref)
         scaling_matrix = Transform.get_scaling_matrix(class_pairs, color_cats_src, color_cats_ref, CV_src, CV_ref)  
         #color_cats_src = Transform.transform(color_cats_src, scaling_matrix, cartesian=False)  
-        color_cats_src = Transform.transform_weighted(color_cats_src, color_cats_src_mem, scaling_matrix, cartesian=False)
+        #color_cats_src = Transform.transform_weighted(color_cats_src, color_cats_src_mem, scaling_matrix, cartesian=False)
 
         # VISUALIZATION 04
         """
         CH_src = ColorClustering.calc_convex_hulls(color_cats_src)
-        for c in FCCT.color_terms:
-            colorv = FCCT.color_samples[c]
+        for c in FCM.color_terms:
+            colorv = FCM.color_samples[c]
             if CH_src[c][1]:
                 Export.write_convex_hull_mesh(mesh=CH_src[c][0],
-                                              path="/home/potechius/Downloads/FCM_Test/04_src_CH_scaled/04_src_CH_scaled_"+c+".ply", 
+                                              path="/home/potechius/Downloads/TEST2/ROT2/ROT_"+c+".ply", 
                                               color=colorv)
-        #exit()
+        exit()
         """
 
         # NOTE: weighted transformation in polar coordinates not possible because the FKNN was done in cartesian coordinates
@@ -631,8 +637,8 @@ class FCM:
         # --------------------------------------------------------------------------------------------------------------
         # Histogram Matching
         # --------------------------------------------------------------------------------------------------------------    
-        hsv_cart_src[:,0] = np.clip(hsv_cart_src[:,0], 0, 255)    
-        hsv_cart_src[:,1] = np.clip(hsv_cart_src[:,1], 0, 255)    
+        hsv_cart_src[:,0] = np.clip(hsv_cart_src[:,0], -255, 255)    
+        hsv_cart_src[:,1] = np.clip(hsv_cart_src[:,1], -255, 255)    
         hsv_cart_src[:,2] = np.clip(hsv_cart_src[:,2], 0, 255)    
         # print(np.min(hsv_cart_src[:,0]))
         # print(np.max(hsv_cart_src[:,0]))
@@ -648,7 +654,9 @@ class FCM:
 
         rgb_out = ColorSpace.HSV2cartRGB(hsv_cart_src)
 
+        # OLD
         #rgb_out = np.expand_dims(HistogramMatching.histogram_matching(rgb_out[:,0,:]*255, ref.get_colors()[:,0,:]*255, 10), 1) / 255
+        # NEW
         rgb_out = np.expand_dims(HistogramMatching.histogram_matching2(rgb_out[:,0,:], ref.get_colors()[:,0,:], 10), 1)
         
         
@@ -661,10 +669,17 @@ class FCM:
         # --------------------------------------------------------------------------------------------------------------
         out_res = rgb_out
         out_res = HistogramMatching.regrain(src_cpy, rgb_out, 100)
-        
+
+
         output_colors = np.clip(out_res, 0, 1)
         out_img.set_colors(output_colors)
 
+        # NOTE
+        """
+        #hsv_cart_src = ColorSpace.RGB2cartHSV(np.expand_dims(output_colors, 1))
+        hsv_cart_src = ColorSpace.RGB2cartHSV(output_colors)
+        Export.write_colors_as_PC(hsv_cart_src, rgb_out[:,0,:], "/home/potechius/Downloads/TEST2/result_rotation_KNN.ply")
+        """
 
         output = {
             "status_code": 0,

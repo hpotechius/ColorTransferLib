@@ -5,7 +5,6 @@ from . import MSE
 from . import HI
 from . import LPIPS
 from . import Corr
-from . import PerceptualMetric
 from . import BRISQUE
 from . import CF
 from . import NIMA
