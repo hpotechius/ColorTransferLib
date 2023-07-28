@@ -92,7 +92,8 @@ class GMM:
                         "Given the input of a source image and an example image, our method is able to generate "
                         "multiple color transfer results with increasing EM iterations. Extensive experiments show "
                         "that our approach generally outperforms other competitive color transfer methods, both "
-                        "visually and quantitatively."
+                        "visually and quantitatively.",
+            "types": ["Image", "Mesh", "PointCloud"]
         }
 
         return info

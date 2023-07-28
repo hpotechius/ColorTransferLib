@@ -90,7 +90,8 @@ class RHG:
                         "unsupervised approach trained to encourage the network to keep the original images content "
                         "while changing the colors based on the given target histogram. We show that this "
                         "histogram-based approach offers a better way to control GAN-generated and real images colors "
-                        "while producing more compelling results compared to existing alternative strategies."
+                        "while producing more compelling results compared to existing alternative strategies.",
+            "types": ["Image"]
         }
 
         return info

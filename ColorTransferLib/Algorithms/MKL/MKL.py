@@ -80,7 +80,8 @@ class MKL:
                         "the Monge-Kantorovitch theory of mass transportation. The proposed solution is optimal in the "
                         "sense that it minimises the amount of changes in the picture colours. It favourably compares "
                         "theoretically and experimentally with other techniques for various images and under various "
-                        "colour spaces."
+                        "colour spaces.",
+            "types": ["Image", "Mesh", "PointCloud"]
         }
 
         return info

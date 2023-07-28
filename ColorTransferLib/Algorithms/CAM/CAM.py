@@ -90,7 +90,8 @@ class CAM:
                         "method with several qualitative comparisons, including a user study conducted with 30 "
                         "participants. In comparison with prior work, our method is simple, easy to implement, and "
                         "achieves visually appealing results when targeting images that have multiple styles. Source "
-                        "code is available at this https URL."
+                        "code is available at this https URL.",
+            "types": ["Image"]
         }
 
         return info

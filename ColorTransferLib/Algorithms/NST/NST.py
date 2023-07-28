@@ -92,7 +92,8 @@ class NST:
                         "and style of arbitrary images, providing a neural algorithm for the creation of artistic "
                         "images. Moreover, in light of the striking similarities between performance-optimised "
                         "artificial neural networks and biological vision, our work offers a path forward to an "
-                        "algorithmic understanding of how humans create and perceive artistic imagery."
+                        "algorithmic understanding of how humans create and perceive artistic imagery.",
+            "types": ["Image"]
         }
 
         return info

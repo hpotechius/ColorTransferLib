@@ -103,7 +103,8 @@ class PDF:
                         "low computation costs. As an illustration this mapping is applied to color transfer between "
                         "two images of different contents. The paper also serves as a central focal point for "
                         "collecting together the research activity in this area and relating it to the important "
-                        "problem of automated color grading."
+                        "problem of automated color grading.",
+            "types": ["Image", "Mesh", "PointCloud"]
         }
 
         return info

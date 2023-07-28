@@ -99,7 +99,8 @@ class TPS:
                         "available to be taken into account and performs well despite potential occurrences of "
                         "correspondence outlier pairs. Our algorithm is shown to be fast, robust and it easily allows "
                         "for user interaction providing freedom for artists to fine tune the recoloured images and "
-                        "videos Grogan et al. (2017)."
+                        "videos Grogan et al. (2017).",
+            "types": ["Image", "Mesh"]
         }
 
         return info

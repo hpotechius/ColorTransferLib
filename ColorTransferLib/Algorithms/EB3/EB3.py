@@ -75,7 +75,8 @@ class EB3:
                         "based on colour distributions and account for the geometry of the point clouds to produce a "
                         "coherent result. The proposed methods rely on simple statistical analysis, are effective, and "
                         "succeed in transferring the colour style from one point cloud to another. The qualitative "
-                        "results of the colour transfers are evaluated and compared with existing methods."
+                        "results of the colour transfers are evaluated and compared with existing methods.",
+            "types": ["PointCloud"]
         }
 
         return info

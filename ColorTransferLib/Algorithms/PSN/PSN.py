@@ -58,8 +58,8 @@ import glob
 # ----------------------------------------------------------------------------------------------------------------------
 class PSN:
     compatibility = {
-        "src": ["Mesh"],
-        "ref": ["Mesh"]
+        "src": ["PointCloud"],
+        "ref": ["PointCloud"]
     }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
@@ -90,7 +90,8 @@ class PSN:
                         "style representation is invariant to the number or the order of points, the style can also be "
                         "an image in the case of stylizing the color property of a point cloud by merely treating the "
                         "image as a set of pixels.Experimental results and analysis demonstrate the capability of the "
-                        "proposed method for stylizing a point cloud either from another point cloud or an image."
+                        "proposed method for stylizing a point cloud either from another point cloud or an image.",
+            "types": ["PointCloud"]
         }
 
         return info
@@ -99,7 +100,7 @@ class PSN:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref, opt):       
+    def apply(src, ref, opt): 
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, PSN.compatibility)
         if output["status_code"] != 0:
@@ -246,7 +247,8 @@ class PSN:
                     
                     if not from_image and geotransfer:
                         transferred_geo = np.squeeze(sess.run(psnet.geo))
-                        src.set_vertex_positions(transferred_geo.reshape(src.get_num_vertices(), 1, 3))
+                        #src.set_vertex_positions(transferred_geo.reshape(src.get_num_vertices(), 1, 3))
+                        src.set_vertex_positions(transferred_geo.reshape(src.get_num_vertices(), 3))
                         #print(transferred_geo.shape)
                         #exit()
                     """

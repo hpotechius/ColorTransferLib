@@ -87,7 +87,8 @@ class DPT:
                         "be locally affine in colorspace, and to express this constraint as a custom fully "
                         "differentiable energy term. We show that this approach successfully suppresses distortion and "
                         "yields satisfying photorealistic style transfers in a broad variety of scenarios, including "
-                        "transfer of the time of day, weather, season, and artistic edits."
+                        "transfer of the time of day, weather, season, and artistic edits.",
+            "types": ["Image"]
         }
 
         return info

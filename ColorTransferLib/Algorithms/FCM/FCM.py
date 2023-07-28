@@ -120,7 +120,8 @@ class FCM:
                         "it allows to objectively evaluate and compare color transfer algorithms by providing a large "
                         "set of objective metrics. Finally, as part of ColorTransferLab, we propose a new color "
                         "transfer method, which integrates concepts of color categories, fuzzy classification, and "
-                        "histogram matching."
+                        "histogram matching.",
+            "types": ["Image", "Mesh", "PointCloud"]
         }
 
         return info

@@ -83,7 +83,8 @@ class FUZ:
                         "fuzzy clustering based color transfer method is proposed. The proposed method accomplishes "
                         "the transformation based on a set of corresponding fuzzy clustering algorithm-selected "
                         "regions in images along with membership degree factors. Results show the presented algorithm "
-                        "is highly automatically and more effective."
+                        "is highly automatically and more effective.",
+            "types": ["Image", "Mesh", "PointCloud"]
         }
 
         return info

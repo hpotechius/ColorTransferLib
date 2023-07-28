@@ -99,7 +99,8 @@ class HIS:
                         "images have similar contents with different compositions. Experimental results show that our "
                         "approach effectively transfers the reference colors to the source images in a variety of "
                         "settings. We also demonstrate a few applications of our approach, such as palette-based "
-                        "recolorization, color enhancement, and color editing."
+                        "recolorization, color enhancement, and color editing.",
+            "types": ["Image"]
         }
 
         return info

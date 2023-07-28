@@ -12,15 +12,15 @@ import time
 import numpy as np
 import os
 import math
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # 0: DEBUG, 1: INFO, 2: WARNING, 3: ERROR
+#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # 0: DEBUG, 1: INFO, 2: WARNING, 3: ERROR
 
 from ColorTransferLib.MeshProcessing.PLYLoader import PLYLoader
 from ColorTransferLib.MeshProcessing.Mesh import Mesh
+from ColorTransferLib.MeshProcessing.Mesh2 import Mesh2
 from ColorTransferLib.ImageProcessing.Image import Image
 from ColorTransferLib.ColorTransfer import ColorTransfer, ColorTransferEvaluation
 
 from ColorTransferLib.Utils.Math import get_random_3x3rotation_matrix
-from ColorTransferLib.Evaluation.PerceptualMetric.PerceptualMetric import PerceptualMetric
 import cv2
 import tensorflow_probability as tfp
 import tensorflow as tf
@@ -31,6 +31,7 @@ from copy import copy
 import gdown
 import zipfile36 as zipfile
 import random
+import requests
 
 # ------------------------------------------------------------------------------------------------------------------
 #
@@ -211,7 +212,30 @@ def createEvaluationFile(dataset_path, out_file, num_tests):
 #  ]
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
+
 if __name__ == '__main__':
+
+    # try:
+
+    # NOTE Temporary
+    src = Mesh2(file_path='/home/potechius/Projects/ColorTransferLab/server/data/PointClouds/athen_postprocessed.ply', datatype="PointCloud")
+    ref = Mesh2(file_path='/home/potechius/Projects/ColorTransferLab/server/data/PointClouds/Wappentier_blue.ply', datatype="PointCloud")
+    #src = Mesh2(file_path='/home/potechius/Projects/ColorTransferLab/server/data/Meshes/$mesh$GameBoy_medium/GameBoy_medium.obj', datatype="Mesh")
+    #ref = Image(file_path='/home/potechius/Projects/ColorTransferLab/server/data/Images/TheScream.jpg')
+    #print(src2.get_color_distribution().shape)
+    ct = ColorTransfer(src, ref, "PSN")
+    out = ct.apply()["object"]
+    out.write("/home/potechius/Downloads/l.ply")
+    exit()
+
+    src = Mesh2('/home/potechius/Projects/ColorTransferLab/server/data/PointClouds/lamp.ply', "PointCloud")
+    num_vertices = src.get_num_vertices()
+    # new_cols = np.full((num_vertices, 3), 0.5)
+    # src.set_colors(new_cols)
+    print(src.get_colors().shape)
+    # src.write("/home/potechius/Downloads/l.ply")
+
+    exit()
     # NOTE Temporary
     # src = Image(file_path="/home/potechius/Downloads/TEST2/source.png")
     # ref = Image(file_path="/home/potechius/Downloads/TEST2/reference.png")

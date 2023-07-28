@@ -65,7 +65,8 @@ class GLO:
             "year": 2001,
             "abstract": "We use a simple statistical analysis to impose one images color characteristics on another. "
                         "We can achieve color correction by choosing an appropriate source image and apply its "
-                        "characteristic to another image."
+                        "characteristic to another image.",
+            "types": ["Image", "Mesh", "PointCloud"]
         }
 
         return info
@@ -83,6 +84,7 @@ class GLO:
         # Preprocessing
         src_color = src.get_colors()
         ref_color = ref.get_colors()
+
         out_img = deepcopy(src)
 
         # [1] Copy source and reference to GPU and create output

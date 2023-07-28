@@ -51,6 +51,8 @@ class ColorTransfer:
         self.__src = src
         self.__ref = ref
 
+        # check the types of the objects
+
         self.__out = None
         self.__approach = approach
 
@@ -98,7 +100,8 @@ class ColorTransfer:
                 "options": options,
                 "abstract": getattr(sys.modules[__name__], met).get_info()["abstract"],
                 "title": getattr(sys.modules[__name__], met).get_info()["title"],
-                "year": getattr(sys.modules[__name__], met).get_info()["year"]
+                "year": getattr(sys.modules[__name__], met).get_info()["year"],
+                "types": getattr(sys.modules[__name__], met).get_info()["types"]
             }
             av_methods.append(av_m)
         return av_methods

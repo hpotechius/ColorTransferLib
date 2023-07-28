@@ -96,7 +96,8 @@ class BCC:
                         "deformation and brush texture. We focus on the effect of color element and devise a method "
                         "for transforming the color of an input photograph according to a reference painting. To do "
                         "this, we consider basic color category concepts in the color transformation process. By doing "
-                        "so, we achieve large but natural color transformations of an image."
+                        "so, we achieve large but natural color transformations of an image.",
+            "types": ["Image", "Mesh", "PointCloud"]
         }
 
         return info

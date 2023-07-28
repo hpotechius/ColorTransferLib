@@ -10,6 +10,7 @@ Please see the LICENSE file that should have been included as part of this packa
 import cv2
 import numpy as np
 from numba import njit
+import random
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -34,7 +35,7 @@ class Image:
             self.__img = cv2.imread(file_path)
             #self.__img = cv2.resize(self.__img, (self.__img.shape[1] //3, self.__img.shape[0] //3))
         elif file_path is None and array is not None:
-            self.__img = array
+            self.__img = array.astype(np.float32)
         else:
             raise ValueError("file_path or array has to be None")
 
@@ -46,6 +47,8 @@ class Image:
 
         if color == "RGB":
             self.__img = cv2.cvtColor(self.__img, cv2.COLOR_BGR2RGB).astype(np.float32)
+        elif color == "BGR":
+            self.__img = self.__img.astype(np.float32)
         elif color == "Grey":
             self.__img = cv2.cvtColor(self.__img, cv2.COLOR_BGR2RGB).astype(np.float32)
         else:
@@ -159,6 +162,16 @@ class Image:
         mean = np.mean(rgb_c, axis=0).astype(np.int)
         std = np.std(rgb_c, axis=0).astype(np.int)
         return histo, mean, std
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # returns 
+    # ------------------------------------------------------------------------------------------------------------------
+    def get_color_distribution(self):
+        color = self.get_colors()
+        color = color[np.random.randint(color.shape[0], size=5000), :]
+        rgb_c = (color * 255.0).astype(np.int).reshape(color.shape[0], color.shape[2])
+        rgb_c = np.unique(rgb_c, axis=0)
+        return rgb_c
 
     # ------------------------------------------------------------------------------------------------------------------
     # returns the 3D color histogram
