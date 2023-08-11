@@ -218,14 +218,22 @@ if __name__ == '__main__':
     # try:
 
     # NOTE Temporary
-    src = Mesh2(file_path='/home/potechius/Projects/ColorTransferLab/server/data/PointClouds/athen_postprocessed.ply', datatype="PointCloud")
-    ref = Mesh2(file_path='/home/potechius/Projects/ColorTransferLab/server/data/PointClouds/Wappentier_blue.ply', datatype="PointCloud")
+    #src = Mesh2(file_path='/home/potechius/Projects/ColorTransferLab/server/data/PointClouds/athen_postprocessed.ply', datatype="PointCloud")
+    #ref = Mesh2(file_path='/home/potechius/Projects/ColorTransferLab/server/data/PointClouds/Wappentier_blue.ply', datatype="PointCloud")
     #src = Mesh2(file_path='/home/potechius/Projects/ColorTransferLab/server/data/Meshes/$mesh$GameBoy_medium/GameBoy_medium.obj', datatype="Mesh")
-    #ref = Image(file_path='/home/potechius/Projects/ColorTransferLab/server/data/Images/TheScream.jpg')
+    #src = Image(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/256_abstract-08.png')
+    src = Image(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/Pillow_low/Pillow_low.png')
+    #src = Mesh2(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/Apple.ply', datatype="PointCloud")
+
+    #ref = Image(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/256_nature-06.png')
+    #ref = Image(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/stanford_bunny/stanford_bunny.png')
+    ref = Mesh2(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/Orange.ply', datatype="PointCloud")
+    #ref = Image(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/palette.png')
+
     #print(src2.get_color_distribution().shape)
-    ct = ColorTransfer(src, ref, "PSN")
+    ct = ColorTransfer(src, ref, "TPS")
     out = ct.apply()["object"]
-    out.write("/home/potechius/Downloads/l.ply")
+    out.write("/home/potechius/Downloads/Output/mesh-pc.png")
     exit()
 
     src = Mesh2('/home/potechius/Projects/ColorTransferLab/server/data/PointClouds/lamp.ply', "PointCloud")

@@ -201,6 +201,21 @@ class Mesh2:
             tex_channel = self.__texture_size[2]
             return self.__texture.reshape(tex_width * tex_height, 1, tex_channel)
             # return self.__texture.astype("float32").reshape(tex_width * tex_height, 1, tex_channel)  / 255.0
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # TEMPORARY because some color transfer algorithms need this
+    # ------------------------------------------------------------------------------------------------------------------
+    def get_raw(self):
+        if self.__type == "PointCloud":
+            return np.expand_dims(self.__vertex_colors, 1)
+        elif self.__type == "Mesh":
+            return np.resize(self.__texture,(256,256,3))
+    # ------------------------------------------------------------------------------------------------------------------
+    # TEMPORARY because some color transfer algorithms need this
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_raw(self, colors):
+        self.__pcd.colors = o3d.utility.Vector3dVector(np.squeeze(colors) / 255)
+
         
     # ------------------------------------------------------------------------------------------------------------------
     # Returns the normals of all vertices as numpy array with shape (len(vertices), 1, 3).
