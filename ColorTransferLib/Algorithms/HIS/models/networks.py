@@ -83,7 +83,11 @@ def get_norm_layer(norm_type='instance'):
 def IRN(input_nc, output_nc, ngf, which_model_netG, norm='none', use_dropout=False, init_type='normal', gpu_ids=[]): # Batch norm -> nonw
     IRN = None
 
-    IRN = HISTUnet3_Res(input_nc, output_nc, ngf, norm_layer=get_norm_layer(norm_type=norm), use_dropout=use_dropout).cuda()
+    if not torch.cuda.is_available():
+        IRN = HISTUnet3_Res(input_nc, output_nc, ngf, norm_layer=get_norm_layer(norm_type=norm), use_dropout=use_dropout).cpu()
+    else:
+        IRN = HISTUnet3_Res(input_nc, output_nc, ngf, norm_layer=get_norm_layer(norm_type=norm), use_dropout=use_dropout).cuda()
+    
     init_weights(IRN, init_type=init_type)
 
     return IRN
@@ -92,7 +96,10 @@ def IRN(input_nc, output_nc, ngf, which_model_netG, norm='none', use_dropout=Fal
 def HEN(input_nc, output_nc, ngf, which_model_netC, norm='batch', use_dropout=False, init_type='normal', gpu_ids=[]):
     HEN = None
 
-    HEN = ConditionNetwork2(input_nc, output_nc, ngf, norm_layer=get_norm_layer(norm_type=norm), use_dropout=use_dropout, gpu_ids=gpu_ids).cuda()
+    if not torch.cuda.is_available():
+        HEN = ConditionNetwork2(input_nc, output_nc, ngf, norm_layer=get_norm_layer(norm_type=norm), use_dropout=use_dropout, gpu_ids=gpu_ids).cpu()
+    else:
+        HEN = ConditionNetwork2(input_nc, output_nc, ngf, norm_layer=get_norm_layer(norm_type=norm), use_dropout=use_dropout, gpu_ids=gpu_ids).cuda()
     init_weights(HEN, init_type=init_type)
 
     return HEN

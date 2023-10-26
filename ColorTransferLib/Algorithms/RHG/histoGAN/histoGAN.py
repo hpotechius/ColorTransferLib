@@ -43,8 +43,9 @@ try:
 except:
   APEX_AVAILABLE = False
 
-assert torch.cuda.is_available(), ('You need to have an Nvidia GPU with CUDA '
-                                   'installed.')
+# TEMP REMOVED
+#assert torch.cuda.is_available(), ('You need to have an Nvidia GPU with CUDA '
+#                                   'installed.')
 
 num_cores = multiprocessing.cpu_count()
 

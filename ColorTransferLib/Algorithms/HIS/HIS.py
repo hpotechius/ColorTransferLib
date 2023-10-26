@@ -61,7 +61,7 @@ class HIS:
 
     compatibility = {
         "src": ["Image"],
-        "ref": ["Image"]
+        "ref": ["Image", "Mesh"]
     }
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -112,6 +112,12 @@ class HIS:
         start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, HIS.compatibility)
+
+        if output["status_code"] == -1:
+            return output
+        
+        if not torch.cuda.is_available():
+            opt.gpu_ids = [-1]
 
         # Preprocessing
         srcT = src.get_raw()

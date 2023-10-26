@@ -44,8 +44,8 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 class MKL:
     compatibility = {
-        "src": ["Image", "Mesh"],
-        "ref": ["Image", "Mesh"]
+        "src": ["Image", "Mesh", "PointCloud"],
+        "ref": ["Image", "Mesh", "PointCloud"]
     }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
@@ -94,11 +94,16 @@ class MKL:
         start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, MKL.compatibility)
+    
+        if output["status_code"] == -1:
+            return output
 
         # Preprocessing
         src_color = src.get_colors()
         ref_color = ref.get_colors()
         out_img = deepcopy(src)
+
+        print(src_color.shape)
 
         src_color_rgb = src_color.reshape(src_color.shape[0], 3)
         ref_color_rgb = ref_color.reshape(ref_color.shape[0], 3)

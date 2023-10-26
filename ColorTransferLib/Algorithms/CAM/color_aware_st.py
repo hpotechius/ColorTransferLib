@@ -928,6 +928,9 @@ def apply(src, ref, opt):
     Input images
     """
 
+    # rescale ref to same size of src
+    #ref = 
+
     STYLE_IMAGE = "data/images/2020_Lee_Example-18_Source.png"
     CONTENT_IMAGE = "data/images/2020_Lee_Example-18_Reference.png"
 

@@ -113,7 +113,7 @@
   },
   {
     "name": "iterations",
-    "default": 300,
+    "default": 100,
     "type": "int",
     "values": [],
     "tooltip": "No description yet!",
@@ -147,7 +147,7 @@
     "name": "device",
     "default": "cuda",
     "type": "string",
-    "values": [],
+    "values": ["cuda", "cpu"],
     "tooltip": "No description yet!",
     "changeable": true
   },

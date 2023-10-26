@@ -52,8 +52,8 @@ from .FaissKNeighbors import FaissKNeighbors
 # ----------------------------------------------------------------------------------------------------------------------
 class BCC:
     compatibility = {
-        "src": ["Image", "Mesh"],
-        "ref": ["Image", "Mesh"]
+        "src": ["Image", "Mesh", "PointCloud"],
+        "ref": ["Image", "Mesh", "PointCloud"]
     }
 
     color_samples = {
@@ -110,6 +110,9 @@ class BCC:
         start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, BCC.compatibility)
+
+        if output["status_code"] == -1:
+            return output
 
         # Preprocessing
         src_color = src.get_colors()

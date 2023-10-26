@@ -19,6 +19,9 @@ from ColorTransferLib.ImageProcessing.Image import Image as Img
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from ColorTransferLib.Utils.Helper import check_compatibility
 
+from numba import cuda
+from copy import deepcopy
+
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Based on the paper:
@@ -54,7 +57,7 @@ class RHG:
     year = 2021
     compatibility = {
         "src": ["Image"],
-        "ref": ["Image"]
+        "ref": ["Image", "Mesh"]
     }
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -105,14 +108,21 @@ class RHG:
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, RHG.compatibility)
 
+        print(output)
         if output["status_code"] == -1:
             return output
+        print("FUCK")
 
         # START PROCESSING
         img_src = src.get_raw()
         img_ref = ref.get_raw()
 
-        torch.cuda.set_device(opt.gpu)
+        src_orig_wh = img_src.shape[:2]
+
+        out_img = deepcopy(src)
+
+        if torch.cuda.is_available():
+            torch.cuda.set_device(opt.gpu)
 
         if opt.generate and opt.face_extraction:
             if opt.input_image is None:
@@ -184,15 +194,22 @@ class RHG:
         out_temp = np.swapaxes(out_temp,0,1)
         out_temp = np.swapaxes(out_temp,1,2)
 
-        img_out = Img(array=cv2.cvtColor(out_temp, cv2.COLOR_BGR2RGB), normalized=True)
 
+        # resize output to src size
+        out_temp = cv2.resize(out_temp, src_orig_wh, interpolation = cv2.INTER_AREA)
+
+        #img_out = Img(array=cv2.cvtColor(out_temp, cv2.COLOR_BGR2RGB), normalized=True)
+        #img_out.resize(src.get_width(), src.get_height())
+
+        out_img.set_colors(out_temp)
 
         output = {
             "status_code": 0,
             "response": "",
-            "object": img_out,
+            "object": out_img,
             "process_time": time.time() - start_time
         }
+   
         
         return output
 

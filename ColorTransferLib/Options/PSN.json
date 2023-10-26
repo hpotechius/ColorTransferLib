@@ -1,7 +1,7 @@
 [
   {
     "name": "iterations",
-    "default": 500,
+    "default": 100,
     "type": "int",
     "values": [],
     "tooltip": "Number of iterations for style transfer.",

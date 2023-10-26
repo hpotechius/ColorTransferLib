@@ -27,7 +27,8 @@ def check_compatibility(src, ref, compatibility_list):
 # ----------------------------------------------------------------------------------------------------------------------
 def get_methods():
     available_methods = os.listdir(os.path.dirname(os.path.abspath(__file__)) + "/../Algorithms")
-    toremove = ["__init__.pyc", "__init__.py", "__pycache__"]
+    #toremove = ["__init__.pyc", "__init__.py", "__pycache__", "FCM", "GMM","RGH","DPT","PSN","BCC","NST","TPS","EB3","PDF","GLO","HIS","FUZ","CAM"]
+    toremove = ["__init__.pyc", "__init__.py", "__pycache__", "FCM", "GMM"]
     available_methods = [m for m in available_methods if m not in toremove]
     return available_methods
 

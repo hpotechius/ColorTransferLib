@@ -52,8 +52,8 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 # ----------------------------------------------------------------------------------------------------------------------
 class FUZ:
     compatibility = {
-        "src": ["Image", "Mesh"],
-        "ref": ["Image", "Mesh"]
+        "src": ["Image", "Mesh", "PointCloud"],
+        "ref": ["Image", "Mesh", "PointCloud"]
     }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
@@ -96,6 +96,11 @@ class FUZ:
     def apply(src, ref, opt):
         start_time = time.time()
 
+        output = check_compatibility(src, ref, FUZ.compatibility)
+
+        if output["status_code"] == -1:
+            return output
+
         src_color = src.get_colors()
         ref_color = ref.get_colors()
         out_img = deepcopy(src)
@@ -110,8 +115,8 @@ class FUZ:
         term_error = opt.error
 
         # [2] Convert RGB to lab color space
-        src_color = ColorSpaces.rgb_to_lab_host(src_color)
-        ref_color = ColorSpaces.rgb_to_lab_host(ref_color)
+        src_color = ColorSpaces.rgb_to_lab_cpu(src_color)
+        ref_color = ColorSpaces.rgb_to_lab_cpu(ref_color)
 
 
         # [3] reshaping because input is of size (num_pixels, 1, 3)
@@ -184,7 +189,7 @@ class FUZ:
 
         # [8] Convert to RGB
         lab_new = lab_new.reshape(src_pix_num, 1, dim)
-        lab_new = ColorSpaces.lab_to_rgb_host(lab_new)
+        lab_new = ColorSpaces.lab_to_rgb_cpu(lab_new)
         lab_new = np.clip(lab_new, 0.0, 1.0)
 
 

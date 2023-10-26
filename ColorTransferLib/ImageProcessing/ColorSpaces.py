@@ -100,7 +100,39 @@ class ColorSpaces:
         out = out.copy_to_host()
 
         return out
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def rgb_to_lab_cpu(img):
+        device_m_rgb2lms = np.array([
+                            [0.3811, 0.5783, 0.0402],
+                            [0.1967, 0.7244, 0.0782],
+                            [0.0241, 0.1288, 0.8444]])
 
+        device_m_lms2lab1 = np.array([
+                            [1.0, 1.0, 1.0],
+                            [1.0, 1.0, -2.0],
+                            [1.0, -1.0, 0.0]])
+
+        device_m_lms2lab2 = np.array([
+                            [1.0/math.sqrt(3.0), 0.0, 0.0],
+                            [0.0, 1.0/math.sqrt(6.0), 0.0],
+                            [0.0, 0.0, 1.0/math.sqrt(2.0)]])
+        
+
+        eigen_device_m_rgb2lms = np.tile(device_m_rgb2lms.T, (img.shape[0], 1, 1))
+        eigen_device_m_lms2lab1 = np.tile(device_m_lms2lab1.T, (img.shape[0], 1, 1))
+        eigen_device_m_lms2lab2 = np.tile(device_m_lms2lab2.T, (img.shape[0], 1, 1))
+
+        result = np.einsum("ijk,ij->ik", eigen_device_m_rgb2lms,  np.squeeze(img))
+
+        result = np.log(result + 0.000000000001)
+        result = np.einsum("ijk,ij->ik", eigen_device_m_lms2lab1,  result)
+        result = np.einsum("ijk,ij->ik", eigen_device_m_lms2lab2,  result)  
+        result = np.expand_dims(result, 1)
+
+        return result
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -136,6 +168,38 @@ class ColorSpaces:
 
         return out
 
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def lab_to_rgb_cpu(img):
+        device_m_lms2rgb = np.array([
+                            [4.4679, -3.5873, 0.1193],
+                            [-1.2186, 2.3809, -0.1624],
+                            [0.0497, -0.2439, 1.2045]])
+
+        device_m_lab2lms1 = np.array([
+                            [math.sqrt(3.0)/3.0, 0.0, 0.0],
+                            [0.0, math.sqrt(6.0)/6.0, 0.0],
+                            [0.0, 0.0, math.sqrt(2.0)/2.0]])
+
+        device_m_lab2lms2 = np.array([
+                            [1.0, 1.0, 1.0],
+                            [1.0, 1.0, -1.0],
+                            [1.0, -2.0, 0.0]])
+        
+
+        eigen_device_m_lms2rgb = np.tile(device_m_lms2rgb.T, (img.shape[0], 1, 1))
+        eigen_device_m_lab2lms1 = np.tile(device_m_lab2lms1.T, (img.shape[0], 1, 1))
+        eigen_device_m_lab2lms2 = np.tile(device_m_lab2lms2.T, (img.shape[0], 1, 1))
+
+        result = np.einsum("ijk,ij->ik", eigen_device_m_lab2lms1,  np.squeeze(img))
+        result = np.einsum("ijk,ij->ik", eigen_device_m_lab2lms2,  result)
+        result = np.exp(result)
+        result = np.einsum("ijk,ij->ik", eigen_device_m_lms2rgb,  result)  
+        result = np.expand_dims(result, 1)
+
+        return result
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------

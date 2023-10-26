@@ -52,7 +52,10 @@ def tensor2im(image_tensor,img_type,imtype=np.uint8):
         print(ERROR)
 
     # image = torch.from_numpy(image_numpy.transpose(2,0,1)).byte().cuda()
-    image = torch.from_numpy(image_numpy.transpose(2,0,1)).cuda()
+    if not torch.cuda.is_available():
+        image = torch.from_numpy(image_numpy.transpose(2,0,1)).cpu()
+    else:
+        image = torch.from_numpy(image_numpy.transpose(2,0,1)).cuda()
 
     return image
 

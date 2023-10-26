@@ -30,6 +30,9 @@ import copy
 from .utils.face_preprocessing import face_extraction
 from .histogram_classes.RGBuvHistBlock import RGBuvHistBlock
 import cv2
+import gc
+
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 #
@@ -63,8 +66,12 @@ def resize_to_minimum_size(min_size, image):
 #
 # ----------------------------------------------------------------------------------------------------------------------
 def hist_interpolation(hists):
-    ratios = torch.abs(torch.rand(hists.shape[0])).to(
-        device=torch.cuda.current_device())
+    if not torch.cuda.is_available():
+        device = "cpu"
+    else:
+        device = "cuda"
+
+    ratios = torch.abs(torch.rand(hists.shape[0])).to(device=device)
     ratios = ratios / torch.sum(ratios)
     out_hist = hists[0, :, :, :, :] * ratios[0]
     for i in range(hists.shape[0] - 1):
@@ -86,6 +93,11 @@ def process_image(model, name, input_image, target_hist, image_size=256,
                   hist_insz=150, hist_bin=64,
                   hist_method='inverse-quadratic', hist_resizing='sampling',
                   hist_sigma=0.02):
+    
+    if not torch.cuda.is_available():
+        device = "cpu"
+    else:
+        device = "cuda"
 
     img = input_image# Image.open(input_image)
     original_img = input_image#np.array(img) / 255
@@ -118,12 +130,12 @@ def process_image(model, name, input_image, target_hist, image_size=256,
         transforms.Lambda(expand_greyscale(3))
     ])
 
-    img = torch.unsqueeze(transform(img), dim=0).to(device=torch.cuda.current_device())
-    histblock = RGBuvHistBlock(insz=hist_insz, h=hist_bin, resizing=hist_resizing, method=hist_method, sigma=hist_sigma, device=torch.cuda.current_device())
+    img = torch.unsqueeze(transform(img), dim=0).to(device=device)
+    histblock = RGBuvHistBlock(insz=hist_insz, h=hist_bin, resizing=hist_resizing, method=hist_method, sigma=hist_sigma, device=device)
     transform = transforms.Compose([transforms.ToTensor()])
 
     img_hist = Image.fromarray((target_hist*255).astype("uint8"))#Image.open(target_hist)
-    img_hist = torch.unsqueeze(transform(img_hist), dim=0).to(device=torch.cuda.current_device())
+    img_hist = torch.unsqueeze(transform(img_hist), dim=0).to(device=device)
     with torch.no_grad():
         h = histblock(img_hist)
         samples_name = "out"#('output-' + f'{os.path.basename(os.path.splitext(target_hist)[0])}' f'-{timestamp}-{postfix}')
@@ -244,5 +256,8 @@ def train_from_folder(
                     hist_method=hist_method, hist_resizing=hist_resizing,
                     hist_sigma=hist_sigma)
     #print(output.shape)
+
+    #del model
+    #torch.cuda.empty_cache()
 
     return output

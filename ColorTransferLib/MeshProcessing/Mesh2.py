@@ -65,7 +65,7 @@ class Mesh2:
         self.__vnormals_enabled = self.__pcd.has_vertex_normals()
 
         self.__vertex_positions = np.asarray(self.__pcd.vertices) if self.__vertices_enabled else []
-        self.__vertex_colors = np.asarray(self.__pcd.vertex_colors) if self.__vcolors_enabled else []
+        self.__vertex_colors = np.asarray(self.__pcd.vertex_colors).astype("float32") if self.__vcolors_enabled else []
         self.__vertex_normals = np.asarray(self.__pcd.vertex_normals) if self.__vnormals_enabled else []
 
         self.__num_vertices = self.__vertex_positions.shape[0] if self.__vertices_enabled else 0
@@ -86,6 +86,11 @@ class Mesh2:
 
         self.__texture_enabled = self.__pcd.has_textures()
         self.__texture = np.asarray(self.__pcd.textures[0]).astype("float32") / 255 if self.__texture_enabled else None
+
+        # remove alpha channel
+        if self.__texture.shape[2] == 4:
+            self.__texture = self.__texture[:,:,:3]
+
         self.__texture_size = np.asarray(self.__texture.shape) if self.__texture_enabled else None
         self.__texture_uvs = self.__pcd.triangle_uvs
 
@@ -105,7 +110,7 @@ class Mesh2:
         self.__vnormals_enabled = self.__pcd.has_normals()
 
         self.__vertex_positions = np.asarray(self.__pcd.points) if self.__vertices_enabled else []
-        self.__vertex_colors = np.asarray(self.__pcd.colors) if self.__vcolors_enabled else []
+        self.__vertex_colors = np.asarray(self.__pcd.colors).astype("float32") if self.__vcolors_enabled else []
         self.__vertex_normals = np.asarray(self.__pcd.normals) if self.__vnormals_enabled else []
 
         self.__num_vertices = self.__vertex_positions.shape[0] if self.__vertices_enabled else 0
@@ -273,7 +278,7 @@ class Mesh2:
     # ------------------------------------------------------------------------------------------------------------------
     def get_color_statistic(self):
         if self.__type == "Mesh":
-            color = self.__texture
+            color = np.reshape(self.__texture, (self.__texture.shape[0]*self.__texture.shape[1], self.__texture.shape[2]))
         elif self.__type == "PointCloud":
             color = self.__vertex_colors
 
@@ -373,7 +378,9 @@ class Mesh2:
     # ------------------------------------------------------------------------------------------------------------------
     # create voxelgrid from given point cloud 
     # ------------------------------------------------------------------------------------------------------------------
-    def get_voxel_grid(self):
+    def get_voxel_grid(self, voxel_level):
+        scale_f = voxel_level
+        print(voxel_level)
         # Initialize a point cloud object
         pcd = self.__pcd
         # fit to unit cube
@@ -382,7 +389,7 @@ class Mesh2:
         sc_f = np.max(sc_f_max - sc_f_min)
         #pcd.scale(1 / sc_f, center=pcd.get_center())
         # Create a voxel grid from the point cloud with a voxel_size of 0.01
-        voxel_grid = o3d.geometry.VoxelGrid.create_from_point_cloud(pcd,voxel_size=0.02 * sc_f)
+        voxel_grid = o3d.geometry.VoxelGrid.create_from_point_cloud(pcd,voxel_size=scale_f * sc_f)
 
         #voxel_grid.scale(scale=57.0)
 
@@ -401,6 +408,6 @@ class Mesh2:
 
         voxelret["centers"] = np.asarray(voxelret["centers"])
         voxelret["colors"] = np.asarray(voxelret["colors"])
-        voxelret["scale"] = 0.02 * sc_f
+        voxelret["scale"] = scale_f * sc_f
 
         return voxelret

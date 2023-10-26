@@ -65,7 +65,7 @@ class TPS:
     year = 2019
     compatibility = {
         "src": ["Image"],
-        "ref": ["Image"]
+        "ref": ["Image", "Mesh"]
     }
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ class TPS:
                         "correspondence outlier pairs. Our algorithm is shown to be fast, robust and it easily allows "
                         "for user interaction providing freedom for artists to fine tune the recoloured images and "
                         "videos Grogan et al. (2017).",
-            "types": ["Image", "Mesh"]
+            "types": ["Image"]
         }
 
         return info
@@ -111,13 +111,16 @@ class TPS:
     def apply(src, ref, opt):
         start_time = time.time()
         # NOTE: sudo apt-get install liboctave-dev
-        # NOTE: plg install -forge image
-        # NOTE: plg install -forge statistics
+        # NOTE: pkg install -forge image
+        # NOTE: pkg install -forge statistics
 
 
 
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, TPS.compatibility)
+
+        if output["status_code"] == -1:
+            return output
 
         # Preprocessing
         # NOTE RGB space needs multiplication with 255

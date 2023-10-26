@@ -214,6 +214,35 @@ def createEvaluationFile(dataset_path, out_file, num_tests):
 # ------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+    from mpl_toolkits import mplot3d
+    from PIL import Image
+
+    im = Image.open("/home/potechius/Projects/ColorTransferLab/server/data/Images/Lena.png")
+    px = im.load()
+    ax = plt.axes(projection = '3d')
+    ax.axes.set_xlim3d(left=0., right=255)
+    ax.axes.set_ylim3d(bottom=0., top=255) 
+    ax.axes.set_zlim3d(bottom=0., top=255) 
+    x = []
+    y = []
+    z = []
+    c = []
+    for row in range(0,im.height):
+        print(row)
+        for col in range(0, im.width):
+            pix = px[col,row]
+            newCol = (pix[0] / 255, pix[1] / 255, pix[2] / 255)
+
+            if(not newCol in c):
+                x.append(pix[0])
+                y.append(pix[1])
+                z.append(pix[2])
+                c.append(newCol)
+    ax.scatter(x,y,z, c = c)
+    plt.show()
+    exit()
+
 
     # try:
 
@@ -222,18 +251,19 @@ if __name__ == '__main__':
     #ref = Mesh2(file_path='/home/potechius/Projects/ColorTransferLab/server/data/PointClouds/Wappentier_blue.ply', datatype="PointCloud")
     #src = Mesh2(file_path='/home/potechius/Projects/ColorTransferLab/server/data/Meshes/$mesh$GameBoy_medium/GameBoy_medium.obj', datatype="Mesh")
     #src = Image(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/256_abstract-08.png')
-    src = Image(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/Pillow_low/Pillow_low.png')
-    #src = Mesh2(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/Apple.ply', datatype="PointCloud")
+    src = Image(file_path='/home/potechius/Projects/ColorTransferLib/data/images/the_scream.jpg')
+    #src = Mesh2(file_path='/home/potechius/Projects/ColorTransferLab/server/data/PointClouds/statue_athena_blue.ply', datatype="PointCloud")
 
-    #ref = Image(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/256_nature-06.png')
+    ref = Image(file_path='/home/potechius/Projects/ColorTransferLib/data/images/starry-night.jpg')
     #ref = Image(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/stanford_bunny/stanford_bunny.png')
-    ref = Mesh2(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/Orange.ply', datatype="PointCloud")
+    #ref = Mesh2(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/Orange.ply', datatype="PointCloud")
     #ref = Image(file_path='/home/potechius/Downloads/TestData-20230803T161847Z-001/TestData/palette.png')
 
+
     #print(src2.get_color_distribution().shape)
-    ct = ColorTransfer(src, ref, "TPS")
+    ct = ColorTransfer(src, ref, "GLO")
     out = ct.apply()["object"]
-    out.write("/home/potechius/Downloads/Output/mesh-pc.png")
+    out.write("/home/potechius/Downloads/test_pc.png")
     exit()
 
     src = Mesh2('/home/potechius/Projects/ColorTransferLab/server/data/PointClouds/lamp.ply', "PointCloud")

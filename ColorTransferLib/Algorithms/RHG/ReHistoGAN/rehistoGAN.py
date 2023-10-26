@@ -44,8 +44,9 @@ try:
 except:
     APEX_AVAILABLE = False
 
-assert torch.cuda.is_available(), ('You need to have an Nvidia GPU with CUDA '
-                                   'installed.')
+# TEMP REMOVED
+#assert torch.cuda.is_available(), ('You need to have an Nvidia GPU with CUDA '
+#                                   'installed.')
 
 num_cores = multiprocessing.cpu_count()
 
@@ -133,8 +134,14 @@ def loss_backwards(fp16, loss, optimizer, **kwargs):
 
 def gradient_penalty(images, output, weight=10):
     batch_size = images.shape[0]
+
+    if not torch.cuda.is_available():
+        ga = torch.ones(output.size()).cpu()
+    else:
+        ga = torch.ones(output.size()).cuda()
+
     gradients = torch_grad(outputs=output, inputs=images,
-                           grad_outputs=torch.ones(output.size()).cuda(),
+                           grad_outputs=ga,
                            create_graph=True, retain_graph=True,
                            only_inputs=True)[0]
 
@@ -143,7 +150,11 @@ def gradient_penalty(images, output, weight=10):
 
 
 def noise(n, latent_dim):
-    return torch.randn(n, latent_dim).cuda()
+    if not torch.cuda.is_available():
+        return torch.randn(n, latent_dim).cpu()
+    else:
+        return torch.randn(n, latent_dim).cuda()
+    
 
 
 def noise_list(n, layers, latent_dim):
@@ -166,7 +177,11 @@ def latent_to_w(style_vectorizer, latent_descr):
 
 
 def image_noise(n, im_size):
-    return torch.FloatTensor(n, im_size, im_size, 1).uniform_(0.0, 1.).cuda()
+    if not torch.cuda.is_available():
+        return torch.FloatTensor(n, im_size, im_size, 1).uniform_(0.0, 1.).cpu()
+    else:
+        return torch.FloatTensor(n, im_size, im_size, 1).uniform_(0.0, 1.).cuda()
+    
 
 
 def leaky_relu(p=0.2):
@@ -224,23 +239,37 @@ def get_gaussian_kernel(kernel_size=15, sigma=3, channels=3):
 
 
 def gaussian_op(x, kernel=None):
+    if not torch.cuda.is_available():
+        device = "cpu"
+    else:
+        device = "cuda"
+
     if kernel is None:
         kernel = get_gaussian_kernel(kernel_size=15, sigma=15, channels=3).to(
-            device=torch.cuda.current_device())
+            device=device)
     return kernel(x)
 
 
 def laplacian_op(x, kernel=None):
+    if not torch.cuda.is_available():
+        device = "cpu"
+    else:
+        device = "cuda"
+
     if kernel is None:
         laplacian = [[0, 1, 0], [1, -4, 1], [0, 1, 0]]
         channels = x.size()[1]
         kernel = torch.tensor(laplacian,
                               dtype=torch.float32).unsqueeze(0).expand(
-            1, channels, 3, 3).to(device=torch.cuda.current_device())
+            1, channels, 3, 3).to(device=device)
     return F.conv2d(x, kernel, stride=1, padding=1)
 
 
 def sobel_op(x, dir=0, kernel=None):
+    if not torch.cuda.is_available():
+        device = "cpu"
+    else:
+        device = "cuda"
     if kernel is None:
         if dir == 0:
             sobel = [[1, 0, -1], [2, 0, -2], [1, 0, -1]]  # x
@@ -248,7 +277,7 @@ def sobel_op(x, dir=0, kernel=None):
             sobel = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]]  # y
         channels = x.size()[1]
         kernel = torch.tensor(sobel, dtype=torch.float32).unsqueeze(0).expand(
-            1, channels, 3, 3).to(device=torch.cuda.current_device())
+            1, channels, 3, 3).to(device=device)
     return F.conv2d(x, kernel, stride=1, padding=1)
 
 
@@ -276,23 +305,28 @@ class expand_greyscale(object):
 
 class reconstruction_loss(object):
     def __init__(self, loss):
+        if not torch.cuda.is_available():
+            device = "cpu"
+        else:
+            device = "cuda"
+
         self.loss = loss
         if self.loss == '1st gradient':
             sobel_x = [[1, 0, -1], [2, 0, -2], [1, 0, -1]]  # x
             sobel_y = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]]  # y
             sobel_x = torch.tensor(
                 sobel_x, dtype=torch.float32).unsqueeze(0).expand(
-                1, 3, 3, 3).to(device=torch.cuda.current_device())
+                1, 3, 3, 3).to(device=device)
             sobel_y = torch.tensor(
                 sobel_y, dtype=torch.float32).unsqueeze(0).expand(
-                1, 3, 3, 3).to(device=torch.cuda.current_device())
+                1, 3, 3, 3).to(device=device)
             self.kernel1 = sobel_x
             self.kernel2 = sobel_y
         elif self.loss == '2nd gradient':
             laplacian = [[0, 1, 0], [1, -4, 1], [0, 1, 0]]
             self.kernel1 = torch.tensor(
                 laplacian, dtype=torch.float32).unsqueeze(0).expand(
-                1, 3, 3, 3).to(device=torch.cuda.current_device())
+                1, 3, 3, 3).to(device=device)
             self.kernel2 = None
         else:
             self.kernel1 = None
@@ -682,7 +716,10 @@ class recoloringGAN(nn.Module):
         self._init_weights(self.ED)
         self._init_weights(self.D)
 
-        self.cuda()
+        if not torch.cuda.is_available():
+            self.cpu()
+        else:
+            self.cuda()
 
         if fp16:
             (self.ED, self.G, self.H, self.D), (self.G_opt, self.D_opt) = (
@@ -752,6 +789,10 @@ class recoloringTrainer():
         set_requires_grad(self.histBlock, True)
 
         if variance_loss is True:
+            if not torch.cuda.is_available():
+                device = "cpu"
+            else:
+                device = "cuda"
             self.histBlock_input = RGBuvHistBlock(insz=self.hist_insz,
                                                   h=self.hist_bin,
                                                   method=self.hist_method,
@@ -760,7 +801,7 @@ class recoloringTrainer():
 
             self.gaussKernel = get_gaussian_kernel(kernel_size=15,
                                                    sigma=5, channels=3).to(
-                device=torch.cuda.current_device())
+                                                    device=device)
 
         if self.rec_loss is None:
             self.rec_loss_func = reconstruction_loss('L1')
@@ -899,19 +940,30 @@ class recoloringTrainer():
 
         if hist_batch is None or image_batch is None:
             batch = next(self.loader_evaluate)
-            image_batch = batch['images'].cuda()
-            hist_batch = batch['histograms'].cuda()
+            if not torch.cuda.is_available():
+                image_batch = batch['images'].cpu()
+                hist_batch = batch['histograms'].cpu()
+            else:
+                image_batch = batch['images'].cuda()
+                hist_batch = batch['histograms'].cuda()
             img_bt_sz = image_batch.shape[0]
             if triple_hist is True:
                 image_batch = torch.cat((image_batch, image_batch,
                                          image_batch), dim=0)
-                hist_batch_2 = batch['histograms2'].cuda()
-                hist_batch_3 = batch['histograms3'].cuda()
+                if not torch.cuda.is_available():
+                    hist_batch_2 = batch['histograms2'].cpu()
+                    hist_batch_3 = batch['histograms3'].cpu()
+                else:
+                    hist_batch_2 = batch['histograms2'].cuda()
+                    hist_batch_3 = batch['histograms3'].cuda()
                 hist_batch = torch.cat((hist_batch, hist_batch_2,
                                         hist_batch_3), dim=0)
             elif double_hist is True:
                 image_batch = torch.cat((image_batch, image_batch), dim=0)
-                hist_batch_2 = batch['histograms2'].cuda()
+                if not torch.cuda.is_available():
+                    hist_batch_2 = batch['histograms2'].cpu()
+                else:
+                    hist_batch_2 = batch['histograms2'].cuda()
                 hist_batch = torch.cat((hist_batch, hist_batch_2), dim=0)
         else:
             img_bt_sz = image_batch.shape[0]
@@ -950,11 +1002,15 @@ class recoloringTrainer():
             if resizing == 'upscaling':
                 print('Upsampling')
                 if resizing_method == 'pyramid':
+                    if not torch.cuda.is_available():
+                        device = "cpu"
+                    else:
+                        device = "cuda"
                     # Image.open(input_image_name)
                     print(output_name)
                     reference = Image.fromarray((input_image_name*255).astype("uint8"))
                     transform = transforms.Compose([transforms.ToTensor()])
-                    reference = torch.unsqueeze(transform(reference), dim=0).to(device=torch.cuda.current_device())
+                    reference = torch.unsqueeze(transform(reference), dim=0).to(device=device)
                     #output = upsampling.pyramid_upsampling(generated_images, reference, levels=pyramid_levels,swapping_levels=swapping_levels, blending=level_blending)
                     generated_images = upsampling.pyramid_upsampling(generated_images, reference, levels=pyramid_levels,swapping_levels=swapping_levels, blending=level_blending)
 
@@ -1007,5 +1063,9 @@ class recoloringTrainer():
     def load(self, name):
         self.load_config()
         mm = "Models/RHG/" + name + ".pt"
-        self.GAN.load_state_dict(torch.load(mm, map_location=f'cuda:{torch.cuda.current_device()}'))
+        if not torch.cuda.is_available():
+            device = torch.device('cpu')
+        else:
+            device = torch.device('cuda')
+        self.GAN.load_state_dict(torch.load(mm, map_location=device))
         return 0

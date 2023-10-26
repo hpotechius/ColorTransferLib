@@ -12,14 +12,20 @@ Adaptation of https://github.com/cysmith/neural-style-tf
 from ColorTransferLib.Algorithms.NST.Model import Model
 import tensorflow as tf
 import numpy as np
+import torch
 import scipy.io
 import struct
 import time
 import cv2
 import os
+from numba import cuda
 from copy import deepcopy
 from ColorTransferLib.Utils.Helper import check_compatibility
 
+
+physical_devices = tf.config.list_physical_devices('GPU')
+for device in physical_devices:
+    tf.config.experimental.set_memory_growth(device, True)
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -61,7 +67,7 @@ class NST:
 
     compatibility = {
         "src": ["Image"],
-        "ref": ["Image"]
+        "ref": ["Image", "Mesh"]
     }
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -107,6 +113,13 @@ class NST:
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, NST.compatibility)
 
+
+        if output["status_code"] == -1:
+            return output
+        
+        if not torch.cuda.is_available():
+            opt.device = "/cpu:0"
+
         # Preprocessing
         src_img = src.get_raw() * 255.0
         ref_img = ref.get_raw() * 255.0
@@ -135,6 +148,7 @@ class NST:
 
         out = NST.render_single_image(src_img, style_imgs, opt)
         out = NST.postprocess(out)
+        tf.compat.v1.reset_default_graph()
 
 
         out_img.set_raw(out)
@@ -144,6 +158,10 @@ class NST:
             "object": out_img,
             "process_time": time.time() - start_time
         }
+
+        # clear memory
+        #tf.keras.clear_session()
+
 
         return output
 
@@ -343,6 +361,8 @@ class NST:
 
             if opt.original_colors:
                 output_img = NST.convert_to_original_colors(np.copy(content_img), output_img, opt)
+
+            sess.close()
 
             return output_img
 

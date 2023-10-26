@@ -17,7 +17,7 @@ import cv2
 from copy import deepcopy
 from ColorTransferLib.Utils.Helper import check_compatibility
 
-
+import torch
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Based on the paper:
@@ -109,6 +109,16 @@ class CAM:
         start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, CAM.compatibility)
+
+        if output["status_code"] == -1:
+            return output
+        
+        if not torch.cuda.is_available():
+            options.device = "cpu"
+
+
+        # resize ref to fit src
+        ref.resize(src.get_width(), src.get_height())
 
         # Preprocessing
         src_img = src.get_raw() * 255.0

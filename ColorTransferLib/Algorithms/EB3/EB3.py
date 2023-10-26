@@ -41,8 +41,8 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 # ----------------------------------------------------------------------------------------------------------------------
 class EB3:
     compatibility = {
-        "src": ["Mesh"],
-        "ref": ["Mesh"]
+        "src": ["PointCloud"],
+        "ref": ["PointCloud"]
     }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
@@ -87,8 +87,8 @@ class EB3:
     @staticmethod
     def IGD(src, ref, pca_enabled):
         # Convert colors from RGB to lalphabeta color space
-        src_color_lab = ColorSpaces.rgb_to_lab_host(src.get_colors()).reshape(src.get_num_vertices(), 3)
-        ref_color_lab = ColorSpaces.rgb_to_lab_host(ref.get_colors()).reshape(ref.get_num_vertices(), 3)
+        src_color_lab = ColorSpaces.rgb_to_lab_cpu(src.get_colors()).reshape(src.get_num_vertices(), 3)
+        ref_color_lab = ColorSpaces.rgb_to_lab_cpu(ref.get_colors()).reshape(ref.get_num_vertices(), 3)
 
         # convert 3D normals to PCA adjusted 6D normals
         norma_src = src.get_normals().reshape(src.get_num_vertices(), 3)
@@ -209,7 +209,7 @@ class EB3:
 
         # [8] Convert to RGB
         lab_new = out.reshape(src.get_num_vertices(), 1, 3)
-        lab_new = ColorSpaces.lab_to_rgb_host(lab_new)
+        lab_new = ColorSpaces.lab_to_rgb_cpu(lab_new)
         lab_new = np.clip(lab_new, 0.0, 1.0)
 
         return lab_new
@@ -220,11 +220,11 @@ class EB3:
     @staticmethod
     def MGD(src, ref, pca_enabled):
         # Convert colors from RGB to lalphabeta color space
-        src_color_lab = ColorSpaces.rgb_to_lab_host(src.get_colors()).reshape(src.get_num_vertices(), 3)
-        ref_color_lab = ColorSpaces.rgb_to_lab_host(ref.get_colors()).reshape(ref.get_num_vertices(), 3)
+        src_color_lab = ColorSpaces.rgb_to_lab_cpu(src.get_colors()).reshape(src.get_num_vertices(), 3)
+        ref_color_lab = ColorSpaces.rgb_to_lab_cpu(ref.get_colors()).reshape(ref.get_num_vertices(), 3)
 
-        norma_src = src.get_normals().reshape(src.get_num_vertices(), 3)
-        norma_ref = ref.get_normals().reshape(ref.get_num_vertices(), 3)
+        norma_src = src.get_vertex_normals().reshape(src.get_num_vertices(), 3)
+        norma_ref = ref.get_vertex_normals().reshape(ref.get_num_vertices(), 3)
 
         if pca_enabled:
             pca = PCA(n_components=3)
@@ -263,7 +263,7 @@ class EB3:
 
         lab_new = f_out[:,:3]
         lab_new = lab_new.reshape(src.get_num_vertices(), 1, 3)
-        lab_new = ColorSpaces.lab_to_rgb_host(np.ascontiguousarray(lab_new, dtype=np.float32))
+        lab_new = ColorSpaces.lab_to_rgb_cpu(np.ascontiguousarray(lab_new, dtype=np.float32))
         lab_new = np.clip(lab_new, 0.0, 1.0)
 
 

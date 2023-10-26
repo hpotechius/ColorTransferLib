@@ -7,6 +7,7 @@ import errno
 import time
 import cv2
 import os
+import gc
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -536,6 +537,7 @@ def stylize(content_img, style_imgs, init_img, frame=None):
 
         if args.original_colors:
             output_img = convert_to_original_colors(np.copy(content_img), output_img)
+
 
         #write_image_output(output_img, content_img, style_imgs, init_img)
         return output_img

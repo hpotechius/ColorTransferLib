@@ -13,6 +13,10 @@ import os
 import cv2
 import copy
 
+physical_devices = tf.config.list_physical_devices('GPU')
+for device in physical_devices:
+    tf.config.experimental.set_memory_growth(device, True)
+
 tf.compat.v1.disable_eager_execution()
 
 xrange = range  # Python 3
@@ -415,5 +419,6 @@ def stylize(args, Matting, src, ref):
         #     save_result(best_image[:, :, ::-1], os.path.join(args.serial, 'out_iter_{}.png'.format(i)))
 
     tf.keras.backend.clear_session()
+    sess.close()
 
     return best_image

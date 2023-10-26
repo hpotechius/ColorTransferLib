@@ -38,8 +38,8 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 # ----------------------------------------------------------------------------------------------------------------------
 class GLO:
     compatibility = {
-        "src": ["Image", "Mesh"],
-        "ref": ["Image", "Mesh"]
+        "src": ["Image", "Mesh", "PointCloud"],
+        "ref": ["Image", "Mesh", "PointCloud"]
     }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
@@ -80,6 +80,70 @@ class GLO:
 
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, GLO.compatibility)
+
+        if output["status_code"] == -1:
+            return output
+
+        # Preprocessing
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+
+        out_img = deepcopy(src)
+
+        device_out = out_img.get_colors()
+
+        # [2] Convert RGB to lab color space
+        if opt.colorspace == "lalphabeta":
+            lab_src = ColorSpaces.rgb_to_lab_cpu(src_color)
+            lab_ref = ColorSpaces.rgb_to_lab_cpu(ref_color)
+        elif opt.colorspace == "rgb":
+            lab_src = src_color
+            lab_ref = ref_color
+
+        # [3] Get mean, standard deviation and ratio of standard deviations
+        mean_lab_src = np.mean(lab_src, axis=(0, 1))
+        std_lab_src = np.std(lab_src, axis=(0, 1))
+        mean_lab_ref = np.mean(lab_ref, axis=(0, 1))
+        std_lab_ref = np.std(lab_ref, axis=(0, 1))
+
+        device_div_std = std_lab_ref / std_lab_src
+
+
+        # [4] Apply Global Color Transfer
+        device_out[:,:,0] = device_div_std[0] * (lab_src[:,:,0] - mean_lab_src[0]) + mean_lab_ref[0]
+        device_out[:,:,1] = device_div_std[1] * (lab_src[:,:,1] - mean_lab_src[1]) + mean_lab_ref[1]
+        device_out[:,:,2] = device_div_std[2] * (lab_src[:,:,2] - mean_lab_src[2]) + mean_lab_ref[2]
+
+        # [5] Convert lab to RGB color space
+        if opt.colorspace == "lalphabeta":
+            device_out = ColorSpaces.lab_to_rgb_cpu(device_out)
+
+        # [6] Copy output from GPU to RAM
+        out_colors = np.clip(device_out, 0, 1)
+
+        out_img.set_colors(out_colors)
+
+
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": out_img,
+            "process_time": time.time() - start_time
+        }
+
+        return output
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def apply_old(src, ref, opt):
+        start_time = time.time()
+
+        # check if method is compatible with provided source and reference objects
+        output = check_compatibility(src, ref, GLO.compatibility)
+
+        if output["status_code"] == -1:
+            return output
 
         # Preprocessing
         src_color = src.get_colors()

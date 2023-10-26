@@ -71,8 +71,8 @@ THREADSPERBLOCK = (32, 32)
 # ----------------------------------------------------------------------------------------------------------------------
 class PDF:
     compatibility = {
-        "src": ["Image", "Mesh"],
-        "ref": ["Image", "Mesh"]
+        "src": ["Image", "Mesh", "PointCloud"],
+        "ref": ["Image", "Mesh", "PointCloud"]
     }
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
@@ -116,6 +116,10 @@ class PDF:
         start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, PDF.compatibility)
+
+        if output["status_code"] == -1:
+            return output
+
         output = {
             "status_code": 0,
             "response": "",
@@ -149,10 +153,14 @@ class PDF:
             mat_rot_tile = np.tile(mat_rot,(src_color.shape[0], 1, 1))
             mat_rot_inv_tile = np.tile(mat_rot_inv,(src_color.shape[0], 1, 1))
 
+
+            mat_rot_tile_ref = np.tile(mat_rot,(ref_color.shape[0], 1, 1))
+            mat_rot_inv_tile_ref = np.tile(mat_rot_inv,(ref_color.shape[0], 1, 1))
+
             #print(device_ref[0])
             # [3] Rotate source and reference colors with random rotation matrix
             src_rotated = np.einsum('ilk,ik->il', mat_rot_tile, device_src)
-            ref_rotated = np.einsum('ilk,ik->il', mat_rot_tile, device_ref)
+            ref_rotated = np.einsum('ilk,ik->il', mat_rot_tile_ref, device_ref)
 
             # print(device_src[0])
             # print(mat_rot_tile[0])
