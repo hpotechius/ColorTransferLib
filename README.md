@@ -175,65 +175,65 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 <details>
   <summary>List of integrated Objective Evaluation Metrics</summary>
 
-### SSIM$^s_{rgb}$
+### SSIM$`^s_{rgb}`$
 **Name**: Structural Similarity Index  
 **Description**: The Structural Similarity Index (SSIM) is a metric used to measure the similarity between two images. Unlike traditional metrics like Mean Squared Error (MSE) that focus solely on pixel-wise differences, SSIM considers changes in structural information, luminance, and texture. The index provides a value between -1 and 1, where a value of 1 indicates that the two images being compared are identical in terms of structural content. SSIM is widely used in the field of image processing for quality assessment of compressed or processed images in comparison to reference images.
 
-### PSNR$^s_{rgb}$
+### PSNR$`^s_{rgb}`$
 **Name**: Peak Signal-to-Noise Ratio  
 
-### MSE$^s_{rgb}$
+### MSE$`^s_{rgb}`$
 **Name**: Mean-Squared Error  
 
-### MS-SSIM$^s_{rgb}$
+### MS-SSIM$`^s_{rgb}`$
 **Name**: Multi-Scale Structural Similarity Index  
 
-### FSIM$^s_{c,yiq}$
+### FSIM$`^s_{c,yiq}`$
 **Name**: Feature Similarity Index  
 
-### LPIPS$^s_{rgb}$
+### LPIPS$`^s_{rgb}`$
 **Name**: Learned Perceptual Image Patch Similarity  
 
-### RMSE$^s_{rgb}$
+### RMSE$`^s_{rgb}`$
 **Name**: Root-Mean-Squared Error  
 
-### GSSIM$^s_{rgb}$
+### GSSIM$`^s_{rgb}`$
 **Name**: Gradient-based Structural Similarity Index  
 
-### VSI$^s_{rgb}$
+### VSI$`^s_{rgb}`$
 **Name**: Visual Saliency-based Index 
 
-### 4-SSIM$^s_{rgb}$
+### 4-SSIM$`^s_{rgb}`$
 **Name**: 4-component Structural Similarity Index
 
-### HI$^r_{rgb}$
+### HI$`^r_{rgb}`$
 **Name**: Histogram Intersection 
 
-### Corr$^r_{rgb}$
+### Corr$`^r_{rgb}`$
 **Name**: Correlation 
 
-### BA$^r_{rgb}$
+### BA$`^r_{rgb}`$
 **Name**: Bhattacharyya Distance 
 
-### BRISQUE$^o_{rgb}$
+### BRISQUE$`^o_{rgb}`$
 **Name**: Blind/Referenceless Image Spatial Quality Evaluator 
 
-### NIMA$^o_{rgb}$
+### NIMA$`^o_{rgb}`$
 **Name**: Neural Image Assessment 
 
-### NIQE$^o_{rgb}$
+### NIQE$`^o_{rgb}`$
 **Name**: Naturalness Image Quality Evaluator 
 
-### CF$^o_{rgyb}$
+### CF$`^o_{rgyb}`$
 **Name**: Colorfulness 
 
-### 4-EGSSIM$^s_{rgb}$
+### 4-EGSSIM$`^s_{rgb}`$
 **Name**: 4-component enhanced Gradient-based Structural Similarity Index 
 
-### CSS$^{sr}_{rgb}$
+### CSS$`^{sr}_{rgb}`$
 **Name**: Color and Structure Similarity 
 
-### CTQM$^{sro}_{lab}$
+### CTQM$`^{sro}_{lab}`$
 **Name**: Color Transfer Quality Metric 
 
 </details>
