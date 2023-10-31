@@ -48,14 +48,6 @@ import phasepack.phasecong as PC
 # ----------------------------------------------------------------------------------------------------------------------
 class FSIM:
     # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
-
-    # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
@@ -150,80 +142,3 @@ class FSIM:
         fsim_val = FSIM.fsim_idx(src_pc2d_y, ref_pc2d_y, SL_y, S_C)
 
         return round(fsim_val, 4)
-
-    # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    # @staticmethod
-    # def apply2(src, ref):
-    #     mssim = ssim(src.get_raw(), ref.get_raw(), channel_axis=2)
-    #     return round(mssim, 4)
-
-# ------------------------------------------------------------------------------------------------------------------
-#
-# ------------------------------------------------------------------------------------------------------------------ 
-def main():
-    # with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/TPS/fsim.txt","r") as file2:
-    #     cc = 0
-    #     summ = 0
-    #     for line in file2.readlines():
-    #         tim = float(line.strip().split(" ")[0])
-    #         if math.isinf(tim):
-    #             continue
-    #         summ += tim
-    #         cc += 1
-    #     summ /= cc
-    #     print(cc)
-    #     print(summ)
-    # exit()    
-
-
-    fuu = ["FCM"]
-    for ALG in fuu:
-        print(ALG)
-
-        file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
-        #ALG = "PDF"
-        total_tests = 0
-        eval_arr = []
-
-        for line in file1.readlines():
-            total_tests += 1
-            print(total_tests)
-            s_p, r_p = line.strip().split(" ")
-            outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-            #print(outfile_name)
-            img_tri = cv2.imread(outfile_name)
-            src_img = img_tri[:,:512,:]
-            ref_img = img_tri[:,512:1024,:]
-            out_img = img_tri[:,1024:,:]
-
-            src = Image(array=src_img)
-            ref = Image(array=ref_img)
-            out = Image(array=out_img)
-            fsim = FSIM.apply(src, out)
-            print(fsim)
-            eval_arr.append(fsim)
-
-            with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/fsim.txt","a") as file2:
-                file2.writelines(str(round(fsim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
-
-            # calculate mean
-        mean = sum(eval_arr) / len(eval_arr)
-
-        # calculate std
-        std = 0
-        for t in eval_arr:
-            std += math.pow(t-mean, 2)
-        std /= len(eval_arr)
-        std = math.sqrt(std)
-
-
-        print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
-
-        file1.close()
-
-
-
-if __name__ == "__main__":
-    main()

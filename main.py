@@ -195,32 +195,18 @@ def createEvaluationFile(dataset_path, out_file, num_tests):
 
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
-# Possible values for ct_approach:
-# ["GLO",   support for [images, point clouds]
-#  "PDF",   support for [images, point clouds]
-#  "MKL",   support for [images, point clouds]
-#  "NST",   support for [images]
-#  "HIS",   support for [images]
-#  "CAM",   support for [images]
-#  "DPT",   support for [images]
-#  "TPS",   support for [images]
-#  "FUZ",   support for [images]
-#  "GMM",   support for [images]
-#  "E3D",   support for [point clouds]
-#  "PSN",   support for [point clouds]
-#  "FCM",   support for [images]
-#  ]
+#
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
-
 if __name__ == '__main__':
     #src = Image(file_path='/Volumes/External/DATASETS/ACM-MM-Evaluation-Dataset/abstract/256_abstract-01.png')
     #ref = Image(file_path='/Volumes/External/DATASETS/ACM-MM-Evaluation-Dataset/abstract/256_abstract-02.png')   
     src = Image(file_path='/Volumes/External/DATASETS/ColorTransfer-Dataset/original/abstract/256_abstract-01.png')
     ref = Image(file_path='/Volumes/External/DATASETS/ColorTransfer-Dataset/original/abstract/256_abstract-02.png')  
-    ct = ColorTransfer(src, ref, "HIS")
+    algo = "PDF"
+    ct = ColorTransfer(src, ref, algo)
     out = ct.apply()["object"]
-    out.write("/Volumes/External/DATASETS/ColorTransfer-Dataset/test_img.png")
+    out.write("/Volumes/External/DATASETS/ColorTransfer-Dataset/result_"+algo+".png")
 
     print("HEHE")
     exit()

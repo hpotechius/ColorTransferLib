@@ -8,19 +8,14 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 import numpy as np
-from numba import cuda
-import math
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
-from ColorTransferLib.Utils.BaseOptions import BaseOptions
-from ColorTransferLib.ImageProcessing.Image import Image as Img
 from copy import deepcopy
-from ColorTransferLib.Utils.Helper import check_compatibility
 import csv
 import cv2
 import open3d as o3d
-from pyhull.convex_hull import ConvexHull
 import time
-import faiss
+
+from ColorTransferLib.Utils.Helper import check_compatibility
+from pyhull.convex_hull import ConvexHull
 from .FaissKNeighbors import FaissKNeighbors
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -69,19 +64,7 @@ class BCC:
         "Pink": np.array([0.85,0.5,0.75]),
         "Purple": np.array([0.4,0.01,0.77]),
     }
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
 
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # HOST METHODS
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -122,7 +105,6 @@ class BCC:
         out_img = deepcopy(src)
 
         # Read Color Dataset
-        time_stamp = time.time()
         color_terms = np.array(["Red", "Yellow", "Green", "Blue", "Black", "White", "Grey", "Orange", "Brown", "Pink", "Purple"])
         color_mapping = []
         with open("Models/BCC/colormapping.csv") as csv_file:
@@ -163,7 +145,6 @@ class BCC:
             "Purple": []
         }
 
-
         color_cats_src_ids = {
             "Red": [],
             "Yellow": [],
@@ -191,19 +172,6 @@ class BCC:
             "Pink": [],
             "Purple": []
         }
-
-        # save categorise image
-        # for i, (pred, color) in enumerate(zip(ref_preds, ref_color[:,0,:])):
-        #     ref_color[i,0,:] = color_samples[color_terms[int(pred)]]
-        # out_img.set_colors(ref_color)
-
-        # output = {2048
-        #     "status_code": 0,
-        #     "response": "",
-        #     "object": out_img
-        # }
-
-        # return output
 
         for i, (pred, color) in enumerate(zip(src_preds, src_color[:,0,:])):
             color_cats_src[color_terms[int(pred)]].append(color)
@@ -238,19 +206,6 @@ class BCC:
             mass_center_src = BCC.__calc_gravitational_center(mesh_src)
             mass_center_ref = BCC.__calc_gravitational_center(mesh_ref)
 
-            # BCC.__write_convex_hull_mesh(colors=color_cats_src[color_cat], 
-            #                                                     shape=np.asarray(color_cats_src[color_cat]).shape, 
-            #                                                     path="/home/potechius/Downloads/convex_hull_"+color_cat+".ply", 
-            #                                                     color=BCC.color_samples[color_cat],
-            #                                                     color_space="LAB")
-            
-            # BCC.__write_convex_hull_mesh(colors=color_cats_ref[color_cat], 
-            #                                                     shape=np.asarray(color_cats_ref[color_cat]).shape, 
-            #                                                     path="/home/potechius/Downloads/convex_hull_"+color_cat+".ply", 
-            #                                                     color=BCC.color_samples[color_cat],
-            #                                                     color_space="LAB")
-
-
             # calculate intersection between convex hull and ray consisting of the center of mass and the given pixel color
             inter_src = BCC.__calc_line_mesh_intersection(mesh_src, color_cats_src[color_cat] - mass_center_src, mass_center_src)
             inter_ref = BCC.__calc_line_mesh_intersection(mesh_ref, color_cats_src[color_cat] - mass_center_src, mass_center_ref)
@@ -268,7 +223,6 @@ class BCC:
 
         output_colors = cv2.cvtColor(sorted_colors.astype("float32"), cv2.COLOR_Lab2RGB)
         output_colors = np.clip(output_colors, 0, 1)
-
 
         out_img.set_colors(output_colors)
 
@@ -299,13 +253,12 @@ class BCC:
             return False
 
     # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Calculates the gravitational center of a mesh
     # ------------------------------------------------------------------------------------------------------------------  
     def __calc_gravitational_center(mesh):
         # calculate gravitational center of convex hull
         # (1) get geometrical center
         coord_center = mesh.get_center()
-        #meshw = meshw.translate(-coord_center)
         # (2) iterate over triangles and calculate tetrahaedon mass and center using the coordinate center of the whole mesh
         vol_center = 0
         vertices = np.asarray(mesh.vertices)
@@ -317,23 +270,20 @@ class BCC:
             pos2 = vertices[tri[2]]
             pos3 = coord_center
             geo_center = np.sum([pos0, pos1, pos2, pos3], axis=0) / 4
-            # calculate volume using the formula:
-            # V = |(a-b) * ((b-d) x (c-d))| / 6
+            # calculate volume using the formula: V = |(a-b) * ((b-d) x (c-d))| / 6
             vol = np.abs(np.dot((pos0 - pos3), np.cross((pos1 - pos3), (pos2-pos3)))) / 6
             vol_center += vol * geo_center
             mesh_volume += vol
-        # (3) calculate mesh center based on:
-        # mass_center = sum(tetra_volumes*tetra_centers)/sum(volumes)
+        # (3) calculate mesh center based on: mass_center = sum(tetra_volumes*tetra_centers)/sum(volumes)
         mass_center = vol_center / mesh_volume
         return mass_center
     
     # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Calculates the convex hull of a given point set
     # ------------------------------------------------------------------------------------------------------------------  
     def __calc_convex_hull(points):
         chull_red_src = ConvexHull(points)
         chull_red_src_p = np.expand_dims(chull_red_src.points, axis=1).astype("float32")
-        #chull_red_src_p = cv2.cvtColor(chull_red_src_p, cv2.COLOR_Lab2RGB)
         chull_red_src_p = np.squeeze(chull_red_src_p)
 
         mesh = o3d.geometry.TriangleMesh(vertices=o3d.utility.Vector3dVector(chull_red_src_p),
@@ -341,7 +291,7 @@ class BCC:
         return mesh
     
     # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Calculates the intersection between a line and a triangle mesh
     # ------------------------------------------------------------------------------------------------------------------    
     def __calc_line_mesh_intersection(mesh, directions, mass_center):
         scene = o3d.t.geometry.RaycastingScene()
@@ -360,7 +310,7 @@ class BCC:
         return ans
     
     # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Calculates the convex hull of a given point set and saves it as a triangle mesh
     # ------------------------------------------------------------------------------------------------------------------ 
     def __write_convex_hull_mesh(colors, shape, path, color, color_space="LAB"):
         if color_space == "RGB":
@@ -380,7 +330,7 @@ class BCC:
                                    write_triangle_uvs=False)
         
     # ------------------------------------------------------------------------------------------------------------------
-    #coplanarity
+    # coplanarity
     # ------------------------------------------------------------------------------------------------------------------         
     def __transfer_colors(output_colors, colors, mass_center_src, mass_center_ref, dist_src, dist_ref):
         point_dir = colors - mass_center_src 

@@ -11,7 +11,7 @@ import cv2
 import math
 import numpy as np
 import sys
-sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
+#sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
 from skimage.metrics import peak_signal_noise_ratio as psnr
 
@@ -27,14 +27,6 @@ from skimage.metrics import peak_signal_noise_ratio as psnr
 # ----------------------------------------------------------------------------------------------------------------------
 class RMSE:
     # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
-
-    # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
@@ -44,70 +36,9 @@ class RMSE:
         src_img = src.get_raw()
         ref_img = ref.get_raw()
 
-        num_pix = src_img.shape[0] * src_img.shape[1]# + ref_img.shape[0] * ref_img.shape[1]
+        num_pix = src_img.shape[0] * src_img.shape[1]
 
         rmse_c = np.sqrt(np.sum((src_img - ref_img) ** 2, axis=(0,1)) / num_pix)
         rmse = np.sum(rmse_c) / 3
 
         return round(rmse, 4)
-
-    # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    # @staticmethod
-    # def apply2(src, ref):
-    #     mssim = ssim(src.get_raw(), ref.get_raw(), channel_axis=2)
-    #     return round(mssim, 4)
-
-# ------------------------------------------------------------------------------------------------------------------
-#
-# ------------------------------------------------------------------------------------------------------------------ 
-def main():
-    fuu = ["GLO", "FUZ", "TPS", "PDF", "MKL", "HIS", "NST", "CAM", "DPT", "RHG", "BCC"]
-    for ALG in fuu:
-        print(ALG)
-        file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-        #ALG = "HIS"
-        total_tests = 0
-        eval_arr = []
-        for line in file1.readlines():
-            total_tests += 1
-            #print(total_tests)
-            s_p, r_p = line.strip().split(" ")
-            outfile_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-            #print(outfile_name)
-            img_tri = cv2.imread(outfile_name)
-            src_img = img_tri[:,:512,:]
-            ref_img = img_tri[:,512:1024,:]
-            out_img = img_tri[:,1024:,:]
-
-            src = Image(array=src_img)
-            out = Image(array=out_img)
-            mse = RMSE.apply(src, out)
-            #print(mse)
-            eval_arr.append(mse)
-
-            with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/rmse.txt","a") as file2:
-                file2.writelines(str(round(mse,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
-
-
-
-            # calculate mean
-        mean = sum(eval_arr) / len(eval_arr)
-
-        # calculate std
-        std = 0
-        for t in eval_arr:
-            std += math.pow(t-mean, 2)
-        std /= len(eval_arr)
-        std = math.sqrt(std)
-
-
-        print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
-
-        file1.close()
-
-
-
-if __name__ == "__main__":
-    main()

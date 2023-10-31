@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -8,21 +8,14 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 import numpy as np
-from numba import cuda
-import math
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
-import argparse
 from PIL import Image
 import numpy as np
 import os
 import time
-from ColorTransferLib.Algorithms.DPT.photo_style import stylize
-import cv2
-from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from copy import deepcopy
+
+from ColorTransferLib.Algorithms.DPT.photo_style import stylize
 from ColorTransferLib.Utils.Helper import check_compatibility
-
-
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -110,64 +103,17 @@ class DPT:
 
         if opt.style_option == 0:
             best_image_bgr = stylize(opt, False, src_img, ref_img)
-            #result = Image.fromarray(np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0)))
-            #result.save(opt.output_image)
             out = np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0))
         elif opt.style_option == 1:
             best_image_bgr = stylize(opt, True, src_img, ref_img)
-            """
-            if not args.apply_smooth:
-                result = Image.fromarray(np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0)))
-                result.save(args.output_image)
-            else:
-                # Pycuda runtime incompatible with Tensorflow
-                from smooth_local_affine import smooth_local_affine
-                content_input = np.array(Image.open(args.content_image_path).convert("RGB"), dtype=np.float32)
-                # RGB to BGR
-                content_input = content_input[:, :, ::-1]
-                # H * W * C to C * H * W
-                content_input = content_input.transpose((2, 0, 1))
-                input_ = np.ascontiguousarray(content_input, dtype=np.float32) / 255.
-
-                _, H, W = np.shape(input_)
-
-                output_ = np.ascontiguousarray(best_image_bgr.transpose((2, 0, 1)), dtype=np.float32) / 255.
-                best_ = smooth_local_affine(output_, input_, 1e-7, 3, H, W, args.f_radius, args.f_edge).transpose(1, 2, 0)
-                result = Image.fromarray(np.uint8(np.clip(best_ * 255., 0, 255.)))
-                result.save(args.output_image)
-            """
-            #result = Image.fromarray(np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0)))
-            #result.save(opt.output_image)
             out = np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0))
         elif opt.style_option == 2:
             opt.max_iter = 2 * opt.max_iter
             tmp_image_bgr = stylize(opt, False, src_img, ref_img)
             result = Image.fromarray(np.uint8(np.clip(tmp_image_bgr[:, :, ::-1], 0, 255.0)))
             opt.init_image_path = os.path.join(opt.serial, "tmp_result.png")
-            #result.save(opt.init_image_path)
 
             best_image_bgr = stylize(opt, True, src_img, ref_img)
-            """
-            if not args.apply_smooth:
-                result = Image.fromarray(np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0)))
-                result.save(args.output_image)
-            else:
-                from smooth_local_affine import smooth_local_affine
-                content_input = np.array(Image.open(args.content_image_path).convert("RGB"), dtype=np.float32)
-                # RGB to BGR
-                content_input = content_input[:, :, ::-1]
-                # H * W * C to C * H * W
-                content_input = content_input.transpose((2, 0, 1))
-                input_ = np.ascontiguousarray(content_input, dtype=np.float32) / 255.
-
-                _, H, W = np.shape(input_)
-
-                output_ = np.ascontiguousarray(best_image_bgr.transpose((2, 0, 1)), dtype=np.float32) / 255.
-                best_ = smooth_local_affine(output_, input_, 1e-7, 3, H, W, args.f_radius, args.f_edge).transpose(1, 2, 0)
-                result = Image.fromarray(np.uint8(np.clip(best_ * 255., 0, 255.)))
-                result.save(args.output_image)
-            """
-
             out = np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0))
 
         out_img.set_raw(out.astype(np.float32))

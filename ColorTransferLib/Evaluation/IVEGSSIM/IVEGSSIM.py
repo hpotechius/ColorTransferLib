@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -7,18 +7,11 @@ This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
 
-from skimage.metrics import structural_similarity as ssim
-from torchmetrics import StructuralSimilarityIndexMeasure
 import cv2
 import math
 import numpy as np
-from scipy import signal
 import sys
-sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
-from ColorTransferLib.ImageProcessing.Image import Image
-import time
-from multiprocessing import Process, Pool, Manager, Semaphore
-#import pysaliency
+#sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -31,14 +24,6 @@ from multiprocessing import Process, Pool, Manager, Semaphore
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class IVEGSSIM:
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
-
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -149,12 +134,7 @@ class IVEGSSIM:
         R1 = ()
         for c in range(3):
             R1_c = ssim_loc[:,:,c][(src_edge[:,:,c] > T1) & (ref_edge[:,:,c] > T1)]
-            # if c == 0:
-            #     print(R1_c.shape)
-            #ssim_r1_c = np.sum(R1_c) / R1_c.shape[0]
-            #ssim_r1 = ssim_r1 + (ssim_r1_c,)
             R1 = R1 + (R1_c,)
-        #return ssim_r1
         return R1
 
 
@@ -163,17 +143,11 @@ class IVEGSSIM:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def R2_region(ssim_loc, src_edge, ref_edge, T1):
-        #ssim_r2 = ()
         R2 = ()
         for c in range(3):
             R2_c = ssim_loc[:,:,c][(src_edge[:,:,c] > T1) & (ref_edge[:,:,c] <= T1) | 
                                    (ref_edge[:,:,c] > T1) & (src_edge[:,:,c] <= T1)]
-            # if c == 0:
-            #     print(R2_c.shape)
-            #ssim_r2_c = np.sum(R2_c) / R2_c.shape[0]
-            #ssim_r2 = ssim_r2 + (ssim_r2_c,)
             R2 = R2 + (R2_c,)
-        #return ssim_r2
         return R2
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -181,16 +155,10 @@ class IVEGSSIM:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def R3_region(ssim_loc, src_edge, ref_edge, T1, T2):
-        #ssim_r3 = ()
         R3 = ()
         for c in range(3):
             R3_c = ssim_loc[:,:,c][(src_edge[:,:,c] < T2) & (ref_edge[:,:,c] > T1)]
-            # if c == 0:
-            #     print(R3_c.shape)
-            #ssim_r3_c = np.sum(R3_c) / R3_c.shape[0]
-            #ssim_r3 = ssim_r3 + (ssim_r3_c,)
             R3 = R3 + (R3_c,)
-        #return ssim_r3
         return R3
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -198,23 +166,12 @@ class IVEGSSIM:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def R4_region(ssim_loc, src_edge, ref_edge, T1, T2):
-        #ssim_r4 = ()
         R4 = ()
         for c in range(3):
-            # R4_c = ssim_loc[:,:,c][(src_edge[:,:,c] <= T1) & 
-            #                        ((ref_edge[:,:,c] <= T1) | 
-            #                        ((src_edge[:,:,c] > T1) & (src_edge[:,:,c] >= T2))) ]
             R4_c = ssim_loc[:,:,c][~((src_edge[:,:,c] > T1) & (ref_edge[:,:,c] > T1)) &
                                    ~((src_edge[:,:,c] > T1) & (ref_edge[:,:,c] <= T1) | (ref_edge[:,:,c] > T1) & (src_edge[:,:,c] <= T1)) &
                                    ~((src_edge[:,:,c] < T2) & (ref_edge[:,:,c] > T1))]
-            # if c == 0:
-            #     print(R4_c.shape)
-            #ssim_r4_c = np.sum(R4_c) / R4_c.shape[0]
-            #ssim_r4 = ssim_r4 + (ssim_r4_c,)
             R4 = R4 + (R4_c,)
-        # print("Total: " + str(262144))
-        # print("R4: " + str(189189))
-        #return ssim_r4
         return R4
     
     # ------------------------------------------------------------------------------------------------------------------
@@ -229,8 +186,6 @@ class IVEGSSIM:
 
         alp = bet = gam = 1.0
 
-
-
         src_img = src.get_raw()
         ref_img = ref.get_raw()
 
@@ -244,7 +199,6 @@ class IVEGSSIM:
 
         T1 = 0.12 * np.max(src_edge_mag)
         T2 = 0.06 * np.max(src_edge_mag)
-
         
         R1 = IVEGSSIM.R1_region(ssim_local, src_edge_mag, ref_edge_mag, T1)
         R2 = IVEGSSIM.R2_region(ssim_local, src_edge_mag, ref_edge_mag, T1)
@@ -282,166 +236,3 @@ class IVEGSSIM:
         mivssim = ivssim_val[0] * w_r + ivssim_val[1] * w_g + ivssim_val[2] * w_b
 
         return round(mivssim, 4)
-    
-# ------------------------------------------------------------------------------------------------------------------
-#
-# ------------------------------------------------------------------------------------------------------------------ 
-def main2():
-    file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "GLO"
-    total_tests = 0
-    eval_arr = []
-
-
-
-    for line in file1.readlines():
-        total_tests += 1
-        print(total_tests)
-        s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        print(outfile_name)
-        img_tri = cv2.imread(outfile_name)
-        src_img = img_tri[:,:512,:]
-        ref_img = img_tri[:,512:1024,:]
-        out_img = img_tri[:,1024:,:]
-
-        src = Image(array=src_img)
-        ref = Image(array=ref_img)
-        out = Image(array=out_img)
-        ssim = IVEGSSIM.apply(src, out)
-        print(ssim)
-
-        eval_arr.append(ssim)
-
-        with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/ivegssim.txt","a") as file2:
-            file2.writelines(str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
-
-
-
-        # calculate mean
-    mean = sum(eval_arr) / len(eval_arr)
-
-    # calculate std
-    std = 0
-    for t in eval_arr:
-        std += math.pow(t-mean, 2)
-    std /= len(eval_arr)
-    std = math.sqrt(std)
-
-
-    print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
-
-    file1.close()
-
-# ------------------------------------------------------------------------------------------------------------------
-#
-# ------------------------------------------------------------------------------------------------------------------ 
-def main():
-    file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "FCM"
-    total_tests = 0
-    eval_arr = []
-
-    manager = Manager()
-    return_dict = manager.dict()
-    jobs = []
-
-    max_processes = 20
-    sem = Semaphore(max_processes)
-
-    def task(i, return_dict, sem):
-        s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        #print(outfile_name)
-        img_tri = cv2.imread(outfile_name)
-        src_img = img_tri[:,:512,:]
-        ref_img = img_tri[:,512:1024,:]
-        out_img = img_tri[:,1024:,:]
-
-        src = Image(array=src_img)
-        ref = Image(array=ref_img)
-        out = Image(array=out_img)
-        ssim = IVEGSSIM.apply(src, out)
-        return_dict[i] = (ssim, str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
-        sem.release()
-
-    for line in file1.readlines():
-        total_tests += 1
-
-        sem.acquire() # acquire semaphore before starting a new process
-        process = Process(target=task, args=(total_tests, return_dict, sem))
-        jobs.append(process)
-        process.start()
-
-        print(total_tests)
-
-        # if total_tests == 20:
-        #     break
-
-    for i, proc in enumerate(jobs):
-        print(i)
-        proc.join()
-
-    print("DONE")
-
-    for i, val in enumerate(return_dict.values()):
-        print(i)
-        eval_arr.append(val[0])
-        with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/ivegssim.txt","a") as file2:
-           file2.writelines(val[1])
-
-    # calculate mean
-    mean = sum(eval_arr) / len(eval_arr)
-
-    # calculate std
-    std = 0
-    for t in eval_arr:
-        std += math.pow(t-mean, 2)
-    std /= len(eval_arr)
-    std = math.sqrt(std)
-    print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
-    file1.close()
-
-    exit()
-
-    for line in file1.readlines():
-        total_tests += 1
-        print(total_tests)
-        s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        print(outfile_name)
-        img_tri = cv2.imread(outfile_name)
-        src_img = img_tri[:,:512,:]
-        ref_img = img_tri[:,512:1024,:]
-        out_img = img_tri[:,1024:,:]
-
-        src = Image(array=src_img)
-        ref = Image(array=ref_img)
-        out = Image(array=out_img)
-        ssim = IVEGSSIM.apply(src, out)
-        print(ssim)
-
-        eval_arr.append(ssim)
-
-        with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/ivegssim.txt","a") as file2:
-            file2.writelines(str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
-
-
-
-        # calculate mean
-    mean = sum(eval_arr) / len(eval_arr)
-
-    # calculate std
-    std = 0
-    for t in eval_arr:
-        std += math.pow(t-mean, 2)
-    std /= len(eval_arr)
-    std = math.sqrt(std)
-
-
-    print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
-
-    file1.close()
-
-if __name__ == "__main__":
-    main()

@@ -7,17 +7,12 @@ This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
 
-from skimage.metrics import structural_similarity as ssim
-from torchmetrics import StructuralSimilarityIndexMeasure
 import cv2
 import math
 import numpy as np
-from scipy import signal
 import sys
 sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
-import time
-#import pysaliency
 from multiprocessing import Process, Pool, Manager, Semaphore
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -48,14 +43,6 @@ from multiprocessing import Process, Pool, Manager, Semaphore
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class CSS:
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
-
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -236,125 +223,3 @@ class CSS:
         css_val = (ss + A4) / (cs + A4)
 
         return round(css_val, 4)
-
-# ------------------------------------------------------------------------------------------------------------------
-#
-# ------------------------------------------------------------------------------------------------------------------ 
-def main():
-    file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "BCC"
-    total_tests = 0
-    eval_arr = []
-
-    manager = Manager()
-    return_dict = manager.dict()
-    jobs = []
-
-    max_processes = 20
-    sem = Semaphore(max_processes)
-
-    def task(i, return_dict, sem):
-        s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        #print(outfile_name)
-        img_tri = cv2.imread(outfile_name)
-        src_img = img_tri[:,:512,:]
-        ref_img = img_tri[:,512:1024,:]
-        out_img = img_tri[:,1024:,:]
-
-        src = Image(array=src_img)
-        ref = Image(array=ref_img)
-        out = Image(array=out_img)
-        ssim = CSS.apply(src, ref, out)
-        return_dict[i] = (ssim, str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
-        sem.release()
-
-    for line in file1.readlines():
-        total_tests += 1
-
-        sem.acquire() # acquire semaphore before starting a new process
-        process = Process(target=task, args=(total_tests, return_dict, sem))
-        jobs.append(process)
-        process.start()
-
-        print(total_tests)
-
-        # if total_tests == 20:
-        #     break
-
-    for i, proc in enumerate(jobs):
-        print(i)
-        proc.join()
-
-    print("DONE")
-
-    for i, val in enumerate(return_dict.values()):
-        print(i)
-        eval_arr.append(val[0])
-        with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/css.txt","a") as file2:
-           file2.writelines(val[1])
-
-    # calculate mean
-    mean = sum(eval_arr) / len(eval_arr)
-
-    # calculate std
-    std = 0
-    for t in eval_arr:
-        std += math.pow(t-mean, 2)
-    std /= len(eval_arr)
-    std = math.sqrt(std)
-    print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
-    file1.close()
-
-    exit()
-
-
-
-
-
-    file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "GLO"
-    total_tests = 0
-    eval_arr = []
-    for line in file1.readlines():
-        total_tests += 1
-        print(total_tests)
-        s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        print(outfile_name)
-        img_tri = cv2.imread(outfile_name)
-        src_img = img_tri[:,:512,:]
-        ref_img = img_tri[:,512:1024,:]
-        out_img = img_tri[:,1024:,:]
-
-        src = Image(array=src_img)
-        ref = Image(array=ref_img)
-        out = Image(array=out_img)
-        ssim = CSS.apply(src, ref, out)
-
-        eval_arr.append(ssim)
-
-        with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/css.txt","a") as file2:
-            file2.writelines(str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
-
-
-
-        # calculate mean
-    mean = sum(eval_arr) / len(eval_arr)
-
-    # calculate std
-    std = 0
-    for t in eval_arr:
-        std += math.pow(t-mean, 2)
-    std /= len(eval_arr)
-    std = math.sqrt(std)
-
-
-    print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
-
-    file1.close()
-
-
-
-if __name__ == "__main__":
-    main()

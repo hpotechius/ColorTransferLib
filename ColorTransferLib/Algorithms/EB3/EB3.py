@@ -8,13 +8,11 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 import numpy as np
-from numba import cuda
-import math
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
-from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from sklearn.decomposition import PCA
 from scipy.linalg import fractional_matrix_power
 from copy import deepcopy
+
+from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.Helper import check_compatibility
 
 
@@ -44,19 +42,7 @@ class EB3:
         "src": ["PointCloud"],
         "ref": ["PointCloud"]
     }
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
 
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # HOST METHODS
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -282,12 +268,10 @@ class EB3:
         # Preprocessing
         out_img = deepcopy(src)
 
-
         if opt.version == "IGD":
             out = EB3.IGD(src, ref, opt.pca)
         else:
             out = EB3.MGD(src, ref, opt.pca)
-
 
         out_img.set_colors(out)
 

@@ -8,23 +8,26 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 import numpy as np
-from numba import cuda
-import math
 import time
-
 import os
-import sys
-os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
+from oct2py import octave
+from copy import deepcopy
+from sys import platform
+
+from ColorTransferLib.Utils.Helper import check_compatibility
+
+if platform == "linux" or platform == "linux2":
+    # linux
+    os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
+elif platform == "darwin":
+    # OS X
+    os.environ["OCTAVE_EXECUTABLE"] = "/opt/homebrew/bin/octave-cli"
+elif platform == "win32":
+    # Windows...
+    pass
 
 # sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
 
-from oct2py import octave, Oct2Py
-from ColorTransferLib.Utils.BaseOptions import BaseOptions
-import cv2
-import json
-from copy import deepcopy
-from ColorTransferLib.Utils.Helper import check_compatibility
-from ColorTransferLib.ImageProcessing.Image import Image as Img
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------

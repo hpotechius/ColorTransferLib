@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -7,8 +7,6 @@ This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
 
-from skimage.metrics import structural_similarity as ssim
-from torchmetrics import StructuralSimilarityIndexMeasure
 import cv2
 import math
 import numpy as np
@@ -16,9 +14,7 @@ from scipy import signal
 import sys
 sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
 from ColorTransferLib.ImageProcessing.Image import Image
-import time
-#import pysaliency
-from multiprocessing import Process, Pool, Manager, Semaphore
+from multiprocessing import Process, Manager, Semaphore
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Based on the paper:
@@ -51,14 +47,6 @@ from multiprocessing import Process, Pool, Manager, Semaphore
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class CTQM:
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
-
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -327,149 +315,3 @@ class CTQM:
         ctqm_val = wo * cf_val + wm * cms_val + ws *ivegssim_val
 
         return round(ctqm_val, 4)
-
-# ------------------------------------------------------------------------------------------------------------------
-#
-# ------------------------------------------------------------------------------------------------------------------ 
-def main():
-    with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/GLO/ctqm.txt","r") as file2:
-        cc = 0
-        summ = 0
-        for line in file2.readlines():
-            tim = float(line.strip().split(" ")[0])
-            if math.isinf(tim) or math.isnan(tim):
-                continue
-            summ += tim
-            cc += 1
-        summ /= cc
-        print(cc)
-        print(summ)
-    exit()    
-    """
-    outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+"GLO"+"/512_interior-01_dithering-4__to__512_nature-09_dithering-4.png"
-    img_tri = cv2.imread(outfile_name)
-    src_img = img_tri[:,:512,:]
-    ref_img = img_tri[:,512:1024,:]
-    out_img = img_tri[:,1024:,:]
-
-    src = Image(array=src_img)
-    ref = Image(array=ref_img)
-    out = Image(array=out_img)
-    ssim = CTQM.apply(src, ref, out)
-    print(ssim)
-    exit()
-    """
-
-    file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "BCC"
-    total_tests = 0
-    eval_arr = []
-
-    manager = Manager()
-    return_dict = manager.dict()
-    jobs = []
-
-    max_processes = 20
-    sem = Semaphore(max_processes)
-
-    def task(i, return_dict, sem):
-        s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        #print(outfile_name)
-        img_tri = cv2.imread(outfile_name)
-        src_img = img_tri[:,:512,:]
-        ref_img = img_tri[:,512:1024,:]
-        out_img = img_tri[:,1024:,:]
-
-        src = Image(array=src_img)
-        ref = Image(array=ref_img)
-        out = Image(array=out_img)
-        ssim = CTQM.apply(src, ref, out)
-        return_dict[i] = (ssim, str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
-        sem.release()
-
-    for line in file1.readlines():
-        total_tests += 1
-
-        sem.acquire() # acquire semaphore before starting a new process
-        process = Process(target=task, args=(total_tests, return_dict, sem))
-        jobs.append(process)
-        process.start()
-
-        print(total_tests)
-
-        # if total_tests == 20:
-        #     break
-
-    for i, proc in enumerate(jobs):
-        print(i)
-        proc.join()
-
-    print("DONE")
-
-    for i, val in enumerate(return_dict.values()):
-        print(i)
-        eval_arr.append(val[0])
-        with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/ctqm.txt","a") as file2:
-           file2.writelines(val[1])
-
-    # calculate mean
-    mean = sum(eval_arr) / len(eval_arr)
-
-    # calculate std
-    std = 0
-    for t in eval_arr:
-        std += math.pow(t-mean, 2)
-    std /= len(eval_arr)
-    std = math.sqrt(std)
-    print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
-    file1.close()
-
-    exit()
-
-    file1 = open("/media/potechius/Active_Disk/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "GLO"
-    total_tests = 0
-    eval_arr = []
-    for line in file1.readlines():
-        total_tests += 1
-        print(total_tests)
-        s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        print(outfile_name)
-        img_tri = cv2.imread(outfile_name)
-        src_img = img_tri[:,:512,:]
-        ref_img = img_tri[:,512:1024,:]
-        out_img = img_tri[:,1024:,:]
-
-        src = Image(array=src_img)
-        ref = Image(array=ref_img)
-        out = Image(array=out_img)
-        ssim = CTQM.apply(src, ref, out)
-
-        eval_arr.append(ssim)
-
-        with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/"+ALG+"/ctqm.txt","a") as file2:
-            file2.writelines(str(round(ssim,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
-
-
-
-        # calculate mean
-    mean = sum(eval_arr) / len(eval_arr)
-
-    # calculate std
-    std = 0
-    for t in eval_arr:
-        std += math.pow(t-mean, 2)
-    std /= len(eval_arr)
-    std = math.sqrt(std)
-
-
-    print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
-
-    file1.close()
-
-
-
-if __name__ == "__main__":
-    main()

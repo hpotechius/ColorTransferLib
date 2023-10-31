@@ -12,10 +12,6 @@ Adaptation of https://github.com/cysmith/neural-style-tf
 import tensorflow as tf
 import numpy as np
 import scipy.io
-import struct
-import time
-import cv2
-import os
 
 
 """

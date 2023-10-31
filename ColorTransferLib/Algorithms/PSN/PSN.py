@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -8,28 +8,20 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 import numpy as np
-from numba import cuda
-import math
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
-from ColorTransferLib.Utils.BaseOptions import BaseOptions
 import configparser
-import shutil
 import time
 from pprint import pprint as ppt
-
 import tensorflow as tf
+import os
+import glob
 
 from ColorTransferLib.Algorithms.PSN.psnet import PSNet
 from ColorTransferLib.Algorithms.PSN.utils import *
-from copy import deepcopy
 from ColorTransferLib.Utils.Helper import check_compatibility
-
-import os
 
 opj = os.path.join
 ope = os.path.exists
 om = os.mkdir
-import glob
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -61,19 +53,7 @@ class PSN:
         "src": ["PointCloud"],
         "ref": ["PointCloud"]
     }
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
 
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # HOST METHODS
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -113,15 +93,8 @@ class PSN:
 
         np.random.seed(42)
         trained_model = "Models/PSN/model"
-        st_time = str(time.strftime('%Y_%m_%d_%H_%M', time.localtime(time.time())))
-        #if not os.path.exists("/home/hpadmin/Projects/psnet/style_transfer_results"):
-        #    os.mkdir("/home/hpadmin/Projects/psnet/style_transfer_results")
-        #st_dir = os.path.join("/home/hpadmin/Projects/psnet/style_transfer_results", st_time)
-        #if not os.path.exists(st_dir):
-        #    os.mkdir(st_dir)
-        #shutil.copyfile("Models/PSNetStyleTransfer/base_config.ini", os.path.join(st_dir, "config.ini"))
+
         config = configparser.ConfigParser()
-        #config.read(os.path.join(st_dir, "config.ini"))
         config.read("Models/PSN/base_config.ini")
 
         content_layer = list(map(lambda x: int(x), config["style_transfer"]["content_layer"].split(",")))
@@ -129,21 +102,9 @@ class PSN:
         use_content_color = ["FE_COLOR_FE_{}".format(i) for i in content_layer]
         use_style_color = ["FE_COLOR_FE_{}".format(i) for i in style_layer]
 
-        #content_path = "/home/hpadmin/Projects/psnet/sample_content/table.ply"
-        #style_path = "/home/hpadmin/Projects/psnet/sample_style/the_scream.jpg"
-
-
-        #content_dir = opj(st_dir, str(0))
-        #if not ope(content_dir):
-        #    om(content_dir)
-
         content_geo = src.get_vertex_positions().reshape(src.get_num_vertices(), 3)
         content_ncolor = src.get_colors().reshape(src.get_num_vertices(), 3)
         content_color = (255 * content_ncolor).astype(np.int16)
-        #content_geo, content_ncolor = prepare_content_or_style(content_path)
-        #content_color = (127.5 * (content_ncolor + 1)).astype(np.int16)
-        #display_point(content_geo, content_color, fname=os.path.join(content_dir, "content.png"), axis="off",
-        #                marker_size=3)
 
         # get content representations
         tf.compat.v1.reset_default_graph()
@@ -155,36 +116,22 @@ class PSN:
                         num_pts=content_ncolor.shape[0])
         psnet.restore_model(trained_model)
         ppt(list(psnet.node.keys()))
-        # obtained_content_fvs = sess.run({i:psnet.node_color[i] for i in use_content_color},
-        #                                 feed_dict={psnet.color: content_ncolor[None, ...],
-        #                                            psnet.bn_pl: False,
-        #                                            psnet.dropout_prob_pl: 1.0})
+
         obtained_content_fvs = sess.run(psnet.node, feed_dict={psnet.color: content_ncolor[None, ...],
                                                                 psnet.geo: content_geo[None, ...],
                                                                 psnet.bn_pl: False,
                                                                 psnet.dropout_prob_pl: 1.0})
         sess.close()
 
-        # for each content, style transfer it from the style in the Style_list
-        #style_dir = opj(content_dir, str(0))
-        #if not ope(style_dir):
-        #    om(style_dir)
 
         #if not (style_path.endswith("ply") or style_path.endswith("npy")):
         if ref.get_type() == "Image":
-            #style_ncolor = prepare_content_or_style(style_path)
-            #print(style_ncolor.shape)
             style_ncolor = ref.get_colors().reshape(ref.get_pixelnum(), 3) * 2.0 - 1.0
             from_image = True            
         else:
             from_image = False
-            #style_geo, style_ncolor = prepare_content_or_style(style_path)
-            #style_color = (127.5 * (style_ncolor + 1)).astype(np.int16)
             style_geo = ref.get_vertex_positions().reshape(ref.get_num_vertices(), 3)
             style_ncolor = ref.get_colors().reshape(ref.get_num_vertices(), 3)
-            style_color = (255 * style_ncolor).astype(np.int16)
-
-            #display_point(style_geo, style_color, fname=os.path.join(style_dir, "style.png"), axis="off", marker_size=3)
 
         # get style representations
         tf.compat.v1.reset_default_graph()
@@ -247,42 +194,8 @@ class PSN:
                     
                     if not from_image and geotransfer:
                         transferred_geo = np.squeeze(sess.run(psnet.geo))
-                        #src.set_vertex_positions(transferred_geo.reshape(src.get_num_vertices(), 1, 3))
                         src.set_vertex_positions(transferred_geo.reshape(src.get_num_vertices(), 3))
-                        #print(transferred_geo.shape)
-                        #exit()
-                    """
-                        print("save")
-                        save_ply(transferred_geo, transferred_color, os.path.join(style_dir,
-                                                style_path.split("/")[-1].split(".")[0] + "_{}.ply".format(i)))
-                        display_point(content_geo, transferred_color, fname=os.path.join(style_dir,
-                                                                                            style_path.split("/")[
-                                                                                                -1].split(".")[
-                                                                                                0] + "_color_{}.png".format(
-                                                                                                i)), axis="off",
-                                        marker_size=2)
-                        display_point(transferred_geo, transferred_color, fname=os.path.join(style_dir,
-                                                                                                style_path.split(
-                                                                                                    "/")[
-                                                                                                    -1].split(".")[
-                                                                                                    0] + "_both_{}.png".format(
-                                                                                                    i)),
-                                        axis="off", marker_size=2)
-                        display_point(transferred_geo, content_color, fname=os.path.join(style_dir,
-                                                                                            style_path.split("/")[
-                                                                                                -1].split(".")[
-                                                                                                0] + "_geo_{}.png".format(
-                                                                                                i)), axis="off",
-                                        marker_size=2)
-                    else:
-                        save_ply(content_geo, transferred_color, os.path.join(style_dir, style_path.split("/")[-1].split(".")[0] + "_{}.ply".format(i)))
-                        display_point(content_geo, transferred_color, fname=os.path.join(style_dir,
-                                                                                            style_path.split("/")[
-                                                                                                -1].split(".")[
-                                                                                                0] + "_color_{}.png".format(
-                                                                                                i)), axis="off",
-                                        marker_size=2)
-                    """
+
                     break
                 previous_loss = current_total_loss
             sess.close()

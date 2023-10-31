@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -9,12 +9,6 @@ Please see the LICENSE file that should have been included as part of this packa
 
 import cv2
 import math
-import os
-import numpy as np
-import json
-import sys
-#sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
-#from ColorTransferLib.ImageProcessing.Image import Image
 import pyiqa
 import torch
 
@@ -31,14 +25,6 @@ import torch
 # ----------------------------------------------------------------------------------------------------------------------
 class NIQE:
     # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
-
-    # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
@@ -51,8 +37,6 @@ class NIQE:
         img_ten = torch.swapaxes(img_ten, 0, 1)
         img_ten = img_ten.unsqueeze(0)
 
-        #print(pyiqa.list_models())
-        #device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         device = "cpu"
         iqa_metric = pyiqa.create_metric('niqe', device=device)
         score_nr = iqa_metric(img_ten)
@@ -60,67 +44,3 @@ class NIQE:
         score_nr = float(score_nr.cpu().detach().numpy())
 
         return round(score_nr, 4)
-
-# ------------------------------------------------------------------------------------------------------------------
-#
-# ------------------------------------------------------------------------------------------------------------------ 
-def main():
-    # with open("/media/potechius/Active_Disk/Tests/MetricEvaluation/PDF/niqe.txt","r") as file2:
-    #     cc = 0
-    #     summ = 0
-    #     for line in file2.readlines():
-    #         tim = float(line.strip().split(" ")[0])
-    #         if math.isinf(tim) or math.isnan(tim):
-    #             continue
-    #         summ += tim
-    #         cc += 1
-    #     summ /= cc
-    #     print(cc)
-    #     print(summ)
-    # exit()  
-
-    file1 = open("/media/potechius/Backup_00/Tests/MetricEvaluation/testset_evaluation_512.txt")
-    ALG = "FCM"
-    total_tests = 0
-    eval_arr = []
-    for line in file1.readlines():
-        total_tests += 1
-        print(total_tests)
-        s_p, r_p = line.strip().split(" ")
-        outfile_name = "/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/"+s_p.split("/")[1].split(".")[0] +"__to__"+r_p.split("/")[1].split(".")[0]+".png"
-        #print(outfile_name)
-        img_tri = cv2.imread(outfile_name)
-        src_img = img_tri[:,:512,:]
-        ref_img = img_tri[:,512:1024,:]
-        out_img = img_tri[:,1024:,:]
-
-        src = Image(array=src_img)
-        out = Image(array=out_img)
-        mse = NIQE.apply(out)
-        print(mse)
-        eval_arr.append(mse)
-
-        with open("/media/potechius/Backup_00/Tests/MetricEvaluation/"+ALG+"/niqe.txt","a") as file2:
-            file2.writelines(str(round(mse,3)) + " " + s_p.split(".")[0] + " " + r_p.split(".")[0] + "\n")
-
-
-
-        # calculate mean
-    mean = sum(eval_arr) / len(eval_arr)
-
-    # calculate std
-    std = 0
-    for t in eval_arr:
-        std += math.pow(t-mean, 2)
-    std /= len(eval_arr)
-    std = math.sqrt(std)
-
-
-    print("Averaged: " + str(round(mean,3)) + " +- " + str(round(std,3)))
-
-    file1.close()
-
-
-
-if __name__ == "__main__":
-    main()

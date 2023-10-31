@@ -9,18 +9,16 @@ Please see the LICENSE file that should have been included as part of this packa
 Adaptation of https://github.com/cysmith/neural-style-tf
 """
 
-from ColorTransferLib.Algorithms.NST.Model import Model
 import tensorflow as tf
 import numpy as np
 import torch
-import scipy.io
-import struct
 import time
 import cv2
 import os
-from numba import cuda
 from copy import deepcopy
+
 from ColorTransferLib.Utils.Helper import check_compatibility
+from ColorTransferLib.Algorithms.NST.Model import Model
 
 
 physical_devices = tf.config.list_physical_devices('GPU')
@@ -61,22 +59,10 @@ for device in physical_devices:
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class NST:
-    identifier = "NST"
-    title = "A Neural Algorithm of Artistic Style"
-    year = 2015
-
     compatibility = {
         "src": ["Image"],
         "ref": ["Image", "Mesh"]
     }
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
 
     # ------------------------------------------------------------------------------------------------------------------
     #
@@ -112,7 +98,6 @@ class NST:
         start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, NST.compatibility)
-
 
         if output["status_code"] == -1:
             return output
@@ -150,7 +135,6 @@ class NST:
         out = NST.postprocess(out)
         tf.compat.v1.reset_default_graph()
 
-
         out_img.set_raw(out)
         output = {
             "status_code": 0,
@@ -158,10 +142,6 @@ class NST:
             "object": out_img,
             "process_time": time.time() - start_time
         }
-
-        # clear memory
-        #tf.keras.clear_session()
-
 
         return output
 

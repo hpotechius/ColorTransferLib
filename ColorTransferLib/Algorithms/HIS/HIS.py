@@ -8,20 +8,12 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 import numpy as np
-from numba import cuda
-import math
 import time
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
+import torch
+from copy import deepcopy
+
 from ColorTransferLib.Algorithms.HIS.models.models import create_model
 from ColorTransferLib.Algorithms.HIS.data.data_loader import CreateDataLoader
-import cv2
-import torch
-from PIL import Image
-import torchvision.utils as vutils
-import sys
-
-from ColorTransferLib.Utils.BaseOptions import BaseOptions
-from copy import deepcopy
 from ColorTransferLib.Utils.Helper import check_compatibility
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -63,20 +55,6 @@ class HIS:
         "src": ["Image"],
         "ref": ["Image", "Mesh"]
     }
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # HOST METHODS
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
     #

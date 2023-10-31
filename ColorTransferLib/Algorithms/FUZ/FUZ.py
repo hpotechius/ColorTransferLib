@@ -8,17 +8,14 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 import numpy as np
-from numba import cuda
-import math
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
-from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from fcmeans import FCM
 import networkx as nx
-import cv2
 import time
-
 from copy import deepcopy
+
+from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.Helper import check_compatibility
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -46,8 +43,6 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 #   Fuzzier: 2.0
 #   Max Iterations: 100
 #   Error: 1e-04
-#
-# TODO: Fix lab color transfer
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class FUZ:
@@ -55,21 +50,9 @@ class FUZ:
         "src": ["Image", "Mesh", "PointCloud"],
         "ref": ["Image", "Mesh", "PointCloud"]
     }
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
 
     # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # HOST METHODS
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Returns basic information of the corresponding publication.
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def get_info():
@@ -90,22 +73,26 @@ class FUZ:
         return info
 
     # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Applies the color transfer algorihtm
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        # Record the start time for performance measurement
         start_time = time.time()
 
+        # Check if the source and reference images are compatible for color transfer
         output = check_compatibility(src, ref, FUZ.compatibility)
 
+        # If not compatible, return the error output
         if output["status_code"] == -1:
             return output
 
+        # Extract colors from the source and reference images
         src_color = src.get_colors()
         ref_color = ref.get_colors()
         out_img = deepcopy(src)
 
-        # [1] Get Parameters
+        # [1] Extract parameters needed for the algorithm
         src_pix_num = src_color.shape[0]
         ref_pix_num = ref_color.shape[0]
         dim = src_color.shape[2]
@@ -114,16 +101,16 @@ class FUZ:
         fuzzier = opt.fuzzier
         term_error = opt.error
 
-        # [2] Convert RGB to lab color space
+        # [2] Convert colors from RGB to Lab color space
         src_color = ColorSpaces.rgb_to_lab_cpu(src_color)
         ref_color = ColorSpaces.rgb_to_lab_cpu(ref_color)
 
 
-        # [3] reshaping because input is of size (num_pixels, 1, 3)
+        # [3] reshaping to (num_pixels, 3) because input is of size (num_pixels, 1, 3)
         src_reshape = src_color.reshape(src_pix_num, dim)
         ref_reshape = ref_color.reshape(ref_pix_num, dim)
 
-        # [4] Apply FCM
+        # [4] Apply Fuzzy C-Means clustering to both source and reference colors
         fcm_src = FCM(n_clusters=clusters, max_iter=max_iter, m=fuzzier, error=term_error)
         fcm_src.fit(src_reshape)
 
@@ -157,7 +144,6 @@ class FUZ:
             std_r[c] = np.array([sig_l, sig_a, sig_b])
             weights_r[c] = (1/3)*sig_l + (1/3)*sig_a + (1/3)*sig_b
 
-
         # [6] Calculate cluster directions by bipartite matching
         mapping = np.arange(clusters)
         B = nx.Graph()
@@ -187,14 +173,15 @@ class FUZ:
 
         lab_new = lab_new.T.reshape((src_pix_num, dim))
 
-        # [8] Convert to RGB
+        # [8] Convert the resulting Lab colors back to RGB
         lab_new = lab_new.reshape(src_pix_num, 1, dim)
         lab_new = ColorSpaces.lab_to_rgb_cpu(lab_new)
         lab_new = np.clip(lab_new, 0.0, 1.0)
 
-
+        # [9] Set the new colors to the output image
         out_img.set_colors(lab_new)
 
+        # Prepare and return the output with performance metrics
         output = {
             "status_code": 0,
             "response": "",

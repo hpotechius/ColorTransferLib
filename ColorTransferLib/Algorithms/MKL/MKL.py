@@ -8,14 +8,11 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 import numpy as np
-from numba import cuda
-import math
 import time
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
-from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from scipy.linalg import fractional_matrix_power
-from ColorTransferLib.Utils.Helper import check_compatibility
 from copy import deepcopy
+
+from ColorTransferLib.Utils.Helper import check_compatibility
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -47,19 +44,7 @@ class MKL:
         "src": ["Image", "Mesh", "PointCloud"],
         "ref": ["Image", "Mesh", "PointCloud"]
     }
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
 
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # HOST METHODS
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -108,12 +93,8 @@ class MKL:
         src_color_rgb = src_color.reshape(src_color.shape[0], 3)
         ref_color_rgb = ref_color.reshape(ref_color.shape[0], 3)
 
-
-        #src_mean = np.mean(src_color_rgb, axis=0)
-        #ref_mean = np.mean(ref_color_rgb, axis=0)
         src_cov = np.cov(src_color_rgb, rowvar=False)
         ref_cov = np.cov(ref_color_rgb, rowvar=False)
-
 
         src_covs = fractional_matrix_power(src_cov, 0.5)
         src_covsr = fractional_matrix_power(src_cov, -0.5)
