@@ -9,6 +9,9 @@ This color transfer library, called *ColorTransferLib* offers a collection of pu
 
 TODO
 
+![CT-API](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/7e59eea8-78be-4dfb-acae-7e8abfd7abe5)
+
+
 ## Installation
 ``
 python setup.py bdist_wheel
