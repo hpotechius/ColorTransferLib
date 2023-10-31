@@ -5,13 +5,13 @@ This color transfer library, called *ColorTransferLib* offers a collection of pu
 ![compatability](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/d59972fd-e135-4572-8682-d3f5f8f85c75)
 
 ## API
-For seamless integration, adhere to the API specifications of the new color transfer algorithm, depicted in Figure \ref{fig:ctapi}.
+For seamless integration, adhere to the API specifications of the new color transfer algorithm, depicted in the Figure below.
 
-Each class demands three inputs: Source, Reference, and Options. The Source and Reference should be of the \textit{Image} or \textit{Mesh} class type, with the latter encompassing 3D point clouds and textured triangle meshes. The Options input consists of dictionaries, stored as a JSON file in the \textit{Options} folder. For a sample option, see Listing \ref{lst:option}. Every option details an adjustable parameter for the algorithm.
+Each class demands three inputs: Source, Reference, and Options. The Source and Reference should be of the **Image** or **Mesh** class type, with the latter encompassing 3D point clouds and textured triangle meshes. The Options input consists of dictionaries, stored as a JSON file in the **Options** folder. For a sample option, see Listings 1. Every option details an adjustable parameter for the algorithm.
 
-Save each new color transfer class in the ColorTransferLib Repository under the \textit{Algorithms} folder. This ensures its automatic integration into the user interface. The class should have two essential functions: \textit{get_info()} and \textit{apply(...)}. The \textit{get_info()} function yields vital details about the algorithm (refer to Listing \ref{lst:info}) for display in the user interface. It also provides data type details, facilitating the identification of compatible objects for the algorithm. The \textit{apply(...)} function ingests the inputs and embodies the core logic for color transfer.
+Save each new color transfer class in the ColorTransferLib Repository under the **Algorithms** folder. This ensures its automatic integration into the user interface. The class should have two essential functions: **get_info()** and **apply(...)**. The **get_info()** function yields vital details about the algorithm (refer to Listing 2). It also provides data type details, facilitating the identification of compatible objects for the algorithm. The **apply(...)** function ingests the inputs and embodies the core logic for color transfer.
 
-The output should resemble a dictionary format, as outlined in Listing \ref{lst:output}. A status code of 0 signifies a valid algorithm output, while -1 indicates invalidity. The process time denotes the algorithm's execution duration, useful for subsequent evaluations. The 'object' key in the dictionary holds the result, which should match the class type of the Source input.
+The output should resemble a dictionary format, as outlined in Listing 3. A status code of 0 signifies a valid algorithm output, while -1 indicates invalidity. The process time denotes the algorithm's execution duration, useful for subsequent evaluations. The 'object' key in the dictionary holds the result, which should match the class type of the Source input.
 
 ![CT-API](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/7e59eea8-78be-4dfb-acae-7e8abfd7abe5)
 
