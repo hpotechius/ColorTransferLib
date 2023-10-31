@@ -4,7 +4,8 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 
 import os
-os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
+#os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
+os.environ["OCTAVE_EXECUTABLE"] = "/opt/homebrew/bin/octave-cli"
 from oct2py import octave, Oct2Py
 from scipy.interpolate import interp1d
 

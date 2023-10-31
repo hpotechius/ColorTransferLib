@@ -18,6 +18,7 @@ from ColorTransferLib.Utils.Helper import get_methods, get_metrics
 
 available_methods = get_methods()
 available_metrics = get_metrics()
+
 for m in available_methods:
     exec(m + " = getattr(importlib.import_module('ColorTransferLib.Algorithms."+m+"."+m+"'), '"+m+"')")
 for m in available_metrics:

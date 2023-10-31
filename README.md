@@ -24,6 +24,12 @@ Necessary for installing dlib -> HistoGAN
 sudo apt-get install python3-dev
 ``
 
+Instalation of pyfftw
+``
+(env-CTL) potechius@HMP-MacBook ColorTransferLib % export DYLD_LIBRARY_PATH=/opt/homebrew/lib export LDFLAGS="-L/opt/homebrew/lib"
+(env-CTL) potechius@HMP-MacBook ColorTransferLib % export CFLAGS="-I/opt/homebrew/include"
+``
+
 run: for a in /sys/bus/pci/devices/*; do echo 0 | sudo tee -a $a/numa_node; done
 to get rid of the info: successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
 

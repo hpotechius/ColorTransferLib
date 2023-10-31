@@ -214,6 +214,17 @@ def createEvaluationFile(dataset_path, out_file, num_tests):
 # ------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
+    #src = Image(file_path='/Volumes/External/DATASETS/ACM-MM-Evaluation-Dataset/abstract/256_abstract-01.png')
+    #ref = Image(file_path='/Volumes/External/DATASETS/ACM-MM-Evaluation-Dataset/abstract/256_abstract-02.png')   
+    src = Image(file_path='/Volumes/External/DATASETS/ColorTransfer-Dataset/original/abstract/256_abstract-01.png')
+    ref = Image(file_path='/Volumes/External/DATASETS/ColorTransfer-Dataset/original/abstract/256_abstract-02.png')  
+    ct = ColorTransfer(src, ref, "HIS")
+    out = ct.apply()["object"]
+    out.write("/Volumes/External/DATASETS/ColorTransfer-Dataset/test_img.png")
+
+    print("HEHE")
+    exit()
+
     import matplotlib.pyplot as plt
     from mpl_toolkits import mplot3d
     from PIL import Image
