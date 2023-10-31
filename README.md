@@ -152,6 +152,42 @@ The following color transfer methods are integrated in the library. Some of them
 
 **Abstract**: *Image style transfer aims to manipulate the appearance of a source image, or "content" image, to share similar texture and colors of a target "style" image. Ideally, the style transfer manipulation should also preserve the semantic content of the source image. A commonly used approach to assist in transferring styles is based on Gram matrix optimization. One problem of Gram matrix-based optimization is that it does not consider the correlation between colors and their styles. Specifically, certain textures or structures should be associated with specific colors. This is particularly challenging when the target style image exhibits multiple style types. In this work, we propose a color-aware multi-style transfer method that generates aesthetically pleasing results while preserving the style-color correlation between style and generated images. We achieve this desired outcome by introducing a simple but efficient modification to classic Gram matrix-based style transfer optimization. A nice feature of our method is that it enables the users to manually select the color associations between the target style and content image for more transfer flexibility. We validated our method with several qualitative comparisons, including a user study conducted with 30 participants. In comparison with prior work, our method is simple, easy to implement, and achieves visually appealing results when targeting images that have multiple styles.*
 
+### (BCC) CamsTransfer[^12] 
+**Title**: A Framework for Transfer Colors Based on the Basic Color Categories  
+**Author**: Youngha Chang, Suguru Saito, Masayuki Nakajima  
+**Published in**: Proceedings Computer Graphics International  
+**Year of Publication**: 2003  
+**Link**: https://doi.org/10.1109/CGI.2003.1214463
+
+**Abstract**: *Usually, paintings are more appealing than photographic images. This is because paintings have styles. This style can be distinguished by looking at elements such as motif, color, shape deformation and brush texture. We focus on the effect of "color" element and devise a method for transforming the color of an input photograph according to a reference painting. To do this, we consider basic color category concepts in the color transformation process. By doing so, we achieve large but natural color transformations of an image.*
+
+### (RHG) ...[XX] 
+**Title**: ...  
+**Author**: ...  
+**Published in**: ...  
+**Year of Publication**: ...  
+**Link**: ...
+
+**Abstract**: *...*
+
+### (CCS) ...[XX] 
+**Title**: ...  
+**Author**: ...  
+**Published in**: ...  
+**Year of Publication**: ...  
+**Link**: ...
+
+**Abstract**: *...*
+
+### (GPC) ...[XX] 
+**Title**: ...  
+**Author**: ...  
+**Published in**: ...  
+**Year of Publication**: ...  
+**Link**: ...
+
+**Abstract**: *...*
+
 </details>
   
 
@@ -245,6 +281,7 @@ If you utilize this code in your research, kindly provide a citation:
 [^6]: Luan, Fujun and Paris, Sylvain and Shechtman, Eli and Bala, Kavita, "Deep Photo Style Transfer," *arXiv*, 2017, doi: 10.48550/arxiv.1703.07511.  
 [^7]: Mairéad Grogan, Rozenn Dahyot, "L2 Divergence for robust colour transfer," *Computer Vision and Image Understanding*, 2019, pp. 39-49 Vol. 181 doi: 10.1016/j.cviu.2019.02.002.  
 [^8]: Junyong Lee, Hyeongseok Son, Gunhee Lee, Jonghyeop Lee, Sunghyun Cho, Seungyong Le, "Deep Color Transfer using Histogram Analogy," *The Visual Computer*, 2020, pp. 2129-2143 Vol. 36, doi: 10.1007/s00371-020-01921-6.  
-[^9]: JCao, Xu and Wang, Weimin and Nagao, Katashi and Nakamura, Ryosuke, "PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color," *IEEE Computer Graphics and Applications*, doi: 110.1109/WACV45572.2020.9093513.  
+[^9]: Cao, Xu and Wang, Weimin and Nagao, Katashi and Nakamura, Ryosuke, "PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color," *IEEE Computer Graphics and Applications*, doi: 110.1109/WACV45572.2020.9093513.  
 [^10]: Ific Goudé, Rémi Cozot, Olivier Le Meur, Kadi Bouatouch. Example‐Based Colour Transfer for 3D Point Clouds. Computer Graphics Forum, Wiley, 2021, 40 (6), pp.428-446. ⟨10.1111/cgf.14388⟩. ⟨hal-03396448⟩  
 [^11]: Afifi, Mahmoud and Abuolaim, Abdullah and Hussien, Mostafa and Brubaker, Marcus A. and Brown, Michael S, "CAMS: Color-Aware Multi-Style Transfer," *arXiv*, 2021, doi: 10.48550/ARXIV.2106.13920.  
+[^12]: Chang, Youngha and Saito, Suguru and Nakajima, Masayuki, "A Framework for Transfer Colors Based on the Basic Color Categories," *Proceedings Computer Graphics International*, 2003, doi: 10.1109/CGI.2003.1214463.  
