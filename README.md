@@ -2,9 +2,6 @@
 # ColorTransferLib
 This color transfer library, called *ColorTransferLib* offers a collection of published color transfer algorithms. The ultimate goal of this project is to create a collection of all developed color transfer methods with standardized API in order to support the research community in the developing and the comparison process of their own algorithms. Currently this library supports color transfer with **images** and **3D point clouds** but will be extended by **triangulated and textured 3D meshes** and **videos**.
 
-
-
-
 ## API
 
 TODO
@@ -40,34 +37,13 @@ Instalation of pyfftw
 run: for a in /sys/bus/pci/devices/*; do echo 0 | sudo tee -a $a/numa_node; done
 to get rid of the info: successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
 
-## Available Objective Evaluation Metrics
-Three classes of evaluation metrics are considered here. Metrics that evaluate the color consistency with the reference image (indicated with $`^r`$), metrics that evaluate the structural similarity with the source image (indicated with $`^s`$) and metrics that evaluates the overall quality of the output (indicated with $`^o`$).
 
-<details>
-  <summary>List of integrated Color and Style Transfer Methods</summary>
-
-### SSIM$^s_{rgb}$
-**Name**: Structural Similarity Index  
-
-### PSNR$^s_{rgb}$
-**Name**: Peak Signal-to-Noise Ratio  
-
-### MSE$^s_{rgb}$
-**Name**: Mean-Squared Error  
-
-### MS-SSIM$^s_{rgb}$
-**Name**: ...  
-
-### FSIM$^s_{c,yiq}$
-**Name**: ...  
-
-### (3/X) GSSIM
-**Name**: Gradient-based Structural Similarity Index 
-
-</details>
 
 ## Available Color Transfer Methods:
 The following color transfer methods are integrated in the library. Some of them are reimplemented based on the algorithm's description in the the published papers and others are adopted from existing repositories and adpated to fit the API. The original implementation of the latter methods can be found next to the **Source** entry.
+
+<details>
+  <summary>List of integrated Color and Style Transfer Methods</summary>
 
 ### (1/12) GlobalColorTransfer[^1] 
 **Title**: Color Transfer between Images  
@@ -190,7 +166,79 @@ The following color transfer methods are integrated in the library. Some of them
   
 **Abstract**: *Color transfer, which plays a key role in image editing, has attracted noticeable attention recently. It has remained a challenge to date due to various issues such as time-consuming manual adjustments and prior segmentation issues. In this paper, we propose to model color transfer under a probability framework and cast it as a parameter estimation problem. In particular, we relate the transferred image with the example image under the Gaussian Mixture Model (GMM) and regard the transferred image color as the GMM centroids. We employ the Expectation-Maximization (EM) algorithm (E-step and M-step) for optimization. To better preserve gradient information, we introduce a Laplacian based regularization term to the objective function at the M-step which is solved by deriving a gradient descent algorithm. Given the input of a source image and an example image, our method is able to generate multiple color transfer results with increasing EM iterations. Extensive experiments show that our approach generally outperforms other competitive color transfer methods, both visually and quantitatively.*
 
+</details>
   
+
+## Available Objective Evaluation Metrics
+Three classes of evaluation metrics are considered here. Metrics that evaluate the color consistency with the reference image (indicated with $`^r`$), metrics that evaluate the structural similarity with the source image (indicated with $`^s`$) and metrics that evaluates the overall quality of the output (indicated with $`^o`$).
+
+<details>
+  <summary>List of integrated Objective Evaluation Metrics</summary>
+
+### SSIM$^s_{rgb}$
+**Name**: Structural Similarity Index  
+**Description**: The Structural Similarity Index (SSIM) is a metric used to measure the similarity between two images. Unlike traditional metrics like Mean Squared Error (MSE) that focus solely on pixel-wise differences, SSIM considers changes in structural information, luminance, and texture. The index provides a value between -1 and 1, where a value of 1 indicates that the two images being compared are identical in terms of structural content. SSIM is widely used in the field of image processing for quality assessment of compressed or processed images in comparison to reference images.
+
+### PSNR$^s_{rgb}$
+**Name**: Peak Signal-to-Noise Ratio  
+
+### MSE$^s_{rgb}$
+**Name**: Mean-Squared Error  
+
+### MS-SSIM$^s_{rgb}$
+**Name**: Multi-Scale Structural Similarity Index  
+
+### FSIM$^s_{c,yiq}$
+**Name**: Feature Similarity Index  
+
+### LPIPS$^s_{rgb}$
+**Name**: Learned Perceptual Image Patch Similarity  
+
+### RMSE$^s_{rgb}$
+**Name**: Root-Mean-Squared Error  
+
+### GSSIM$^s_{rgb}$
+**Name**: Gradient-based Structural Similarity Index  
+
+### VSI$^s_{rgb}$
+**Name**: Visual Saliency-based Index 
+
+### 4-SSIM$^s_{rgb}$
+**Name**: 4-component Structural Similarity Index
+
+### HI$^r_{rgb}$
+**Name**: Histogram Intersection 
+
+### Corr$^r_{rgb}$
+**Name**: Correlation 
+
+### BA$^r_{rgb}$
+**Name**: Bhattacharyya Distance 
+
+### BRISQUE$^o_{rgb}$
+**Name**: Blind/Referenceless Image Spatial Quality Evaluator 
+
+### NIMA$^o_{rgb}$
+**Name**: Neural Image Assessment 
+
+### NIQE$^o_{rgb}$
+**Name**: Naturalness Image Quality Evaluator 
+
+### CF$^o_{rgyb}$
+**Name**: Colorfulness 
+
+### 4-EGSSIM$^s_{rgb}$
+**Name**: 4-component enhanced Gradient-based Structural Similarity Index 
+
+### CSS$^{sr}_{rgb}$
+**Name**: Color and Structure Similarity 
+
+### CTQM$^{sro}_{lab}$
+**Name**: Color Transfer Quality Metric 
+
+</details>
+
+
 ## References
 [^1]: E. Reinhard, M. Ashikhmin, B. Gooch, and P. Shirley, “Color transfer between images,” *IEEE Comput. Graph. Appl.*, vol. 21, p. 34–41, sep 2001.
 [^2]: F. Pitie, A. C. Kokaram and R. Dahyot, "N-dimensional probability density function transfer and its application to color transfer," *Tenth IEEE International Conference on Computer Vision (ICCV'05) Volume 1*, 2005, pp. 1434-1439 Vol. 2, doi: 10.1109/ICCV.2005.166.
