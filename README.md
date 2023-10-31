@@ -265,7 +265,7 @@ If you utilize this code in your research, kindly provide a citation:
 ```
 @inproceeding{potechius2023,
   title={A software test bed for sharing and evaluating color transfer algorithms for images and 3D objects},
-  author={H.Potechius, Thomas Sikora, Gunasekaran Raja, Sebastian Knorr},
+  author={Herbert Potechius, Thomas Sikora, Gunasekaran Raja, Sebastian Knorr},
   year={2023},
   booktitle={European Conference on Visual Media Production (CVMP)},
   doi={10.1145/3626495.3626509}
