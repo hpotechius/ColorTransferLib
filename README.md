@@ -1,5 +1,9 @@
+![colortransfer_example](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/928791b0-b734-4835-92c9-cdcb12fcddc7)
 # ColorTransferLib
 This color transfer library, called *ColorTransferLib* offers a collection of published color transfer algorithms. The ultimate goal of this project is to create a collection of all developed color transfer methods with standardized API in order to support the research community in the developing and the comparison process of their own algorithms. Currently this library supports color transfer with **images** and **3D point clouds** but will be extended by **triangulated and textured 3D meshes** and **videos**.
+
+
+
 
 ## API
 
