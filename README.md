@@ -43,15 +43,28 @@ to get rid of the info: successful NUMA node read from SysFS had negative value 
 ## Available Objective Evaluation Metrics
 Three classes of evaluation metrics are considered here. Metrics that evaluate the color consistency with the reference image (indicated with $`^r`$), metrics that evaluate the structural similarity with the source image (indicated with $`^s`$) and metrics that evaluates the overall quality of the output (indicated with $`^o`$).
 
-### SSIM$`^s_{rgb}`$
+<details>
+  <summary>List of integrated Color and Style Transfer Methods</summary>
+
+### SSIM$^s_{rgb}$
 **Name**: Structural Similarity Index  
 
-### PSNR$`^s_{rgb}`$
+### PSNR$^s_{rgb}$
 **Name**: Peak Signal-to-Noise Ratio  
 
+### MSE$^s_{rgb}$
+**Name**: Mean-Squared Error  
+
+### MS-SSIM$^s_{rgb}$
+**Name**: ...  
+
+### FSIM$^s_{c,yiq}$
+**Name**: ...  
+
 ### (3/X) GSSIM
-**Name**: Gradient-based Structural Similarity Index  
-TODO
+**Name**: Gradient-based Structural Similarity Index 
+
+</details>
 
 ## Available Color Transfer Methods:
 The following color transfer methods are integrated in the library. Some of them are reimplemented based on the algorithm's description in the the published papers and others are adopted from existing repositories and adpated to fit the API. The original implementation of the latter methods can be found next to the **Source** entry.
