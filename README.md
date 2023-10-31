@@ -15,6 +15,7 @@ The output should resemble a dictionary format, as outlined in Listing 3. A stat
 
 ![CT-API](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/7e59eea8-78be-4dfb-acae-7e8abfd7abe5)
 
+![Listing](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/93692741-46f6-4955-80a5-d152fa22104d)
 
 ## Installation
 ``
