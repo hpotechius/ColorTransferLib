@@ -50,65 +50,20 @@ to get rid of the info: successful NUMA node read from SysFS had negative value 
 ## Available Color Transfer Methods:
 The following color transfer methods are integrated in the library. Some of them are reimplemented based on the algorithm's description in the the published papers and others are adopted from existing repositories and adpated to fit the API. The original implementation of the latter methods can be found next to the **Source** entry.
 
-| Year | ID | Publication |
-| --- | --- | --- |
-| 2001 |GLO | Color Transfer between Images [^1] |
-| 2005 |PDF | N-dimensional probability density function transfer and its application to color transfer [^2] |
-| 2007 |MKL | The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer [^3] |
+| Year | ID  | Publication |
+| ---  | --- | --- |
+| 2001 | GLO | [Color Transfer between Images]([https://www.google.com](https://doi.org/10.1109/38.946629)) [^1] |
+| 2005 | PDF | N-dimensional probability density function transfer and its application to color transfer [^2] |
+| 2007 | MKL | The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer [^3] |
+| 2010 | FUZ | An efficient fuzzy clustering-based color transfer method [^4] |
+| 2015 | NST | An efficient fuzzy clustering-based color transfer method [^5] |
+| 2017 | DPT | Deep Photo Style Transfer [^6] |
+| 2019 | TPS | L2 Divergence for robust colour transfer [^7] |
+| 2020 | HIS | Deep Color Transfer using Histogram Analogy [^7] |
 
 <details>
   <summary>List of integrated Color and Style Transfer Methods</summary>
 
-### (MKL) MongeKLColorTransfer[^3]
-**Title**: The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer.  
-**Author**: Francois Pitie, Anil C. Kokaram  
-**Published in**: 4th European Conference on Visual Media Production  
-**Year of Publication**: 2007  
-**Link**: https://doi.org/10.1049/cp:20070055  
-  
-**Abstract**: *A common task in image editing is to change the colours of a picture to match the desired colour grade of another picture. Finding the correct colour mapping is tricky because it involves numerous interrelated operations, like balancing the colours, mixing the colour channels or adjusting the contrast. Recently, a number of automated tools have been proposed to find an adequate one-to-one colour mapping. The focus in this paper is on finding the best linear colour transformation. Linear transformations have been proposed in the literature but independently. The aim of this paper is thus to establish a common mathematical background to all these methods. Also, this paper proposes a novel transformation, which is derived from the Monge-Kantorovitch theory of mass transportation. The proposed solution is optimal in the sense that it minimises the amount of changes in the picture colours. It favourably compares theoretically and experimentally with other techniques for various images and under various colour spaces.*
-
-### (FUZ) FuzzyColorTransfer[^4] 
-**Title**: An efficient fuzzy clustering-based color transfer method  
-**Author**: XiaoYan Qian, BangFeng Wang, Lei Han  
-**Published in**: Seventh International Conference on Fuzzy Systems and Knowledge Discovery  
-**Year of Publication**: 2010  
-**Link**: https://doi.org/10.1109/FSKD.2010.5569560  
-
-**Abstract**: *Each image has its own color content that greatly influences the perception of human observer. Recently, color transfer among different images has been under investigation. In this paper, after a brief review on the few efficient works performed in the field, a novel fuzzy clustering based color transfer method is proposed. The proposed method accomplishes the transformation based on a set of corresponding fuzzy clustering algorithm-selected regions in images along with membership degree factors. Results show the presented algorithm is highly automatically and more effective.*
-  
-### (NST) NeuralStyleTransfer[^5]
-**Title**: A Neural Algorithm of Artistic Style  
-**Author**: Leon A. Gatys, Alexander S. Ecker, Matthias Bethge  
-**Published in**: arXiv  
-**Year of Publication**: 2015  
-**Link**: https://doi.org/10.48550/arXiv.1508.06576  
-**Source**: https://github.com/cysmith/neural-style-tf  
-  
-**Abstract**: *In fine art, especially painting, humans have mastered the skill to create unique visual experiences through composing a complex interplay between the content and style of an image. Thus far the algorithmic basis of this process is unknown and there exists no artificial system with similar capabilities. However, in other key areas of visual perception such as object and face recognition near-human performance was recently demonstrated by a class of biologically inspired vision models called Deep Neural Networks. Here we introduce an artificial system based on a Deep Neural Network that creates artistic images of high perceptual quality. The system uses neural representations to separate and recombine content and style of arbitrary images, providing a neural algorithm for the creation of artistic images. Moreover, in light of the striking similarities between performance-optimised artificial neural networks and biological vision, our work offers a path forward to an algorithmic understanding of how humans create and perceive artistic imagery.*
-
-  
-### (DPT) DeepPhotoStyleTransfer[^6] 
-**Title**: Deep Photo Style Transfer  
-**Author**: Fujun Luan, Sylvain Paris, Eli Shechtman, Kavita Bala  
-**Published in**: ...  
-**Year of Publication**: 2017  
-**Link**: https://doi.org/10.48550/arXiv.1703.07511  
-**Source**: https://github.com/LouieYang/deep-photo-styletransfer-tf  
-
-**Abstract**: *This paper introduces a deep-learning approach to photographic style transfer that handles a large variety of image content while faithfully transferring the reference style. Our approach builds upon the recent work on painterly transfer that separates style from the content of an image by considering different layers of a neural network. However, as is, this approach is not suitable for photorealistic style transfer. Even when both the input and reference images are photographs, the output still exhibits distortions reminiscent of a painting. Our contribution is to constrain the transformation from the input to the output to be locally affine in colorspace, and to express this constraint as a custom fully differentiable energy term. We show that this approach successfully suppresses distortion and yields satisfying photorealistic style transfers in a broad variety of scenarios, including transfer of the time of day, weather, season, and artistic edits.*
-
-  
-### (TPS) TpsColorTransfer[^7]
-**Title**: L2 Divergence for robust colour transfer  
-**Author**: Mairéad Grogan, Rozenn Dahyot  
-**Published in**: Computer Vision and Image Understanding  
-**Year of Publication**: 2019  
-**Link**: https://doi.org/10.1016/j.cviu.2019.02.002  
-**Source**: https://github.com/groganma/gmm-colour-transfer  
-  
-**Abstract**: *Optimal Transport (OT) is a very popular framework for performing colour transfer in images and videos. We have proposed an alternative framework where the cost function used for inferring a parametric transfer function is defined as the robust L 2 divergence between two probability density functions (Grogan and Dahyot, 2015). In this paper, we show that our approach combines many advantages of state of the art techniques and outperforms many recent algorithms as measured quantitatively with standard quality metrics, and qualitatively using perceptual studies (Grogan and Dahyot, 2017). Mathematically, our formulation is presented in contrast to the OT cost function that shares similarities with our cost function. Our formulation, however, is more flexible as it allows colour correspondences that may be available to be taken into account and performs well despite potential occurrences of correspondence outlier pairs. Our algorithm is shown to be fast, robust and it easily allows for user interaction providing freedom for artists to fine tune the recoloured images and videos (Grogan et al., 2017).*
-  
 ### (HIS) HistogramAnalogy[^8]
 **Title**: Deep Color Transfer using Histogram Analogy  
 **Author**: Junyong Lee, Hyeongseok Son, Gunhee Lee, Jonghyeop Lee, Sunghyun Cho, Seungyong Lee  
