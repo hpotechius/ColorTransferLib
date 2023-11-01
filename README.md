@@ -64,9 +64,9 @@ The following color transfer methods are integrated in the library. Some of them
 | 2020 | EB3 | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
 | 2021 | CAM | [CAMS: Color-Aware Multi-Style Transfer](https://doi.org/10.48550/arXiv.2106.13920) |
 | 2003 | BCC | [A Framework for Transfer Colors Based on the Basic Color Categories](https://doi.org/10.1109/CGI.2003.1214463) |
-| XXX | RHG | []() |
-| XXX | CCS | []() |
-| XXX | GPC | []() |
+| 2021 | RHG | [HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms](https://doi.org/10.48550/arXiv.2011.11731) |
+| 2006 | CCS | [Color transfer in correlated color space](https://doi.org/10.1145/1128923.1128974) |
+| 2009 | GPC | [Gradient-Preserving Color Transfer](http://dx.doi.org/10.1111/j.1467-8659.2009.01566.x) |
 
 
 ## Available Objective Evaluation Metrics
