@@ -90,10 +90,10 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 | 2012 | BRISQUE$`^o_{rgb}`$ | Blind/Referenceless Image Spatial Quality Evaluator | [No-Reference Image Quality Assessment in the Spatial Domain](https://doi.org/10.1109/TIP.2012.2214050) |
 | 2018 | NIMA$`^o_{rgb}`$ | Neural Image Assessment | [NIMA: Neural Image Assessment](https://doi.org/10.48550/arXiv.1709.05424) |
 | 2013 | NIQE$`^o_{rgb}`$ | Naturalness Image Quality Evaluator | [Making a “Completely Blind” Image Quality Analyzer](https://doi.org/10.1109/LSP.2012.2227726) |
-| ... | CF$`^o_{rgyb}`$ | Colorfulness | []() |
+| 2003 | CF$`^o_{rgyb}`$ | Colorfulness | [Measuring Colourfulness in Natural Images](http://dx.doi.org/10.1117/12.477378) |
 | 2011 | 4-EGSSIM$`^s_{rgb}`$ | 4-component enhanced Gradient-based Structural Similarity Index | [An image similarity measure using enhanced human visual system characteristics](https://ui.adsabs.harvard.edu/link_gateway/2011SPIE.8063E..10N/doi:10.1117/12.883301) |
-| ... | CSS$`^{sr}_{rgb}`$ | Color and Structure Similarity | []() |
-| ... | CTQM$`^{sro}_{lab}`$ | Color Transfer Quality Metric | []() |
+| 2019 | CSS$`^{sr}_{rgb}`$ | Color and Structure Similarity | [Selective color transfer with multi-source images](https://doi.org/10.1016/j.patrec.2009.01.004) |
+| 2016 | CTQM$`^{sro}_{lab}`$ | Color Transfer Quality Metric | [Novel multi-color transfer algorithms and quality measure](https://doi.org/10.1109/TCE.2016.7613196) |
 
 ## Citation
 If you utilize this code in your research, kindly provide a citation:
