@@ -48,7 +48,7 @@ to get rid of the info: successful NUMA node read from SysFS had negative value 
 
 
 ## Available Color Transfer Methods:
-The following color transfer methods are integrated in the library. Some of them are reimplemented based on the algorithm's description in the the published papers and others are adopted from existing repositories and adpated to fit the API. The original implementation of the latter methods can be found next to the **Source** entry.
+The following color and style transfer methods are integrated in the library. Some of them are reimplemented based on the algorithm's description in the the published papers and others are adopted from existing repositories and adpated to fit the API. The original implementation of the latter methods can be found next to the publication's name. The superscripts (2D, 3D) indicated wether the algorithm is applicable to 2D structures like images and mesh textures or to 3D structures like point clouds. The subscript (CT, ST) describs wether the algorithm is a color or a style transfer algorithm.
 
 | Year | ID  | Publication |
 | ---  | --- | --- |
