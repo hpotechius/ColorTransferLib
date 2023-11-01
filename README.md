@@ -74,12 +74,12 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 
 | Year | ID  | Name | Publication |
 | ---  | --- | --- | --- |
-| ... | PSNR$`^s_{rgb}`$ | Peak Signal-to-Noise Ratio | []() |
-| ... | HI$`^r_{rgb}`$ | Histogram Intersection | []() |
-| ... | Corr$`^r_{rgb}`$ | Correlation | []() |
-| ... | BA$`^r_{rgb}`$ | Bhattacharyya Distance | []() |
-| ... | MSE$`^s_{rgb}`$ | Mean-Squared Error | []() |
-| ... | RMSE$`^s_{rgb}`$ | Root-Mean-Squared Error | []() |
+| / | PSNR$`^s_{rgb}`$ | Peak Signal-to-Noise Ratio | / |
+| / | HI$`^r_{rgb}`$ | Histogram Intersection | / |
+| / | Corr$`^r_{rgb}`$ | Correlation | / |
+| / | BA$`^r_{rgb}`$ | Bhattacharyya Distance | / |
+| / | MSE$`^s_{rgb}`$ | Mean-Squared Error | / |
+| / | RMSE$`^s_{rgb}`$ | Root-Mean-Squared Error | / |
 | 2003 | CF$`^o_{rgyb}`$ | Colorfulness | [Measuring Colourfulness in Natural Images](http://dx.doi.org/10.1117/12.477378) |
 | 2003 | MS-SSIM$`^s_{rgb}`$ | Multi-Scale Structural Similarity Index | [Multiscale structural similarity for image quality assessment](https://doi.org/10.1109/ACSSC.2003.1292216) |
 | 2004 | SSIM$`^s_{rgb}`$ | Structural Similarity Index | [Image quality assessment: from error visibility to structural similarity](https://doi.org/10.1109/TIP.2003.819861) |
