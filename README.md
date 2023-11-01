@@ -77,11 +77,11 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 | ... | PSNR$`^s_{rgb}`$ | Peak Signal-to-Noise Ratio | []() |
 | 2004 | SSIM$`^s_{rgb}`$ | Structural Similarity Index | [Image quality assessment: from error visibility to structural similarity](https://doi.org/10.1109/TIP.2003.819861) |
 | ... | MSE$`^s_{rgb}`$ | Mean-Squared Error | []() |
-| ... | MS-SSIM$`^s_{rgb}`$ | Multi-Scale Structural Similarity Index | []() |
+| 2003 | MS-SSIM$`^s_{rgb}`$ | Multi-Scale Structural Similarity Index | [Multiscale structural similarity for image quality assessment](https://doi.org/10.1109/ACSSC.2003.1292216) |
 | ... | FSIM$`^s_{c,yiq}`$ | Feature Similarity Index | []() |
 | ... | LPIPS$`^s_{rgb}`$ | Learned Perceptual Image Patch Similarity | []() |
 | ... | RMSE$`^s_{rgb}`$ | Root-Mean-Squared Error | []() |
-| ... | GSSIM$`^s_{rgb}`$ | Gradient-based Structural Similarity Index | []() |
+| 2006 | GSSIM$`^s_{rgb}`$ | Gradient-based Structural Similarity Index | [Gradient-Based Structural Similarity for Image Quality Assessment](https://doi.org/10.1109/ICIP.2006.313132) |
 | ... | VSI$`^s_{rgb}`$ | Visual Saliency-based Index | []() |
 | ... | 4-SSIM$`^s_{rgb}`$ | 4-component Structural Similarity Index | []() |
 | ... | HI$`^r_{rgb}`$ | Histogram Intersection | []() |
