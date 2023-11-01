@@ -50,27 +50,15 @@ to get rid of the info: successful NUMA node read from SysFS had negative value 
 ## Available Color Transfer Methods:
 The following color transfer methods are integrated in the library. Some of them are reimplemented based on the algorithm's description in the the published papers and others are adopted from existing repositories and adpated to fit the API. The original implementation of the latter methods can be found next to the **Source** entry.
 
+| Year | ID | Publication |
+| --- | --- | --- |
+| 2001 |GLO | Color Transfer between Images [^1] |
+| 2005 |PDF | N-dimensional probability density function transfer and its application to color transfer [^2] |
+| 2007 |MKL | The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer [^3] |
+
 <details>
   <summary>List of integrated Color and Style Transfer Methods</summary>
 
-### (GLO) GlobalColorTransfer[^1] 
-**Title**: Color Transfer between Images  
-**Author**: Erik Reinhard, Michael Ashikhmin, Bruce Gooch, Peter Shirley  
-**Published in**: IEEE Computer Graphics and Applications  
-**Year of Publication**: 2001  
-**Link**: https://doi.org/10.1109/38.946629  
-
-**Abstract**: *We use a simple statistical analysis to impose one image's color characteristics on another. We can achieve color correction by choosing an appropriate source image and apply its characteristic to another image.*
-
-### (PDF) PdfColorTransfer[^2]
-**Title**: N-dimensional probability density function transfer and its application to color transfer  
-**Author**: Francois Pitie, Anil C. Kokaram, Rozenn Dahyot  
-**Published in**: Tenth IEEE International Conference on Computer Vision (ICCV'05) Volume 1  
-**Year of Publication**: 2005  
-**Link**: https://doi.org/10.1109/ICCV.2005.166  
-  
-**Abstract**: *This article proposes an original method to estimate a continuous transformation that maps one N-dimensional distribution to another. The method is iterative, non-linear, and is shown to converge. Only 1D marginal distribution is used in the estimation process, hence involving low computation costs. As an illustration this mapping is applied to color transfer between two images of different contents. The paper also serves as a central focal point for collecting together the research activity in this area and relating it to the important problem of automated color grading.*
-  
 ### (MKL) MongeKLColorTransfer[^3]
 **Title**: The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer.  
 **Author**: Francois Pitie, Anil C. Kokaram  
