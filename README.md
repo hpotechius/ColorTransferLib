@@ -72,28 +72,28 @@ The following color transfer methods are integrated in the library. Some of them
 ## Available Objective Evaluation Metrics
 Three classes of evaluation metrics are considered here. Metrics that evaluate the color consistency with the reference image (indicated with $`^r`$), metrics that evaluate the structural similarity with the source image (indicated with $`^s`$) and metrics that evaluates the overall quality of the output (indicated with $`^o`$).
 
-| Year | ID  | Publication |
-| ---  | --- | --- |
-| ... | PSNR$`^s_{rgb}`$ | Peak Signal-to-Noise Ratio |
-| ... | SSIM$`^s_{rgb}`$ | Structural Similarity Index |
-| ... | MSE$`^s_{rgb}`$ | Mean-Squared Error |
-| ... | MS-SSIM$`^s_{rgb}`$ | Multi-Scale Structural Similarity Index |
-| ... | FSIM$`^s_{c,yiq}`$ | Feature Similarity Index |
-| ... | LPIPS$`^s_{rgb}`$ | Learned Perceptual Image Patch Similarity |
-| ... | RMSE$`^s_{rgb}`$ | Root-Mean-Squared Error |
-| ... | GSSIM$`^s_{rgb}`$ | Gradient-based Structural Similarity Index |
-| ... | VSI$`^s_{rgb}`$ | Visual Saliency-based Index |
-| ... | 4-SSIM$`^s_{rgb}`$ | 4-component Structural Similarity Index |
-| ... | HI$`^r_{rgb}`$ | Histogram Intersection |
-| ... | Corr$`^r_{rgb}`$ | Correlation |
-| ... | BA$`^r_{rgb}`$ | Bhattacharyya Distance |
-| ... | BRISQUE$`^o_{rgb}`$ | Blind/Referenceless Image Spatial Quality Evaluator |
-| ... | NIMA$`^o_{rgb}`$ | Neural Image Assessment |
-| ... | NIQE$`^o_{rgb}`$ | Naturalness Image Quality Evaluator |
-| ... | CF$`^o_{rgyb}`$ | Colorfulness |
-| ... | 4-EGSSIM$`^s_{rgb}`$ | 4-component enhanced Gradient-based Structural Similarity Index |
-| ... | CSS$`^{sr}_{rgb}`$ | Color and Structure Similarity |
-| ... | CTQM$`^{sro}_{lab}`$ | Color Transfer Quality Metric |
+| Year | ID  | Name | Publication |
+| ---  | --- | --- | --- |
+| ... | PSNR$`^s_{rgb}`$ | Peak Signal-to-Noise Ratio | []() |
+| 2004 | SSIM$`^s_{rgb}`$ | Structural Similarity Index | [Image quality assessment: from error visibility to structural similarity](https://doi.org/10.1109/TIP.2003.819861) |
+| ... | MSE$`^s_{rgb}`$ | Mean-Squared Error | []() |
+| ... | MS-SSIM$`^s_{rgb}`$ | Multi-Scale Structural Similarity Index | []() |
+| ... | FSIM$`^s_{c,yiq}`$ | Feature Similarity Index | []() |
+| ... | LPIPS$`^s_{rgb}`$ | Learned Perceptual Image Patch Similarity | []() |
+| ... | RMSE$`^s_{rgb}`$ | Root-Mean-Squared Error | []() |
+| ... | GSSIM$`^s_{rgb}`$ | Gradient-based Structural Similarity Index | []() |
+| ... | VSI$`^s_{rgb}`$ | Visual Saliency-based Index | []() |
+| ... | 4-SSIM$`^s_{rgb}`$ | 4-component Structural Similarity Index | []() |
+| ... | HI$`^r_{rgb}`$ | Histogram Intersection | []() |
+| ... | Corr$`^r_{rgb}`$ | Correlation | []() |
+| ... | BA$`^r_{rgb}`$ | Bhattacharyya Distance | []() |
+| ... | BRISQUE$`^o_{rgb}`$ | Blind/Referenceless Image Spatial Quality Evaluator | []() |
+| ... | NIMA$`^o_{rgb}`$ | Neural Image Assessment | []() |
+| ... | NIQE$`^o_{rgb}`$ | Naturalness Image Quality Evaluator | []() |
+| ... | CF$`^o_{rgyb}`$ | Colorfulness | []() |
+| ... | 4-EGSSIM$`^s_{rgb}`$ | 4-component enhanced Gradient-based Structural Similarity Index | []() |
+| ... | CSS$`^{sr}_{rgb}`$ | Color and Structure Similarity | []() |
+| ... | CTQM$`^{sro}_{lab}`$ | Color Transfer Quality Metric | []() |
 
 ## Citation
 If you utilize this code in your research, kindly provide a citation:
