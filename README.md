@@ -72,71 +72,28 @@ The following color transfer methods are integrated in the library. Some of them
 ## Available Objective Evaluation Metrics
 Three classes of evaluation metrics are considered here. Metrics that evaluate the color consistency with the reference image (indicated with $`^r`$), metrics that evaluate the structural similarity with the source image (indicated with $`^s`$) and metrics that evaluates the overall quality of the output (indicated with $`^o`$).
 
-<details>
-  <summary>List of integrated Objective Evaluation Metrics</summary>
-
-### SSIM$`^s_{rgb}`$
-**Name**: Structural Similarity Index  
-**Description**: The Structural Similarity Index (SSIM) is a metric used to measure the similarity between two images. Unlike traditional metrics like Mean Squared Error (MSE) that focus solely on pixel-wise differences, SSIM considers changes in structural information, luminance, and texture. The index provides a value between -1 and 1, where a value of 1 indicates that the two images being compared are identical in terms of structural content. SSIM is widely used in the field of image processing for quality assessment of compressed or processed images in comparison to reference images.
-
-### PSNR$`^s_{rgb}`$
-**Name**: Peak Signal-to-Noise Ratio  
-
-### MSE$`^s_{rgb}`$
-**Name**: Mean-Squared Error  
-
-### MS-SSIM$`^s_{rgb}`$
-**Name**: Multi-Scale Structural Similarity Index  
-
-### FSIM$`^s_{c,yiq}`$
-**Name**: Feature Similarity Index  
-
-### LPIPS$`^s_{rgb}`$
-**Name**: Learned Perceptual Image Patch Similarity  
-
-### RMSE$`^s_{rgb}`$
-**Name**: Root-Mean-Squared Error  
-
-### GSSIM$`^s_{rgb}`$
-**Name**: Gradient-based Structural Similarity Index  
-
-### VSI$`^s_{rgb}`$
-**Name**: Visual Saliency-based Index 
-
-### 4-SSIM$`^s_{rgb}`$
-**Name**: 4-component Structural Similarity Index
-
-### HI$`^r_{rgb}`$
-**Name**: Histogram Intersection 
-
-### Corr$`^r_{rgb}`$
-**Name**: Correlation 
-
-### BA$`^r_{rgb}`$
-**Name**: Bhattacharyya Distance 
-
-### BRISQUE$`^o_{rgb}`$
-**Name**: Blind/Referenceless Image Spatial Quality Evaluator 
-
-### NIMA$`^o_{rgb}`$
-**Name**: Neural Image Assessment 
-
-### NIQE$`^o_{rgb}`$
-**Name**: Naturalness Image Quality Evaluator 
-
-### CF$`^o_{rgyb}`$
-**Name**: Colorfulness 
-
-### 4-EGSSIM$`^s_{rgb}`$
-**Name**: 4-component enhanced Gradient-based Structural Similarity Index 
-
-### CSS$`^{sr}_{rgb}`$
-**Name**: Color and Structure Similarity 
-
-### CTQM$`^{sro}_{lab}`$
-**Name**: Color Transfer Quality Metric 
-
-</details>
+| Year | ID  | Publication |
+| ---  | --- | --- |
+| ... | PSNR$`^s_{rgb}`$ | Peak Signal-to-Noise Ratio |
+| ... | SSIM$`^s_{rgb}`$ | Structural Similarity Index |
+| ... | MSE$`^s_{rgb}`$ | Mean-Squared Error |
+| ... | MS-SSIM$`^s_{rgb}`$ | Multi-Scale Structural Similarity Index |
+| ... | FSIM$`^s_{c,yiq}`$ | Feature Similarity Index |
+| ... | LPIPS$`^s_{rgb}`$ | Learned Perceptual Image Patch Similarity |
+| ... | RMSE$`^s_{rgb}`$ | Root-Mean-Squared Error |
+| ... | GSSIM$`^s_{rgb}`$ | Gradient-based Structural Similarity Index |
+| ... | VSI$`^s_{rgb}`$ | Visual Saliency-based Index |
+| ... | 4-SSIM$`^s_{rgb}`$ | 4-component Structural Similarity Index |
+| ... | HI$`^r_{rgb}`$ | Histogram Intersection |
+| ... | Corr$`^r_{rgb}`$ | Correlation |
+| ... | BA$`^r_{rgb}`$ | Bhattacharyya Distance |
+| ... | BRISQUE$`^o_{rgb}`$ | Blind/Referenceless Image Spatial Quality Evaluator |
+| ... | NIMA$`^o_{rgb}`$ | Neural Image Assessment |
+| ... | NIQE$`^o_{rgb}`$ | Naturalness Image Quality Evaluator |
+| ... | CF$`^o_{rgyb}`$ | Colorfulness |
+| ... | 4-EGSSIM$`^s_{rgb}`$ | 4-component enhanced Gradient-based Structural Similarity Index |
+| ... | CSS$`^{sr}_{rgb}`$ | Color and Structure Similarity |
+| ... | CTQM$`^{sro}_{lab}`$ | Color Transfer Quality Metric |
 
 ## Citation
 If you utilize this code in your research, kindly provide a citation:
@@ -149,17 +106,3 @@ If you utilize this code in your research, kindly provide a citation:
   doi={10.1145/3626495.3626509}
 }
 ```
-
-## References
-[^1]: E. Reinhard, M. Ashikhmin, B. Gooch, and P. Shirley, “Color transfer between images,” *IEEE Comput. Graph. Appl.*, vol. 21, p. 34–41, sep 2001.
-[^2]: F. Pitie, A. C. Kokaram and R. Dahyot, "N-dimensional probability density function transfer and its application to color transfer," *Tenth IEEE International Conference on Computer Vision (ICCV'05) Volume 1*, 2005, pp. 1434-1439 Vol. 2, doi: 10.1109/ICCV.2005.166.
-[^3]: F. Pitie and A. Kokaram, "The linear Monge-Kantorovitch linear colour mapping for example-based colour transfer," *4th European Conference on Visual Media Production*, 2007, pp. 1-9, doi: 10.1049/cp:20070055.
-[^4]: X. Qian, BangFeng Wang and Lei Han, "An efficient fuzzy clustering-based color transfer method," *2010 Seventh International Conference on Fuzzy Systems and Knowledge Discovery*, 2010, pp. 520-523, doi: 10.1109/FSKD.2010.5569560.
-[^5]: Gatys, Leon A. and Ecker, Alexander S. and Bethge, Matthias, "A Neural Algorithm of Artistic Style," *arXiv*, 2015, doi: 10.48550/arXiv.1508.06576. 
-[^6]: Luan, Fujun and Paris, Sylvain and Shechtman, Eli and Bala, Kavita, "Deep Photo Style Transfer," *arXiv*, 2017, doi: 10.48550/arxiv.1703.07511.  
-[^7]: Mairéad Grogan, Rozenn Dahyot, "L2 Divergence for robust colour transfer," *Computer Vision and Image Understanding*, 2019, pp. 39-49 Vol. 181 doi: 10.1016/j.cviu.2019.02.002.  
-[^8]: Junyong Lee, Hyeongseok Son, Gunhee Lee, Jonghyeop Lee, Sunghyun Cho, Seungyong Le, "Deep Color Transfer using Histogram Analogy," *The Visual Computer*, 2020, pp. 2129-2143 Vol. 36, doi: 10.1007/s00371-020-01921-6.  
-[^9]: Cao, Xu and Wang, Weimin and Nagao, Katashi and Nakamura, Ryosuke, "PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color," *IEEE Computer Graphics and Applications*, doi: 110.1109/WACV45572.2020.9093513.  
-[^10]: Ific Goudé, Rémi Cozot, Olivier Le Meur, Kadi Bouatouch. Example‐Based Colour Transfer for 3D Point Clouds. Computer Graphics Forum, Wiley, 2021, 40 (6), pp.428-446. ⟨10.1111/cgf.14388⟩. ⟨hal-03396448⟩  
-[^11]: Afifi, Mahmoud and Abuolaim, Abdullah and Hussien, Mostafa and Brubaker, Marcus A. and Brown, Michael S, "CAMS: Color-Aware Multi-Style Transfer," *arXiv*, 2021, doi: 10.48550/ARXIV.2106.13920.  
-[^12]: Chang, Youngha and Saito, Suguru and Nakajima, Masayuki, "A Framework for Transfer Colors Based on the Basic Color Categories," *Proceedings Computer Graphics International*, 2003, doi: 10.1109/CGI.2003.1214463.  
