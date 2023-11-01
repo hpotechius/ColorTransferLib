@@ -53,20 +53,20 @@ The following color transfer methods are integrated in the library. Some of them
 | Year | ID  | Publication |
 | ---  | --- | --- |
 | 2001 | GLO | [Color Transfer between Images](https://doi.org/10.1109/38.946629) |
-| 2005 | PDF | N-dimensional probability density function transfer and its application to color transfer |
-| 2007 | MKL | The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer |
-| 2010 | FUZ | An efficient fuzzy clustering-based color transfer method |
-| 2015 | NST | A Neural Algorithm of Artistic Style |
-| 2017 | DPT | Deep Photo Style Transfer |
-| 2019 | TPS | L2 Divergence for robust colour transfer |
-| 2020 | HIS | Deep Color Transfer using Histogram Analogy |
-| 2020 | PSN | PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color |
-| 2020 | EB3 | Example-Based Colour Transfer for 3D Point Clouds |
-| 2021 | CAM | CAMS: Color-Aware Multi-Style Transfer |
-| 2003 | BCC | A Framework for Transfer Colors Based on the Basic Color Categories |
-| XXX | RHG | XXX |
-| XXX | CCS | XXX |
-| XXX | GPC | XXX |
+| 2005 | PDF | [N-dimensional probability density function transfer and its application to color transfer](https://doi.org/10.1109/ICCV.2005.166) |
+| 2007 | MKL | [The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer](https://doi.org/10.1049/cp:20070055) |
+| 2010 | FUZ | [An efficient fuzzy clustering-based color transfer method](https://doi.org/10.1109/FSKD.2010.5569560) |
+| 2015 | NST | [A Neural Algorithm of Artistic Style](https://doi.org/10.48550/arXiv.1508.06576) |
+| 2017 | DPT | [Deep Photo Style Transfer](https://doi.org/10.48550/arXiv.1703.07511) |
+| 2019 | TPS | [L2 Divergence for robust colour transfer](https://doi.org/10.1016/j.cviu.2019.02.002) |
+| 2020 | HIS | [Deep Color Transfer using Histogram Analogy](https://doi.org/10.1007/s00371-020-01921-6) |
+| 2020 | PSN | [PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color](https://doi.org/10.1109/WACV45572.2020.9093513) |
+| 2020 | EB3 | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
+| 2021 | CAM | [CAMS: Color-Aware Multi-Style Transfer](https://doi.org/10.48550/arXiv.2106.13920) |
+| 2003 | BCC | [A Framework for Transfer Colors Based on the Basic Color Categories](https://doi.org/10.1109/CGI.2003.1214463) |
+| XXX | RHG | []() |
+| XXX | CCS | []() |
+| XXX | GPC | []() |
 
 
 ## Available Objective Evaluation Metrics
