@@ -83,7 +83,7 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 | ... | RMSE$`^s_{rgb}`$ | Root-Mean-Squared Error | []() |
 | 2006 | GSSIM$`^s_{rgb}`$ | Gradient-based Structural Similarity Index | [Gradient-Based Structural Similarity for Image Quality Assessment](https://doi.org/10.1109/ICIP.2006.313132) |
 | ... | VSI$`^s_{rgb}`$ | Visual Saliency-based Index | []() |
-| ... | 4-SSIM$`^s_{rgb}`$ | 4-component Structural Similarity Index | []() |
+| 2010 | 4-SSIM$`^s_{rgb}`$ | 4-component Structural Similarity Index | [Content-partitioned structural similarity index for image quality assessment](https://doi.org/10.1016/j.image.2010.03.004) |
 | ... | HI$`^r_{rgb}`$ | Histogram Intersection | []() |
 | ... | Corr$`^r_{rgb}`$ | Correlation | []() |
 | ... | BA$`^r_{rgb}`$ | Bhattacharyya Distance | []() |
@@ -91,7 +91,7 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 | ... | NIMA$`^o_{rgb}`$ | Neural Image Assessment | []() |
 | ... | NIQE$`^o_{rgb}`$ | Naturalness Image Quality Evaluator | []() |
 | ... | CF$`^o_{rgyb}`$ | Colorfulness | []() |
-| ... | 4-EGSSIM$`^s_{rgb}`$ | 4-component enhanced Gradient-based Structural Similarity Index | []() |
+| 2011 | 4-EGSSIM$`^s_{rgb}`$ | 4-component enhanced Gradient-based Structural Similarity Index | [An image similarity measure using enhanced human visual system characteristics](https://ui.adsabs.harvard.edu/link_gateway/2011SPIE.8063E..10N/doi:10.1117/12.883301) |
 | ... | CSS$`^{sr}_{rgb}`$ | Color and Structure Similarity | []() |
 | ... | CTQM$`^{sro}_{lab}`$ | Color Transfer Quality Metric | []() |
 
