@@ -77,26 +77,26 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 
 | Year | ID  | Name | Publication |
 | ---  | --- | --- | --- |
-| / | PSNR$`^s_{rgb}`$ | Peak Signal-to-Noise Ratio | / |
-| / | HI$`^r_{rgb}`$ | Histogram Intersection | / |
-| / | Corr$`^r_{rgb}`$ | Correlation | / |
-| / | BA$`^r_{rgb}`$ | Bhattacharyya Distance | / |
-| / | MSE$`^s_{rgb}`$ | Mean-Squared Error | / |
-| / | RMSE$`^s_{rgb}`$ | Root-Mean-Squared Error | / |
-| 2003 | CF$`^o_{rgyb}`$ | Colorfulness | [Measuring Colourfulness in Natural Images](http://dx.doi.org/10.1117/12.477378) |
-| 2003 | MS-SSIM$`^s_{rgb}`$ | Multi-Scale Structural Similarity Index | [Multiscale structural similarity for image quality assessment](https://doi.org/10.1109/ACSSC.2003.1292216) |
-| 2004 | SSIM$`^s_{rgb}`$ | Structural Similarity Index | [Image quality assessment: from error visibility to structural similarity](https://doi.org/10.1109/TIP.2003.819861) |
-| 2006 | GSSIM$`^s_{rgb}`$ | Gradient-based Structural Similarity Index | [Gradient-Based Structural Similarity for Image Quality Assessment](https://doi.org/10.1109/ICIP.2006.313132) |
-| 2010 | 4-SSIM$`^s_{rgb}`$ | 4-component Structural Similarity Index | [Content-partitioned structural similarity index for image quality assessment](https://doi.org/10.1016/j.image.2010.03.004) |
-| 2011 | 4-EGSSIM$`^s_{rgb}`$ | 4-component enhanced Gradient-based Structural Similarity Index | [An image similarity measure using enhanced human visual system characteristics](https://ui.adsabs.harvard.edu/link_gateway/2011SPIE.8063E..10N/doi:10.1117/12.883301) |
-| 2011 | FSIM$`^s_{c,yiq}`$ | Feature Similarity Index | [FSIM: A Feature Similarity Index for Image Quality Assessment](https://doi.org/10.1109/TIP.2011.2109730) |
-| 2012 | BRISQUE$`^o_{rgb}`$ | Blind/Referenceless Image Spatial Quality Evaluator | [No-Reference Image Quality Assessment in the Spatial Domain](https://doi.org/10.1109/TIP.2012.2214050) |
-| 2013 | NIQE$`^o_{rgb}`$ | Naturalness Image Quality Evaluator | [Making a “Completely Blind” Image Quality Analyzer](https://doi.org/10.1109/LSP.2012.2227726) |
-| 2014 | VSI$`^s_{rgb}`$ | Visual Saliency-based Index | [VSI: A Visual Saliency-Induced Index for Perceptual Image Quality Assessment](https://doi.org/10.1109/TIP.2014.2346028) |
-| 2016 | CTQM$`^{sro}_{lab}`$ | Color Transfer Quality Metric | [Novel multi-color transfer algorithms and quality measure](https://doi.org/10.1109/TCE.2016.7613196) |
-| 2018 | LPIPS$`^s_{rgb}`$ | Learned Perceptual Image Patch Similarity | [The Unreasonable Effectiveness of Deep Features as a Perceptual Metric](https://doi.org/10.1109/CVPR.2018.00068) |
-| 2018 | NIMA$`^o_{rgb}`$ | Neural Image Assessment | [NIMA: Neural Image Assessment](https://doi.org/10.48550/arXiv.1709.05424) |
-| 2019 | CSS$`^{sr}_{rgb}`$ | Color and Structure Similarity | [Selective color transfer with multi-source images](https://doi.org/10.1016/j.patrec.2009.01.004) |
+| / | $`PSNR^s_{rgb}`$ | Peak Signal-to-Noise Ratio | / |
+| / | $`HI^r_{rgb}`$ | Histogram Intersection | / |
+| / | $`Corr^r_{rgb}`$ | Correlation | / |
+| / | $`BA^r_{rgb}`$ | Bhattacharyya Distance | / |
+| / | $`MSE^s_{rgb}`$ | Mean-Squared Error | / |
+| / | $`RMSE^s_{rgb}`$ | Root-Mean-Squared Error | / |
+| 2003 | $`CF^o_{rgyb}`$ | Colorfulness | [Measuring Colourfulness in Natural Images](http://dx.doi.org/10.1117/12.477378) |
+| 2003 | $`MS-SSIM^s_{rgb}`$ | Multi-Scale Structural Similarity Index | [Multiscale structural similarity for image quality assessment](https://doi.org/10.1109/ACSSC.2003.1292216) |
+| 2004 | $`SSIM^s_{rgb}`$ | Structural Similarity Index | [Image quality assessment: from error visibility to structural similarity](https://doi.org/10.1109/TIP.2003.819861) |
+| 2006 | $`GSSIM^s_{rgb}`$ | Gradient-based Structural Similarity Index | [Gradient-Based Structural Similarity for Image Quality Assessment](https://doi.org/10.1109/ICIP.2006.313132) |
+| 2010 | $`IVSSIM^s_{rgb}`$ | 4-component Structural Similarity Index | [Content-partitioned structural similarity index for image quality assessment](https://doi.org/10.1016/j.image.2010.03.004) |
+| 2011 | $`IVEGSSIM^s_{rgb}`$ | 4-component enhanced Gradient-based Structural Similarity Index | [An image similarity measure using enhanced human visual system characteristics](https://ui.adsabs.harvard.edu/link_gateway/2011SPIE.8063E..10N/doi:10.1117/12.883301) |
+| 2011 | $`FSIM^s_{c,yiq}`$ | Feature Similarity Index | [FSIM: A Feature Similarity Index for Image Quality Assessment](https://doi.org/10.1109/TIP.2011.2109730) |
+| 2012 | $`BRISQUE^o_{rgb}`$ | Blind/Referenceless Image Spatial Quality Evaluator | [No-Reference Image Quality Assessment in the Spatial Domain](https://doi.org/10.1109/TIP.2012.2214050) |
+| 2013 | $`NIQE^o_{rgb}`$ | Naturalness Image Quality Evaluator | [Making a “Completely Blind” Image Quality Analyzer](https://doi.org/10.1109/LSP.2012.2227726) |
+| 2014 | $`VSI^s_{rgb}`$ | Visual Saliency-based Index | [VSI: A Visual Saliency-Induced Index for Perceptual Image Quality Assessment](https://doi.org/10.1109/TIP.2014.2346028) |
+| 2016 | $`CTQM^{sro}_{lab}`$ | Color Transfer Quality Metric | [Novel multi-color transfer algorithms and quality measure](https://doi.org/10.1109/TCE.2016.7613196) |
+| 2018 | $`LPIPS^s_{rgb}`$ | Learned Perceptual Image Patch Similarity | [The Unreasonable Effectiveness of Deep Features as a Perceptual Metric](https://doi.org/10.1109/CVPR.2018.00068) |
+| 2018 | $`NIMA^o_{rgb}`$ | Neural Image Assessment | [NIMA: Neural Image Assessment](https://doi.org/10.48550/arXiv.1709.05424) |
+| 2019 | $`CSS^{sr}_{rgb}`$ | Color and Structure Similarity | [Selective color transfer with multi-source images](https://doi.org/10.1016/j.patrec.2009.01.004) |
 
 ## Citation
 If you utilize this code in your research, kindly provide a citation:
