@@ -55,21 +55,21 @@ The following color and style transfer methods are integrated in the library. So
 
 | Year | ID  | Publication |
 | ---  | --- | --- |
-| 2001 | GLO$`^{2D,3D}_{CT}`$ | [Color Transfer between Images](https://doi.org/10.1109/38.946629) |
-| 2003 | BCC$`^{2D,3D}_{CT}`$ | [A Framework for Transfer Colors Based on the Basic Color Categories](https://doi.org/10.1109/CGI.2003.1214463) |
-| 2005 | PDF$`^{2D,3D}_{CT}`$ | [N-dimensional probability density function transfer and its application to color transfer](https://doi.org/10.1109/ICCV.2005.166) |
-| 2006 | CCS$`^{2D,3D}_{CT}`$ | [Color transfer in correlated color space](https://doi.org/10.1145/1128923.1128974) |
-| 2007 | MKL$`^{2D,3D}_{CT}`$ | [The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer](https://doi.org/10.1049/cp:20070055) |
-| 2009 | GPC$`^{2D}_{CT}`$ | [Gradient-Preserving Color Transfer](http://dx.doi.org/10.1111/j.1467-8659.2009.01566.x) |
-| 2010 | FUZ$`^{2D,3D}_{CT}`$ | [An efficient fuzzy clustering-based color transfer method](https://doi.org/10.1109/FSKD.2010.5569560) |
-| 2015 | NST$`^{2D}_{ST}`$ | [A Neural Algorithm of Artistic Style](https://doi.org/10.48550/arXiv.1508.06576) - [Original Implementation](https://github.com/cysmith/neural-style-tf) |
-| 2017 | DPT$`^{2D}_{ST}`$ | [Deep Photo Style Transfer](https://doi.org/10.48550/arXiv.1703.07511) - [Original Implementation](https://github.com/LouieYang/deep-photo-styletransfer-tf) |
-| 2019 | TPS$`^{2D}_{CT}`$ | [L2 Divergence for robust colour transfer](https://doi.org/10.1016/j.cviu.2019.02.002) - [Original Implementation](https://github.com/groganma/gmm-colour-transfer) |
-| 2020 | HIS$`^{2D}_{CT}`$ | [Deep Color Transfer using Histogram Analogy](https://doi.org/10.1007/s00371-020-01921-6) - [Original Implementation](https://github.com/codeslake/Color_Transfer_Histogram_Analogy) |
-| 2020 | PSN$`^{3D}_{ST}`$ | [PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color](https://doi.org/10.1109/WACV45572.2020.9093513) - [Original Implementation](https://github.com/hoshino042/psnet) |
-| 2020 | EB3$`^{3D}_{CT}`$ | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
-| 2021 | CAM$`^{2D}_{ST}`$ | [CAMS: Color-Aware Multi-Style Transfer](https://doi.org/10.48550/arXiv.2106.13920) - [Original Implementation](https://github.com/mahmoudnafifi/color-aware-style-transfer) |
-| 2021 | RHG$`^{2D}_{CT}`$ | [HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms](https://doi.org/10.48550/arXiv.2011.11731) |
+| 2001 | $`GLO^{2D,3D}_{CT}`$ | [Color Transfer between Images](https://doi.org/10.1109/38.946629) |
+| 2003 | $`BCC^{2D,3D}_{CT}`$ | [A Framework for Transfer Colors Based on the Basic Color Categories](https://doi.org/10.1109/CGI.2003.1214463) |
+| 2005 | $`PDF^{2D,3D}_{CT}`$ | [N-dimensional probability density function transfer and its application to color transfer](https://doi.org/10.1109/ICCV.2005.166) |
+| 2006 | $`CCS^{2D,3D}_{CT}`$ | [Color transfer in correlated color space](https://doi.org/10.1145/1128923.1128974) |
+| 2007 | $`MKL^{2D,3D}_{CT}`$ | [The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer](https://doi.org/10.1049/cp:20070055) |
+| 2009 | $`GPC^{2D}_{CT}`$ | [Gradient-Preserving Color Transfer](http://dx.doi.org/10.1111/j.1467-8659.2009.01566.x) |
+| 2010 | $`FUZ^{2D,3D}_{CT}`$ | [An efficient fuzzy clustering-based color transfer method](https://doi.org/10.1109/FSKD.2010.5569560) |
+| 2015 | $`NST^{2D}_{ST}`$ | [A Neural Algorithm of Artistic Style](https://doi.org/10.48550/arXiv.1508.06576) - [Original Implementation](https://github.com/cysmith/neural-style-tf) |
+| 2017 | $`DPT^{2D}_{ST}`$ | [Deep Photo Style Transfer](https://doi.org/10.48550/arXiv.1703.07511) - [Original Implementation](https://github.com/LouieYang/deep-photo-styletransfer-tf) |
+| 2019 | $`TPS^{2D}_{CT}`$ | [L2 Divergence for robust colour transfer](https://doi.org/10.1016/j.cviu.2019.02.002) - [Original Implementation](https://github.com/groganma/gmm-colour-transfer) |
+| 2020 | $`HIS^{2D}_{CT}`$ | [Deep Color Transfer using Histogram Analogy](https://doi.org/10.1007/s00371-020-01921-6) - [Original Implementation](https://github.com/codeslake/Color_Transfer_Histogram_Analogy) |
+| 2020 | $`PSN^{3D}_{ST}`$ | [PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color](https://doi.org/10.1109/WACV45572.2020.9093513) - [Original Implementation](https://github.com/hoshino042/psnet) |
+| 2020 | $`EB3^{3D}_{CT}`$ | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
+| 2021 | $`CAM^{2D}_{ST}`$ | [CAMS: Color-Aware Multi-Style Transfer](https://doi.org/10.48550/arXiv.2106.13920) - [Original Implementation](https://github.com/mahmoudnafifi/color-aware-style-transfer) |
+| 2021 | $`RHG^{2D}_{CT}`$ | [HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms](https://doi.org/10.48550/arXiv.2011.11731) |
 
 
 ## Available Objective Evaluation Metrics
