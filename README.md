@@ -41,7 +41,9 @@ octave:1> gbvs_install.m
 
 
 ### Install via PyPI
-TODO
+```
+pip install colortransferlib
+```
 
 ### Install from source
 ```
