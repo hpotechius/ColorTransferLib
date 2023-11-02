@@ -28,11 +28,17 @@ Download the Models-Folder from the following link and place it in the project's
 ```
 
 Run the following commands once:
+```
+sudo apt-get install liboctave-dev
+pkg install -forge image
+pkg install -forge statistics
+```
 - To enable VSI
 ```
-potechius@VRAR-2023:~/Projects/VSCode/ColorTransferLib$ ocatve
+user@pc:~/<Project Path>/ColorTransferLib/Evaluation/VIS/gbvs$ ocatve
 octave:1> gbvs_install.m
 ```
+
 
 ### Install via PyPI
 TODO
