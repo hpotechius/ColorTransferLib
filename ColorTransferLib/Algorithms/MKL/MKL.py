@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -81,14 +81,13 @@ class MKL:
         output = check_compatibility(src, ref, MKL.compatibility)
     
         if output["status_code"] == -1:
+            output["response"] = "Incompatible type."
             return output
 
         # Preprocessing
         src_color = src.get_colors()
         ref_color = ref.get_colors()
         out_img = deepcopy(src)
-
-        print(src_color.shape)
 
         src_color_rgb = src_color.reshape(src_color.shape[0], 3)
         ref_color_rgb = ref_color.reshape(ref_color.shape[0], 3)
@@ -101,7 +100,6 @@ class MKL:
 
         T = np.dot(src_covsr, np.dot(fractional_matrix_power(np.dot(src_covs, np.dot(ref_cov, src_covs)), 0.5), src_covsr))
 
-        # has to be rewritten
         mean_src = np.mean(src_color_rgb, axis=0)
         mean_ref = np.mean(ref_color_rgb, axis=0)
         out = (src_color_rgb - mean_src) @ T + mean_ref

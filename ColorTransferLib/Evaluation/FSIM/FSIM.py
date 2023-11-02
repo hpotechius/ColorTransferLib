@@ -8,9 +8,7 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 import cv2
-import math
 import numpy as np
-from ColorTransferLib.ImageProcessing.Image import Image
 import phasepack.phasecong as PC
 
 # ----------------------------------------------------------------------------------------------------------------------

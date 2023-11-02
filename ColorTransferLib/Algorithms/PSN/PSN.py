@@ -9,11 +9,9 @@ Please see the LICENSE file that should have been included as part of this packa
 
 import numpy as np
 import configparser
-import time
 from pprint import pprint as ppt
 import tensorflow as tf
 import os
-import glob
 
 from ColorTransferLib.Algorithms.PSN.psnet import PSNet
 from ColorTransferLib.Algorithms.PSN.utils import *
@@ -84,6 +82,7 @@ class PSN:
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, PSN.compatibility)
         if output["status_code"] != 0:
+            output["response"] = "Incompatible type."
             return output
         
         iteration = opt.iterations  # iteration number for style transfer

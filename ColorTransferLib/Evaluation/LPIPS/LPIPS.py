@@ -7,15 +7,11 @@ This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
 
-import cv2
-import math
 import lpips
 import torch
 import sys
 import os
 
-sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
-from ColorTransferLib.ImageProcessing.Image import Image
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------

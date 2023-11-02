@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -11,25 +11,33 @@ import numpy as np
 import time
 from copy import deepcopy
 
-from ColorTransferLib.ImageProcessing.Image import Image as Img
 from ColorTransferLib.Utils.Helper import check_compatibility
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Based on the paper:
-#   Title: Color Transfer between Images
-#   Author: Erik Reinhard, Michael Ashikhmin, Bruce Gooch, Peter Shirley
-#   Published in: IEEE Computer Graphics and Applications
-#   Year of Publication: 2001
+#   Title: Color Transfer in Correlated Color Space
+#   Author: Xuezhong Xiao, Lizhuang Ma
+#   Published in: Proceedings of the 2006 ACM international conference on Virtual reality continuum and its applications
+#   Year of Publication: 2006
 #
 # Abstract:
-#   We use a simple statistical analysis to impose one image's color characteristics on another. We can achieve color
-#   correction by choosing an appropriate source image and apply its characteristic to another image.
+#   In this paper we present a process called color transfer which can borrow one image's color characteristics from 
+#   another. Recently Reinhard and his colleagues reported a pioneering work of color transfer. Their technology can 
+#   produce very believable results, but has to transform pixel values from RGB to lab . Inspired by their work, we 
+#   advise an approach which can directly deal with the color transfer in any 3D space. From the view of statistics, 
+#   we consider pixel's value as a threedimension stochastic variable and an image as a set of samples, so the 
+#   correlations between three components can be measured by covariance. Our method imports covariance between three 
+#   components of pixel values while calculate the mean along each of the three axes. Then we decompose the covariance 
+#   matrix using SVD algorithm and get a rotation matrix. Finally we can scale, rotate and shift pixel data of target 
+#   image to fit data points' cluster of source image in the current color space and get resultant image which takes on 
+#   source image's look and feel. Besides the global processing, a swatch-based method is introduced in order to 
+#   manipulate images' color more elaborately. Experimental results confirm the validity and usefulness of our method.
 #
 # Info:
-#   Name: GlobalColorTransfer
-#   Identifier: GLO
-#   Link: https://doi.org/10.1109/38.946629
+#   Name: CorrelatedColorSpaceTransfer
+#   Identifier: CSS
+#   Link: https://doi.org/10.1145/1128923.1128974
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class CCS:
@@ -47,7 +55,20 @@ class CCS:
             "identifier": "CCS",
             "title": "Color Transfer in Correlated Color Space",
             "year": 2006,
-            "abstract": "In this paper we present a process called color transfer which can borrow one image's color characteristics from another. Recently Reinhard and his colleagues reported a pioneering work of color transfer. Their technology can produce very believable results, but has to transform pixel values from RGB to lab . Inspired by their work, we advise an approach which can directly deal with the color transfer in any 3D space. From the view of statistics, we consider pixel's value as a threedimension stochastic variable and an image as a set of samples, so the correlations between three components can be measured by covariance. Our method imports covariance between three components of pixel values while calculate the mean along each of the three axes. Then we decompose the covariance matrix using SVD algorithm and get a rotation matrix. Finally we can scale, rotate and shift pixel data of target image to fit data points' cluster of source image in the current color space and get resultant image which takes on source image's look and feel. Besides the global processing, a swatch-based method is introduced in order to manipulate images' color more elaborately. Experimental results confirm the validity and usefulness of our method.",
+            "abstract": "In this paper we present a process called color transfer which can borrow one image's color "
+                        "characteristics from another. Recently Reinhard and his colleagues reported a pioneering work "
+                        "of color transfer. Their technology can produce very believable results, but has to transform "
+                        "pixel values from RGB to lab . Inspired by their work, we advise an approach which can directly "
+                        "deal with the color transfer in any 3D space. From the view of statistics, we consider pixel's "
+                        "value as a threedimension stochastic variable and an image as a set of samples, so the "
+                        "correlations between three components can be measured by covariance. Our method imports "
+                        "covariance between three components of pixel values while calculate the mean along each of the "
+                        "three axes. Then we decompose the covariance matrix using SVD algorithm and get a rotation "
+                        "matrix. Finally we can scale, rotate and shift pixel data of target image to fit data points' "
+                        "cluster of source image in the current color space and get resultant image which takes on "
+                        "source image's look and feel. Besides the global processing, a swatch-based method is introduced "
+                        "in order to manipulate images' color more elaborately. Experimental results confirm the validity "
+                        "and usefulness of our method.",
             "types": ["Image", "Mesh", "PointCloud"]
         }
 
@@ -64,14 +85,15 @@ class CCS:
         output = check_compatibility(src, ref, CCS.compatibility)
 
         if output["status_code"] == -1:
+            output["response"] = "Incompatible type."
             return output
 
         # Preprocessing
         src_color = src.get_colors()
         ref_color = ref.get_colors()
-
+        
         # original src size
-        size_src = (src.get_height(), src.get_width(), 3)
+        #size_src = (src.get_height(), src.get_width(), 3)
 
         out_img = deepcopy(src)
         out = out_img.get_colors()
@@ -83,11 +105,9 @@ class CCS:
         num_pts_src = reshaped_src.shape[0]
         num_pts_ref = reshaped_ref.shape[0]
 
-
         # [] Calculate mean of each channel (for src and ref)
         mean_src = np.mean(src_color, axis=(0, 1))
         mean_ref = np.mean(ref_color, axis=(0, 1))
-
 
         # [] Calculate covariance matrix between the three components (for src and ref)
         cov_src = np.cov(reshaped_src, rowvar=False)
@@ -112,7 +132,7 @@ class CCS:
         T_src[:3,3] = -mean_src
         
         R_src = np.eye(4)
-        R_src[:3,:3] = np.linalg.inv(U_src)#U_src.T
+        R_src[:3,:3] = np.linalg.inv(U_src)
         
         S_src = np.array([[1/np.sqrt(L_src[0]), 0, 0, 0],
                           [0, 1/np.sqrt(L_src[1]), 0, 0],
@@ -127,9 +147,9 @@ class CCS:
         transformation_matrix = T_ref @ R_ref @ S_ref @ S_src @ R_src @ T_src
         out = (transformation_matrix @ homogeneous_src.T).T
 
-        out = np.reshape(out[:,:3], size_src)
-        out_colors = np.clip(out, 0, 1)
-
+        # turn homogeneous points into euclidean points 
+        out_colors = out[:,:3]
+        out_colors = np.clip(out_colors, 0, 1)
         out_img.set_colors(out_colors)
 
         output = {

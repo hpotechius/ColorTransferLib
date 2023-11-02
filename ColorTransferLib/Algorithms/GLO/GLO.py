@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -67,6 +67,7 @@ class GLO:
         output = check_compatibility(src, ref, GLO.compatibility)
 
         if output["status_code"] == -1:
+            output["response"] = "Incompatible type."
             return output
         
         # Preprocessing

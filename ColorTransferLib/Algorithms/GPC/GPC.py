@@ -166,24 +166,26 @@ class GPC:
         output = check_compatibility(src, ref, GPC.compatibility)
 
         if output["status_code"] == -1:
+            output["response"] = "Incompatible type."
             return output
 
         # Preprocessing
         src_img = src.get_raw()
         ref_img = ref.get_raw()
+        
 
         #histogram matching
         matched_img = GPC.histogram_matching(src_img, ref_img)
 
         # original src size
-        size_src = (src.get_height(), src.get_width(), 3)
+        #size_src = (src.get_height(), src.get_width(), 3)
 
         out_img = deepcopy(src)
         out = out_img.get_colors()
 
         pad = 50
 
-        M, N = src.get_height()+2*pad, src.get_width()+2*pad
+        M, N = src_img.shape[0]+2*pad, src_img.shape[1]+2*pad
         lambda_val = 1.0  # Setzen Sie hier den gewünschten Wert für Lambda ein
         Dx, Dy = GPC.gradient_matrices(M, N)
 
@@ -196,13 +198,14 @@ class GPC:
             o_rgb[:,:,channel] = GPC.solve_for_channel(matched_img[:,:,channel].flatten(), src_img[:,:,channel].flatten(), M, N, lambda_val, Dx, Dy)
 
         o_rgb = np.clip(o_rgb, 0, 1)
-        o_rgb = o_rgb[pad:-1-pad,pad:-1-pad,:]
-        out_imgage = Img(array=o_rgb, normalized=True, color="BGR")
+        o_rgb = o_rgb[pad:o_rgb.shape[0]-pad,pad:o_rgb.shape[1]-pad,:]
+
+        out_img.set_colors(o_rgb)
 
         output = {
             "status_code": 0,
             "response": "",
-            "object": out_imgage,
+            "object": out_img,
             "process_time": time.time() - start_time
         }
 

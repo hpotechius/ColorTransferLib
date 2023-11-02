@@ -151,8 +151,7 @@ def process_image(model, name, input_image, target_hist, image_size=256,
                         input_image_name=input_image,
                         save_input=False,
                         post_recoloring=post_recoloring)
-
-    
+        
         return output
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -71,7 +71,7 @@ class Image:
     # Writes the file to the specified path.
     # ------------------------------------------------------------------------------------------------------------------
     def write(self, out_path):
-        cv2.imwrite(out_path, cv2.cvtColor(self.__img, cv2.COLOR_RGB2BGR) * 255.0)
+        cv2.imwrite(out_path + ".png", cv2.cvtColor(self.__img, cv2.COLOR_RGB2BGR) * 255.0)
 
     # ------------------------------------------------------------------------------------------------------------------
     # Converts the image to the given color space.
@@ -178,7 +178,7 @@ class Image:
     # ------------------------------------------------------------------------------------------------------------------
     def get_color_statistic_3D(self, bins=[256,256,256], normalized=False):
         color = self.get_colors()
-        rgb_c = (color * 255.0).astype(np.int).reshape(color.shape[0], color.shape[2])
+        rgb_c = (color * 255.0).astype(int).reshape(color.shape[0], color.shape[2])
         histo = np.asarray(np.histogramdd(rgb_c, bins)[0])
 
         if normalized:

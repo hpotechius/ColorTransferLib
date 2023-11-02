@@ -38,3 +38,5 @@ pyiqa
 dlib
 pysaliency
 pyhull
+pyamg
+brisque

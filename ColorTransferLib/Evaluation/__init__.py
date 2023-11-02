@@ -8,5 +8,5 @@ from . import Corr
 from . import BRISQUE
 from . import CF
 from . import NIMA
-from . import VIS
+from . import VSI
 from . import GSSIM

@@ -361,7 +361,7 @@
   },
   {
     "name": "upsampling_output",
-    "default": true,
+    "default": false,
     "type": "bool",
     "values": [true, false],
     "tooltip": "TESTING PHASE: Applies guided upsampling. It is recommended if input image > 256x256.",

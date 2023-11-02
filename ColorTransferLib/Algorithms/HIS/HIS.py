@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -52,7 +52,7 @@ class HIS:
     year = 2020
 
     compatibility = {
-        "src": ["Image"],
+        "src": ["Image", "Mesh"],
         "ref": ["Image", "Mesh"]
     }
 
@@ -92,6 +92,7 @@ class HIS:
         output = check_compatibility(src, ref, HIS.compatibility)
 
         if output["status_code"] == -1:
+            output["response"] = "Incompatible type."
             return output
         
         if not torch.cuda.is_available():

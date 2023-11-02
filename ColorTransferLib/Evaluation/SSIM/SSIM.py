@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -8,11 +8,7 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 from skimage.metrics import structural_similarity as ssim
-import cv2
-import math
-import numpy as np
-from scipy import signal
-import time
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------

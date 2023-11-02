@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -60,7 +60,7 @@ for device in physical_devices:
 # ----------------------------------------------------------------------------------------------------------------------
 class NST:
     compatibility = {
-        "src": ["Image"],
+        "src": ["Image", "Mesh"],
         "ref": ["Image", "Mesh"]
     }
 
@@ -100,6 +100,7 @@ class NST:
         output = check_compatibility(src, ref, NST.compatibility)
 
         if output["status_code"] == -1:
+            output["response"] = "Incompatible type."
             return output
         
         if not torch.cuda.is_available():
@@ -135,7 +136,7 @@ class NST:
         out = NST.postprocess(out)
         tf.compat.v1.reset_default_graph()
 
-        out_img.set_raw(out)
+        out_img.set_raw(out, normalized=True)
         output = {
             "status_code": 0,
             "response": "",

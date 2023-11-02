@@ -1,13 +1,4 @@
 """
-Copyright 2022 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
-All rights reserved.
-This file is released under the "MIT License Agreement".
-Please see the LICENSE file that should have been included as part of this package.
-"""
-
-"""
 PyTorch implementation of the paper:
 M. Afifi, A. Abuolaim, M. Korashy,  M. A. Brubaker, and M. S. Brown. Color-Aware Style Transfer. arXiv preprint 2021.
 # Libraries
@@ -665,8 +656,8 @@ def image_loader(img, opt, K=16):
     pil_img = img * 255
     pil_img = Image.fromarray(pil_img.astype(np.uint8))
     image = opt.loader(pil_img).unsqueeze(0)
-    return image.to(opt.device, torch.float), torch.tensor(
-        colors).to(opt.device, torch.float)
+    #return image.to(opt.device, torch.float), torch.tensor(colors).to(opt.device, torch.float)
+    return image.to(opt.device, torch.float), torch.tensor(np.array(colors)).to(opt.device, torch.float)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -698,8 +689,10 @@ class Normalization(nn.Module):
         # .view the mean and std to make them [C x 1 x 1] so that they can
         # directly work with image Tensor of shape [B x C x H x W].
         # B is batch size. C is number of channels. H is height and W is width.
-        self.mean = torch.tensor(mean).view(-1, 1, 1)
-        self.std = torch.tensor(std).view(-1, 1, 1)
+        #self.mean = torch.tensor(mean).view(-1, 1, 1)
+        #self.std = torch.tensor(std).view(-1, 1, 1)
+        self.mean = (mean).clone().detach().view(-1, 1, 1)
+        self.std = (std).clone().detach().view(-1, 1, 1)
 
     # ------------------------------------------------------------------------------------------------------------------
     #

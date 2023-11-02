@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -10,26 +10,11 @@ Please see the LICENSE file that should have been included as part of this packa
 import numpy as np
 import math
 import time
-import os
-import copy
 from copy import deepcopy
-import os
-from scipy.linalg import orth
-
-
-import sys
-#sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
-
-
 import numpy as np
-from scipy.spatial.transform import Rotation as R
 
-from ColorTransferLib.ImageProcessing.Image import Image as Img
-from scipy.interpolate import interp1d
 from ColorTransferLib.Utils.Helper import check_compatibility
 
-
-THREADSPERBLOCK = (32, 32)
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Based on the paper:
@@ -97,11 +82,10 @@ class PDF:
         return info
     
     # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Generate a random 3x3 rotation matrix
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def random_rotation_matrix():
-        """Generate a random 3x3 rotation matrix."""
         random_state = np.random.default_rng()
         H = np.eye(3) + random_state.standard_normal((3, 3))
         Q, R = np.linalg.qr(H)
@@ -117,6 +101,7 @@ class PDF:
         output = check_compatibility(src, ref, PDF.compatibility)
 
         if output["status_code"] == -1:
+            output["response"] = "Incompatible type."
             return output
 
         output = {

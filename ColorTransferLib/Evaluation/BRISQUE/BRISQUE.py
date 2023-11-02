@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -7,25 +7,9 @@ This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
 
-import sys
-#sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
-
-from skimage.metrics import structural_similarity as ssim
-import cv2
-import math
-import numpy as np
-from scipy import signal
-from ColorTransferLib.ImageProcessing.Image import Image
-from libsvm import svm
-#from .brisquequality import test_measure_BRISQUE
-from brisque import BRISQUE as BRI
 import pyiqa
 import torch
 
-import os
-os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
-from oct2py import octave, Oct2Py
-from multiprocessing import Process, Pool, Manager, Semaphore
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------

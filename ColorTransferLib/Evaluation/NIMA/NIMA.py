@@ -7,12 +7,9 @@ This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
 
-import cv2
-import math
 import copy
 import tensorflow as tf
 
-from ColorTransferLib.ImageProcessing.Image import Image
 from .predict import predict
 from .utils.utils import calc_mean_score
 from .handlers.model_builder import Nima

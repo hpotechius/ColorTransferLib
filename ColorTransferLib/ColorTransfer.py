@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -7,11 +7,29 @@ This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
 
+
+ 
+import warnings
 import importlib
 import sys
 import json
 import os
 import copy
+
+# Suppresses the following warning: NumbaDeprecationWarning: The 'nopython' keyword argument was not supplied to the 
+# 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to 
+# True in Numba 0.59.0.
+warnings.filterwarnings("ignore", message=".*The 'nopython' keyword.*")
+
+# Suppresses the following warning: 
+# (1) UserWarning: nn.functional.upsample is deprecated. Use nn.functional.interpolate instead.
+# warnings.warn("nn.functional.upsample is deprecated. Use nn.functional.interpolate instead.")
+# (2) UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in  the future, please use 
+# 'weights' instead.
+warnings.filterwarnings("ignore", message=".*deprecated.*")
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # 0: DEBUG, 1: INFO, 2: WARNING, 3: ERROR
+
 
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from ColorTransferLib.Utils.Helper import get_methods, get_metrics
@@ -23,6 +41,15 @@ for m in available_methods:
     exec(m + " = getattr(importlib.import_module('ColorTransferLib.Algorithms."+m+"."+m+"'), '"+m+"')")
 for m in available_metrics:
     exec(m + " = getattr(importlib.import_module('ColorTransferLib.Evaluation."+m+"."+m+"'), '"+m+"')")
+
+# Useful for preventing the status prints from the algorithms which were integrated from public repositories
+VAR_BLOCKPRINT = True
+# Disable
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+# Restore
+def enablePrint():
+    sys.stdout = sys.__stdout__
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -65,7 +92,9 @@ class ColorTransfer:
     #
     # ------------------------------------------------------------------------------------------------------------------
     def apply(self):
+        if VAR_BLOCKPRINT: blockPrint()
         self.__out = globals()[self.__approach].apply(self.__src, self.__ref, self.__options)
+        if VAR_BLOCKPRINT: enablePrint()
         return self.__out
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -113,10 +142,6 @@ class ColorTransfer:
 # ----------------------------------------------------------------------------------------------------------------------
 # Proxy class for all color transfer evlauation metric within this project. This class allows the call of the algorithms with
 # different kind of input data without preprocessing.
-#
-#
-# The following approaches are currently supported:
-# global - 2001 - Color Transfer between Images
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class ColorTransferEvaluation():

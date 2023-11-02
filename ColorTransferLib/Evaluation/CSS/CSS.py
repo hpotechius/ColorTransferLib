@@ -10,10 +10,8 @@ Please see the LICENSE file that should have been included as part of this packa
 import cv2
 import math
 import numpy as np
-import sys
-sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
-from ColorTransferLib.ImageProcessing.Image import Image
-from multiprocessing import Process, Pool, Manager, Semaphore
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Based on the paper:

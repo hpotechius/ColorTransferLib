@@ -10,6 +10,7 @@ Please see the LICENSE file that should have been included as part of this packa
 import time
 from copy import deepcopy
 import torch
+import cv2
 
 import ColorTransferLib.Algorithms.CAM.color_aware_st as cwst
 from ColorTransferLib.Utils.Helper import check_compatibility
@@ -51,8 +52,8 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 # ----------------------------------------------------------------------------------------------------------------------
 class CAM:
     compatibility = {
-        "src": ["Image"],
-        "ref": ["Image"]
+        "src": ["Image", "Mesh"],
+        "ref": ["Image", "Mesh"]
     }
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -81,7 +82,7 @@ class CAM:
                         "participants. In comparison with prior work, our method is simple, easy to implement, and "
                         "achieves visually appealing results when targeting images that have multiple styles. Source "
                         "code is available at this https URL.",
-            "types": ["Image"]
+            "types": ["Image", "Mesh"]
         }
 
         return info
@@ -96,23 +97,24 @@ class CAM:
         output = check_compatibility(src, ref, CAM.compatibility)
 
         if output["status_code"] == -1:
+            output["response"] = "Incompatible type."
             return output
         
         if not torch.cuda.is_available():
             options.device = "cpu"
 
-
-        # resize ref to fit src
-        ref.resize(src.get_width(), src.get_height())
+        #ref.resize(src.get_width(), src.get_height())
 
         # Preprocessing
         src_img = src.get_raw() * 255.0
         ref_img = ref.get_raw() * 255.0
         out_img = deepcopy(src)
 
+        ref_img = cv2.resize(ref_img, dsize=(src_img.shape[0], src_img.shape[1]), interpolation=cv2.INTER_CUBIC)
+
         out = cwst.apply(src_img, ref_img, options)
 
-        out_img.set_raw(out)
+        out_img.set_raw(out, normalized=True)
         output = {
             "status_code": 0,
             "response": "",

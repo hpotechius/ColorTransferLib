@@ -46,7 +46,7 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 # ----------------------------------------------------------------------------------------------------------------------
 class DPT:
     compatibility = {
-        "src": ["Image"],
+        "src": ["Image", "Mesh"],
         "ref": ["Image", "Mesh"]
     }
     # ------------------------------------------------------------------------------------------------------------------
@@ -95,6 +95,10 @@ class DPT:
         start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, DPT.compatibility)
+
+        if output["status_code"] == -1:
+            output["response"] = "Incompatible type."
+            return output
 
         # Preprocessing
         src_img = src.get_raw() * 255.0

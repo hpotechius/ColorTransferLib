@@ -26,7 +26,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# Structural similarity index measure (VIS)
+# Structural similarity index measure (VSI)
 # ...
 #
 # Source: VSI: A visual saliency-induced index for perceptual image quality assessment
@@ -44,19 +44,21 @@ import numpy as np
 # https://ajcr.net/Basic-guide-to-einsum/
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-class VIS:
+class VSI:
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def initOcatve():
+        #octave.run(os.getcwd() + "/ColorTransferLib/Evaluation/VSI/gbvs/gbvs_install.m")
+
         # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
         # Necessary to run "gbvs_install" once on a new system
         octave.addpath(octave.genpath('.'))
-        #octave.addpath(octave.genpath('module/Algorithms/TpsColorTransfer/L2RegistrationForCT'))
         octave.eval("warning('off','Octave:shadowed-function')")
         octave.eval('pkg load image')
         octave.eval('pkg load statistics')
+        #octave.gbvs_install()
         #octave.eval("dir")
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -147,7 +149,7 @@ class VIS:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def VIS(S_val, VS_m):
+    def VSI(S_val, VS_m):
         VSI_val = np.sum(S_val * VS_m) / np.sum(VS_m)
         return VSI_val
 
@@ -159,7 +161,7 @@ class VIS:
         src = args[0]
         ref = args[2]
         
-        VIS.initOcatve()
+        VSI.initOcatve()
         C1 = 0.00001
         C2 = 0.00001
         C3 = 0.00001
@@ -169,8 +171,8 @@ class VIS:
         src_img = src.get_raw()
         ref_img = ref.get_raw()
 
-        src_lmn = VIS.rgb2lmn(src_img)
-        ref_lmn = VIS.rgb2lmn(ref_img)
+        src_lmn = VSI.rgb2lmn(src_img)
+        ref_lmn = VSI.rgb2lmn(ref_img)
 
         L1 = src_lmn[:,:,0]
         L2 = ref_lmn[:,:,0]
@@ -179,18 +181,18 @@ class VIS:
         N1 = src_lmn[:,:,2]
         N2 = ref_lmn[:,:,2]
 
-        VS1 = VIS.VS(src_img)
-        VS2 = VIS.VS(ref_img)
-        VS_m = VIS.VS_m(VS1, VS2)
+        VS1 = VSI.VS(src_img)
+        VS2 = VSI.VS(ref_img)
+        VS_m = VSI.VS_m(VS1, VS2)
 
-        G1 = VIS.G(L1)
-        G2 = VIS.G(L2)
+        G1 = VSI.G(L1)
+        G2 = VSI.G(L2)
 
-        SSV = VIS.S_SV(VS1, VS2, C1)
-        SG = VIS.S_G(G1, G2, C2)
-        SC = VIS.S_C(M1, M2, N1, N2, C3)
-        S_val = VIS.S(SSV, SG, SC, a, b)
+        SSV = VSI.S_SV(VS1, VS2, C1)
+        SG = VSI.S_G(G1, G2, C2)
+        SC = VSI.S_C(M1, M2, N1, N2, C3)
+        S_val = VSI.S(SSV, SG, SC, a, b)
 
-        VIS_val = VIS.VIS(S_val, VS_m)
+        VSI_val = VSI.VSI(S_val, VS_m)
 
-        return round(VIS_val, 4)
+        return round(VSI_val, 4)

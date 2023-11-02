@@ -65,7 +65,7 @@
   },
   {
     "name": "max_iter",
-    "default": 2,
+    "default": 100,
     "type": "int",
     "values": [],
     "tooltip": "Training Optimizer Options: Maximum image iteration.",

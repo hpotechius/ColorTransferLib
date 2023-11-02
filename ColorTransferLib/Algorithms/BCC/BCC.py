@@ -95,6 +95,7 @@ class BCC:
         output = check_compatibility(src, ref, BCC.compatibility)
 
         if output["status_code"] == -1:
+            output["response"] = "Incompatible type."
             return output
 
         # Preprocessing

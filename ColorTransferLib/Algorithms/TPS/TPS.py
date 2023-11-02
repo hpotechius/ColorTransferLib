@@ -1,5 +1,5 @@
 """
-Copyright 2022 by Herbert Potechius,
+Copyright 2023 by Herbert Potechius,
 Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
 Technology - Immersive Media and AR/VR Research Group.
 All rights reserved.
@@ -10,7 +10,6 @@ Please see the LICENSE file that should have been included as part of this packa
 import numpy as np
 import time
 import os
-from oct2py import octave
 from copy import deepcopy
 from sys import platform
 
@@ -26,8 +25,7 @@ elif platform == "win32":
     # Windows...
     pass
 
-# sys.path.insert(0, '/home/potechius/Projects/VSCode/ColorTransferLib/')
-
+from oct2py import octave
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -67,7 +65,7 @@ class TPS:
     title = "L2 Divergence for robust colour transfer"
     year = 2019
     compatibility = {
-        "src": ["Image"],
+        "src": ["Image", "Mesh"],
         "ref": ["Image", "Mesh"]
     }
 
@@ -117,12 +115,11 @@ class TPS:
         # NOTE: pkg install -forge image
         # NOTE: pkg install -forge statistics
 
-
-
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, TPS.compatibility)
 
         if output["status_code"] == -1:
+            output["response"] = "Incompatible type."
             return output
 
         # Preprocessing
@@ -138,8 +135,8 @@ class TPS:
         octave.eval('pkg load statistics')
 
         outp = octave.ctfunction(ref_img, src_img, opt.cluster_method, opt.cluster_num, opt.colorspace)
-
-        out_img.set_raw(outp.astype(np.float32))
+        outp = outp.astype(np.float32)
+        out_img.set_raw(outp)
         output = {
             "status_code": 0,
             "response": "",
