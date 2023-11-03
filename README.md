@@ -5,7 +5,7 @@
 
 The ColorTransferLib is a library focused on color transfer, featuring a range of published algorithms. Some algorithms have been re-implemented, while others are integrated from public repositories. The primary objective of this project is to compile all existing color and style transfer methods into one library with a standardized API. This aids the research community in both development and comparison of algorithms. Currently, the library supports 15 color and style transfer methods for images (PNG-Format), 3D point clouds (PLY-Format), and textured triangle meshes (OBJ-Format with corresponding MTL and PNG). Additionally, it includes 20 metrics for evaluating color transfer results. A detailed list of all algorithms is available below.
 
-![ColorTransferLab_DataTypes_stretched](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/f1a41f86-98c8-429c-b347-1b9431ec8838)
+![ColorTransferLab_DataTypes_stretched](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/adbcc0fc-46b6-4c97-82ec-8a5a27e203f0)
 
 
 ## API
