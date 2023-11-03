@@ -1,11 +1,11 @@
-![colortransfer_example](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/928791b0-b734-4835-92c9-cdcb12fcddc7)
+![279368591-928791b0-b734-4835-92c9-cdcb12fcddc7](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/80644bb0-ef7e-4916-a9d5-c8b63d86cccd)
 # ColorTransferLib
 ![python3.10.12](https://img.shields.io/badge/build-3.10.12-blue?logo=python&label=Python) ![](https://img.shields.io/badge/build-22.04.3%20LTS-orange?logo=ubuntu&label=Ubuntu
 ) ![](https://img.shields.io/badge/build-MIT-purple?label=License) ![](https://img.shields.io/badge/build-6.4.0-brown?logo=octave&label=Octave) ![](https://img.shields.io/badge/build-GeForce%20RTX%203060-white?logo=nvidia&label=GPU) ![](https://img.shields.io/badge/build-intel%20Core%20i7--13700KF-white?logo=intel&label=CPU)
 
 The ColorTransferLib is a library focused on color transfer, featuring a range of published algorithms. Some algorithms have been re-implemented, while others are integrated from public repositories. The primary objective of this project is to compile all existing color and style transfer methods into one library with a standardized API. This aids the research community in both development and comparison of algorithms. Currently, the library supports 15 color and style transfer methods for images (PNG-Format), 3D point clouds (PLY-Format), and textured triangle meshes (OBJ-Format with corresponding MTL and PNG). Additionally, it includes 20 metrics for evaluating color transfer results. A detailed list of all algorithms is available below.
 
-![ColorTransferLab_DataTypes_stretched](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/adbcc0fc-46b6-4c97-82ec-8a5a27e203f0)
+![280260864-adbcc0fc-46b6-4c97-82ec-8a5a27e203f0](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/39ce5fc1-7a1d-4cdd-844f-747b057bae8b)
 
 ## API
 For seamless integration, adhere to the API specifications of the new color transfer algorithm, depicted in the Figure below.
@@ -16,9 +16,9 @@ Save each new color transfer class in the ColorTransferLib Repository under the 
 
 The output should resemble a dictionary format, as outlined in Listing 3. A status code of 0 signifies a valid algorithm output, while -1 indicates invalidity. The process time denotes the algorithm's execution duration, useful for subsequent evaluations. The 'object' key in the dictionary holds the result, which should match the class type of the Source input.
 
-![CT-API](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/2b9e196c-597d-4d57-a079-999564328d1e)
+![280261362-2b9e196c-597d-4d57-a079-999564328d1e](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/066f02ca-001b-44cf-be2b-9f864b2bc545)
 
-![Listing](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/93692741-46f6-4955-80a5-d152fa22104d)
+![listings](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/42e78a4f-89dc-4afe-876c-a1950044d514)
 
 ## Installation
 ### Requirements
