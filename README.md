@@ -22,9 +22,9 @@ The output should resemble a dictionary format, as outlined in Listing 3. A stat
 
 ## Installation
 ### Requirements
-Download the Models-Folder from the following link and place it in the project's root directory.
+Download the Models-Folder from [here](https://potechius.com/Downloads/Models.zip) and place it in the project's root directory.
 ```
-...
+
 ```
 
 Run the following commands once:
