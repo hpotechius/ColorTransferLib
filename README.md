@@ -7,7 +7,6 @@ The ColorTransferLib is a library focused on color transfer, featuring a range o
 
 ![ColorTransferLab_DataTypes_stretched](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/adbcc0fc-46b6-4c97-82ec-8a5a27e203f0)
 
-
 ## API
 For seamless integration, adhere to the API specifications of the new color transfer algorithm, depicted in the Figure below.
 
@@ -23,18 +22,20 @@ The output should resemble a dictionary format, as outlined in Listing 3. A stat
 
 ## Installation
 ### Requirements
-Download the Models-Folder from [here](https://potechius.com/Downloads/Models.zip) and place it in the project's root directory.
-```
+(1) Download the Models-Folder from [here](https://potechius.com/Downloads/Models.zip) and place it in the project's root directory.
 
-```
-
-Run the following commands once:
+(2) Install the following packages:
 ```
 sudo apt-get install liboctave-dev
+```
+
+(3) Install the following octave package:
+```
 pkg install -forge image
 pkg install -forge statistics
 ```
-- To enable VSI
+
+(4) Run the `gbvs_install.m` to make the evaluation metric VSI runnable:
 ```
 user@pc:~/<Project Path>/ColorTransferLib/Evaluation/VIS/gbvs$ ocatve
 octave:1> gbvs_install.m
