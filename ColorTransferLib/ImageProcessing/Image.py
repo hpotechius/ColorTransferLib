@@ -148,7 +148,7 @@ class Image:
     # ------------------------------------------------------------------------------------------------------------------
     def get_color_statistic(self, bins=256, normalized=False):
         color = self.get_colors()
-        rgb_c = (color * 255.0).astype(np.int).reshape(color.shape[0], color.shape[2])
+        rgb_c = (color * 255.0).astype(int).reshape(color.shape[0], color.shape[2])
         histo_red = np.asarray(np.histogram(rgb_c[:,0], bins=np.arange(bins+1))[0]).reshape(bins,1)
         histo_green = np.asarray(np.histogram(rgb_c[:,1], bins=np.arange(bins+1))[0]).reshape(bins,1)
         histo_blue = np.asarray(np.histogram(rgb_c[:,2], bins=np.arange(bins+1))[0]).reshape(bins,1)
@@ -159,8 +159,8 @@ class Image:
             histo_blue = histo_blue / np.sum(histo_blue)
 
         histo = np.concatenate((histo_red, histo_green, histo_blue), axis=1)
-        mean = np.mean(rgb_c, axis=0).astype(np.int)
-        std = np.std(rgb_c, axis=0).astype(np.int)
+        mean = np.mean(rgb_c, axis=0).astype(int)
+        std = np.std(rgb_c, axis=0).astype(int)
         return histo, mean, std
     
     # ------------------------------------------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ class Image:
     def get_color_distribution(self):
         color = self.get_colors()
         color = color[np.random.randint(color.shape[0], size=5000), :]
-        rgb_c = (color * 255.0).astype(np.int).reshape(color.shape[0], color.shape[2])
+        rgb_c = (color * 255.0).astype(int).reshape(color.shape[0], color.shape[2])
         rgb_c = np.unique(rgb_c, axis=0)
         return rgb_c
 
@@ -245,7 +245,7 @@ class Image:
     # RGB color space is quantized in a 10x10x10 area 
     # ------------------------------------------------------------------------------------------------------------------
     def __calculate_3D_color_histogram(self):
-        upd = np.clip(np.floor(self.__img * 10).astype(np.int8), 0, 9).reshape(self.__height * self.__width, 3)
+        upd = np.clip(np.floor(self.__img * 10).astype(int), 0, 9).reshape(self.__height * self.__width, 3)
         uni = np.unique(upd, axis=0, return_counts=True)
         con = np.concatenate((uni[0], uni[1].reshape((-1, 1))), axis=1)
         return con
