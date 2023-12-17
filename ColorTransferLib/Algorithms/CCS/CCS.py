@@ -55,11 +55,11 @@ class CCS:
             "identifier": "CCS",
             "title": "Color Transfer in Correlated Color Space",
             "year": 2006,
-            "abstract": "In this paper we present a process called color transfer which can borrow one image's color "
+            "abstract": "In this paper we present a process called color transfer which can borrow one images color "
                         "characteristics from another. Recently Reinhard and his colleagues reported a pioneering work "
                         "of color transfer. Their technology can produce very believable results, but has to transform "
                         "pixel values from RGB to lab. Inspired by their work, we advise an approach which can directly "
-                        "deal with the color transfer in any 3D space. From the view of statistics, we consider pixel's "
+                        "deal with the color transfer in any 3D space. From the view of statistics, we consider pixels "
                         "value as a threedimension stochastic variable and an image as a set of samples, so the "
                         "correlations between three components can be measured by covariance. Our method imports "
                         "covariance between three components of pixel values while calculate the mean along each of the "
