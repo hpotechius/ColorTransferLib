@@ -58,16 +58,16 @@ class CCS:
             "abstract": "In this paper we present a process called color transfer which can borrow one image's color "
                         "characteristics from another. Recently Reinhard and his colleagues reported a pioneering work "
                         "of color transfer. Their technology can produce very believable results, but has to transform "
-                        "pixel values from RGB to lab . Inspired by their work, we advise an approach which can directly "
+                        "pixel values from RGB to lab. Inspired by their work, we advise an approach which can directly "
                         "deal with the color transfer in any 3D space. From the view of statistics, we consider pixel's "
                         "value as a threedimension stochastic variable and an image as a set of samples, so the "
                         "correlations between three components can be measured by covariance. Our method imports "
                         "covariance between three components of pixel values while calculate the mean along each of the "
                         "three axes. Then we decompose the covariance matrix using SVD algorithm and get a rotation "
-                        "matrix. Finally we can scale, rotate and shift pixel data of target image to fit data points' "
+                        "matrix. Finally we can scale, rotate and shift pixel data of target image to fit data points "
                         "cluster of source image in the current color space and get resultant image which takes on "
-                        "source image's look and feel. Besides the global processing, a swatch-based method is introduced "
-                        "in order to manipulate images' color more elaborately. Experimental results confirm the validity "
+                        "source images look and feel. Besides the global processing, a swatch-based method is introduced "
+                        "in order to manipulate images color more elaborately. Experimental results confirm the validity "
                         "and usefulness of our method.",
             "types": ["Image", "Mesh", "PointCloud"]
         }
