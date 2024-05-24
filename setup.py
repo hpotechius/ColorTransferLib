@@ -10,7 +10,7 @@ with open('requirements/requirements.txt') as f:
 
 setuptools.setup(
     name="ColorTransferLib",
-    version="1.0.0-3",
+    version="1.0.0-4",
     author="Herbert Potechius",
     author_email="potechius.herbert@gmail.com",
     description="This library provides color and tyle transfer algorithms which were published in scientific papers. Additionall a set of IQA metrics are available.",
