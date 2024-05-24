@@ -31,8 +31,11 @@ sudo apt-get install liboctave-dev
 
 (3) Install the following octave package:
 ```
-pkg install -forge image
-pkg install -forge statistics
+# activate octave environment
+octave
+# install packages
+octave:1> pkg install -forge image
+octave:2> pkg install -forge statistics
 ```
 
 (4) Run the `gbvs_install.m` to make the evaluation metric VSI runnable:
@@ -52,6 +55,25 @@ pip install colortransferlib
 pip install -r requirements/requirements.txt
 python setup.py bdist_wheel
 pip install --force-reinstall ../ColorTransferLib/dist/ColorTransferLib-0.0.2-py3-none-any.whl 
+```
+
+## Usage
+```python
+from ColorTransferLib.ColorTransfer import ColorTransfer
+from ColorTransferLib.ImageProcessing.Image import Image
+
+src = Image(file_path='/media/source.png')
+ref = Image(file_path='/media/reference.png') 
+
+algo = "GLO"
+ct = ColorTransfer(src, ref, algo)
+out = ct.apply()
+
+# No output file extension has to be given
+if out["status_code"] == 0:
+    out["object"].write("/media/out")
+else:
+    print("Error: " + out["response"])
 ```
 
 ## Available Color Transfer Methods:
