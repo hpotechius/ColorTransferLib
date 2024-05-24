@@ -11,11 +11,10 @@ linear_attention_transformer==0.19.1
 libsvm==3.23.0.4
 lpips==0.1.4
 matplotlib==3.8.1
-numpy==1.24.3
+numpy==1.26.4
 numba==0.58.1
 oct2py==5.6.0
 open3d==0.17.0
-opencv-contrib-python==4.8.1.78
 PilloW==10.0.1
 phasepack==1.5
 pyamg==5.0.1

@@ -48,13 +48,17 @@ octave:1> gbvs_install.m
 ### Install via PyPI
 ```
 pip install colortransferlib
+# manual installation to allow h246 codec
+pip install opencv-python==4.9.0.80 --no-binary opencv-python --force-reinstall
 ```
 
 ### Install from source
 ```
 pip install -r requirements/requirements.txt
 python setup.py bdist_wheel
-pip install --force-reinstall ../ColorTransferLib/dist/ColorTransferLib-0.0.2-py3-none-any.whl 
+pip install --force-reinstall ../ColorTransferLib/dist/ColorTransferLib-0.0.4-py3-none-any.whl 
+# manual installation to allow h246 codec
+pip install opencv-python==4.9.0.80 --no-binary opencv-python 
 ```
 
 ## Usage

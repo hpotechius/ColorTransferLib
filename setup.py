@@ -32,5 +32,7 @@ setuptools.setup(
     python_requires='>=3.8',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    install_requires=requirements,
+    install_requires= requirements
 )
+
+# run seperately: "pip install opencv-python==4.9.0.80 --no-binary opencv-python"

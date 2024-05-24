@@ -28,7 +28,7 @@ warnings.filterwarnings("ignore", message=".*The 'nopython' keyword.*")
 # 'weights' instead.
 warnings.filterwarnings("ignore", message=".*deprecated.*")
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # 0: DEBUG, 1: INFO, 2: WARNING, 3: ERROR
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0' # 0: DEBUG, 1: INFO, 2: WARNING, 3: ERROR
 
 
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
@@ -43,7 +43,7 @@ for m in available_metrics:
     exec(m + " = getattr(importlib.import_module('ColorTransferLib.Evaluation."+m+"."+m+"'), '"+m+"')")
 
 # Useful for preventing the status prints from the algorithms which were integrated from public repositories
-VAR_BLOCKPRINT = True
+VAR_BLOCKPRINT = False
 # Disable
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')
@@ -56,14 +56,22 @@ def enablePrint():
 # Proxy class for all color transfer algorithms within this project. This class allows the call of the algorithms with
 # different kind of input data without preprocessing. The following input data can be processed:
 #
-# ------------------------------
-# | Source      | Reference    |
-# ------------------------------
-# | Image       | Image        |
-# | Image       | Pointcloud   |
-# | Pointcloud  | Image        |
-# | Pointcloud  | Pointcloud   |
-# ------------------------------
+# -----------------------------------------
+# | Source                 | Reference    |
+# -----------------------------------------
+# | Image                  | Image        |
+# | Image                  | Pointcloud   |
+# | Image                  | Mesh         |
+# | Pointcloud             | Image        |
+# | Pointcloud             | Pointcloud   |
+# | Pointcloud             | Mesh         |
+# | Video                  | Image        |
+# | Video                  | Pointcloud   |
+# | Video                  | Mesh         |
+# | Volumetric Video       | Image        |
+# | Volumetric Video       | Pointcloud   |
+# | Volumetric Video       | Mesh         |
+# -----------------------------------------
 #
 # The following approaches are currently supported:
 # global - 2001 - Color Transfer between Images

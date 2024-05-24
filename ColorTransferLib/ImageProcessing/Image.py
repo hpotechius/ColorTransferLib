@@ -57,9 +57,8 @@ class Image:
         if not normalized:
             self.__img = self.__img / 255.0
 
-        self.__3D_color_histogram = self.__calculate_3D_color_histogram()
-        #print(self.__3D_color_histogram[0,0,:])
-        #exit()
+        # WARNING: This is slow. Temporarily removed
+        #self.__3D_color_histogram = self.__calculate_3D_color_histogram()
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------

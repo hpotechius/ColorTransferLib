@@ -9,9 +9,10 @@ Please see the LICENSE file that should have been included as part of this packa
 
 from ColorTransferLib.MeshProcessing.Mesh import Mesh
 from ColorTransferLib.ImageProcessing.Image import Image
+from ColorTransferLib.ImageProcessing.Video import Video
 from ColorTransferLib.ColorTransfer import ColorTransfer, ColorTransferEvaluation
 
-
+import cv2
 
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
@@ -19,8 +20,27 @@ from ColorTransferLib.ColorTransfer import ColorTransfer, ColorTransferEvaluatio
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':  
+
+    src = Video(file_path='/media/potechius/External/data/Videos/sample-5s.mp4')
+
+    #src.write("/media/potechius/External/data/Videos/out.mp4")
+
+    #frames = src.get_raw()
+    # for i, frame in enumerate(frames):
+    #     print(frame.dtype)
+    #     cv2.imshow(f'Frame {i}', frame)
+    #     # Wait for 'interval' seconds
+    #     if cv2.waitKey(int(1000)) & 0xFF == ord('q'):
+    #         break
+
+    # cv2.destroyAllWindows()
+
+
+    #exit()
+
+
     # 2D Color/Style Transfer Example
-    src = Image(file_path='/media/potechius/External/data/Images/Wanderer_above_the_Sea_of_Fog.png')
+    #src = Image(file_path='/media/potechius/External/data/Images/Wanderer_above_the_Sea_of_Fog.png')
     ref = Image(file_path='/media/potechius/External/data/Images/The_Scream.png')  
     #out = Image(file_path='/media/potechius/External/data/Images/out.png')  
     
