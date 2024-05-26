@@ -8,6 +8,7 @@ Please see the LICENSE file that should have been included as part of this packa
 """
 
 from ColorTransferLib.MeshProcessing.Mesh import Mesh
+from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
 from ColorTransferLib.ImageProcessing.Image import Image
 from ColorTransferLib.ImageProcessing.Video import Video
 from ColorTransferLib.ColorTransfer import ColorTransfer, ColorTransferEvaluation
@@ -21,7 +22,13 @@ import cv2
 # ------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':  
 
-    src = Video(file_path='/media/potechius/External/data/Videos/sample-5s.mp4')
+    #src = Video(file_path='/media/potechius/External/data/Videos/sample-5s.mp4')
+
+
+    src = VolumetricVideo(folder_path='/media/potechius/External/data/VolumetricVideos/$volumetric$Human', file_name='Human')
+
+    #src.write("/media/potechius/External/data/VolumetricVideos/out")
+    #exit()
 
     #src.write("/media/potechius/External/data/Videos/out.mp4")
 
@@ -62,7 +69,7 @@ if __name__ == '__main__':
     out = ct.apply()
 
     if out["status_code"] == 0:
-        out["object"].write("/media/potechius/External/data/Images/out")
+        out["object"].write("/media/potechius/External/data/VolumetricVideos/$volumetric$Test")
     else:
         print("Error: " + out["response"])
     print("Done")

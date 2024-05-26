@@ -14,6 +14,7 @@ from copy import deepcopy
 from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.Helper import check_compatibility
 from ColorTransferLib.ImageProcessing.Video import Video
+from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ class GLO:
             "abstract": "We use a simple statistical analysis to impose one images color characteristics on another. "
                         "We can achieve color correction by choosing an appropriate source image and apply its "
                         "characteristic to another image.",
-            "types": ["Image", "Mesh", "PointCloud", "Video"]
+            "types": ["Image", "Mesh", "PointCloud", "Video", "VolumetricVideo"]
         }
 
         return info
@@ -73,17 +74,19 @@ class GLO:
         
         # check if type is video
         out_colors_arr = []
-        if src.get_type() == "Video":
+        if src.get_type() == "Video" or src.get_type() == "VolumetricVideo":
             src_colors = src.get_colors()
         else:
             src_colors = [src.get_colors()]
 
-        for src_color in src_colors:
+        for i, src_color in enumerate(src_colors):
             # Preprocessing
             ref_color = ref.get_colors()
 
             if src.get_type() == "Video":
                 out_img = deepcopy(src.get_images()[0])
+            elif src.get_type() == "VolumetricVideo":
+                out_img = deepcopy(src.get_meshes()[i])
             else:
                 out_img = deepcopy(src)
 
@@ -123,6 +126,8 @@ class GLO:
 
         if src.get_type() == "Video":
             outp = Video(imgs=out_colors_arr)
+        elif src.get_type() == "VolumetricVideo":
+            outp = VolumetricVideo(meshes=out_colors_arr, file_name=src.get_file_name())
         else:
             outp = out_colors_arr[0]
 

@@ -31,6 +31,8 @@ class Mesh:
         self.__vertex_colors = []
         self.__num_vertices = 0
 
+        self.__pcd = None
+
         # face properties
         self.__faces_enabled = False
         self.__fnormals_enabled = False
@@ -75,9 +77,13 @@ class Mesh:
         self.__num_faces = self.__face_positions.shape[0] if self.__faces_enabled else 0
 
         texture_path = file_path.split(".")[0] + ".png"
+        print(texture_path)
         if os.path.isfile(texture_path):
             self.__pcd.textures =  [o3d.io.read_image(texture_path).flip_vertical()]
-            # self.__pcd.textures =  [o3d.io.read_image(texture_path).flip_vertical()]
+        else:
+            texture_path = file_path.split(".")[0] + ".jpg"
+            if os.path.isfile(texture_path):
+                self.__pcd.textures =  [o3d.io.read_image(texture_path).flip_vertical()]
 
         self.__texture_enabled = self.__pcd.has_textures()
         self.__texture = np.asarray(self.__pcd.textures[0]).astype("float32") / 255 if self.__texture_enabled else None
@@ -150,6 +156,10 @@ class Mesh:
     # GETTER METHODS
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
+
+    def get_mesh(self):
+        return self.__pcd
+
     # ------------------------------------------------------------------------------------------------------------------
     # Returns if vertex colors are available
     # ------------------------------------------------------------------------------------------------------------------

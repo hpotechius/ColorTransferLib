@@ -27,6 +27,8 @@ The output should resemble a dictionary format, as outlined in Listing 3. A stat
 (2) Install the following packages:
 ```
 sudo apt-get install liboctave-dev
+# allows writing of mp4 with h246 codec
+sudo apt-get install ffmpeg
 ```
 
 (3) Install the following octave package:
