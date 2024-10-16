@@ -9,11 +9,15 @@ Please see the LICENSE file that should have been included as part of this packa
 
 from ColorTransferLib.MeshProcessing.Mesh import Mesh
 from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
+
 from ColorTransferLib.ImageProcessing.Image import Image
 from ColorTransferLib.ImageProcessing.Video import Video
 from ColorTransferLib.ColorTransfer import ColorTransfer, ColorTransferEvaluation
 
+from ColorTransferLib.DataTypes.LightField import LightField
+
 import cv2
+import numpy as np
 
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
@@ -21,11 +25,10 @@ import cv2
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':  
-
     #src = Video(file_path='/media/potechius/External/data/Videos/sample-5s.mp4')
 
 
-    src = VolumetricVideo(folder_path='/media/potechius/External/data/VolumetricVideos/$volumetric$Human', file_name='Human')
+    #src = VolumetricVideo(folder_path='/media/potechius/External/data/VolumetricVideos/$volumetric$Human', file_name='Human')
 
     #src.write("/media/potechius/External/data/VolumetricVideos/out")
     #exit()
@@ -46,9 +49,16 @@ if __name__ == '__main__':
     #exit()
 
 
+    src = LightField(file_path='/home/potechius/Code/ColorTransferLib/testdata/lightfields/amethyst.mp4', size=(17, 17))
+    #arr = src.get_image_array()
+    #exit()
+
+
+    #src.write("/home/potechius/Code/ColorTransferLib/testdata/results/out")
+
     # 2D Color/Style Transfer Example
-    #src = Image(file_path='/media/potechius/External/data/Images/Wanderer_above_the_Sea_of_Fog.png')
-    ref = Image(file_path='/media/potechius/External/data/Images/The_Scream.png')  
+    #src = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+    ref = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-06.png')  
     #out = Image(file_path='/media/potechius/External/data/Images/out.png')  
     
     #cte = ColorTransferEvaluation(src, ref, out)
@@ -67,9 +77,13 @@ if __name__ == '__main__':
     algo = "GLO"
     ct = ColorTransfer(src, ref, algo)
     out = ct.apply()
+    #print(out)
+    #exit()
 
     if out["status_code"] == 0:
-        out["object"].write("/media/potechius/External/data/VolumetricVideos/$volumetric$Test")
+        out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/out")
+        src.write("/home/potechius/Code/ColorTransferLib/testdata/results/src")
+        ref.write("/home/potechius/Code/ColorTransferLib/testdata/results/ref")
     else:
         print("Error: " + out["response"])
     print("Done")

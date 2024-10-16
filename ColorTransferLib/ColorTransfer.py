@@ -34,13 +34,16 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0' # 0: DEBUG, 1: INFO, 2: WARNING, 3: ERR
 from ColorTransferLib.Utils.BaseOptions import BaseOptions
 from ColorTransferLib.Utils.Helper import get_methods, get_metrics
 
-available_methods = get_methods()
-available_metrics = get_metrics()
+#available_methods = get_methods()
+#available_metrics = get_metrics()
 
-for m in available_methods:
-    exec(m + " = getattr(importlib.import_module('ColorTransferLib.Algorithms."+m+"."+m+"'), '"+m+"')")
-for m in available_metrics:
-    exec(m + " = getattr(importlib.import_module('ColorTransferLib.Evaluation."+m+"."+m+"'), '"+m+"')")
+#print(available_methods)
+
+# for m in available_methods:
+#     exec(m + " = getattr(importlib.import_module('ColorTransferLib.Algorithms."+m+"."+m+"'), '"+m+"')")
+
+# for m in available_metrics:
+#     exec(m + " = getattr(importlib.import_module('ColorTransferLib.Evaluation."+m+"."+m+"'), '"+m+"')")
 
 # Useful for preventing the status prints from the algorithms which were integrated from public repositories
 VAR_BLOCKPRINT = False
@@ -101,7 +104,25 @@ class ColorTransfer:
     # ------------------------------------------------------------------------------------------------------------------
     def apply(self):
         if VAR_BLOCKPRINT: blockPrint()
-        self.__out = globals()[self.__approach].apply(self.__src, self.__ref, self.__options)
+        m = self.__approach
+
+        try:
+            # dynamically import the module
+            module = importlib.import_module(f'ColorTransferLib.Algorithms.{m}.{m}')
+            
+            # Call the class of the module
+            cls = getattr(module, m)
+            
+            # Call the apply method of the class
+            self.__out = cls.apply(self.__src, self.__ref, self.__options)
+        except ImportError as e:
+            print(f"Error while importing the module: {e}")
+        except AttributeError as e:
+            print(f"Error while retrieving the class or method: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+
         if VAR_BLOCKPRINT: enablePrint()
         return self.__out
 
