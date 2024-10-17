@@ -15,6 +15,7 @@ from ColorTransferLib.ImageProcessing.Video import Video
 from ColorTransferLib.ColorTransfer import ColorTransfer, ColorTransferEvaluation
 
 from ColorTransferLib.DataTypes.LightField import LightField
+from ColorTransferLib.DataTypes.GaussianSplatting import GaussianSplatting
 
 import cv2
 import numpy as np
@@ -48,16 +49,11 @@ if __name__ == '__main__':
 
     #exit()
 
-
-    src = LightField(file_path='/home/potechius/Code/ColorTransferLib/testdata/lightfields/amethyst.mp4', size=(17, 17))
-    #arr = src.get_image_array()
-    #exit()
-
-
-    #src.write("/home/potechius/Code/ColorTransferLib/testdata/results/out")
-
-    # 2D Color/Style Transfer Example
+    #src = GaussianSplatting(file_path='/home/potechius/Code/ColorTransferLib/testdata/gaussiansplatting/plush.splat')
+    #src = LightField(file_path='/home/potechius/Code/ColorTransferLib/testdata/lightfields/amethyst.mp4', size=(17, 17))
+    src = VolumetricVideo(folder_path='/home/potechius/Code/ColorTransferLib/testdata/volumetricvideos/$volumetric$human', file_name='human')
     #src = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+    #src = Video(file_path='/home/potechius/Code/ColorTransferLib/testdata/videos/earth.mp4')
     ref = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-06.png')  
     #out = Image(file_path='/media/potechius/External/data/Images/out.png')  
     
@@ -81,7 +77,7 @@ if __name__ == '__main__':
     #exit()
 
     if out["status_code"] == 0:
-        out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/out")
+        out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/PlushTest")
         src.write("/home/potechius/Code/ColorTransferLib/testdata/results/src")
         ref.write("/home/potechius/Code/ColorTransferLib/testdata/results/ref")
     else:

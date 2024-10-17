@@ -68,11 +68,11 @@ class Video:
         size = (height, width)
         
         #Define the codec and create VideoWriter object
-        fourcc = cv2.VideoWriter_fourcc(*"avc1")
+        fourcc = cv2.VideoWriter_fourcc(*"XVID")
         fps = 30
 
         # Initialize the VideoWriter
-        out = cv2.VideoWriter(out_path + ".mp4", fourcc, fps, size)
+        out = cv2.VideoWriter(out_path + ".avi", fourcc, fps, size)
 
         for i, frame in enumerate(self.__imgs):
             ff = (cv2.cvtColor(frame.get_raw(), cv2.COLOR_RGB2BGR) * 255.0).astype(np.uint8)

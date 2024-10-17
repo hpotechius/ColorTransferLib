@@ -52,14 +52,24 @@ class VolumetricVideo:
     # Writes the mesh to the specified path
     # ------------------------------------------------------------------------------------------------------------------
     def write(self, path):
+        print(path)
         new_file_name = path.split("/")[-1]
-        new_file_name = new_file_name.replace('$volumetric$', '')
+        out_folder, _ = os.path.split(path)
 
-        out_path = os.path.join(path, new_file_name)
+        out_folder += "/$volumetric$" + path.split("/")[-1]
+
+        # Erstelle den Ordner, falls er nicht existiert
+        if not os.path.exists(out_folder):
+            os.makedirs(out_folder)
+            print(f"Ordner {out_folder} wurde erstellt.")
+        else:
+            print(f"Ordner {out_folder} existiert bereits.")
+
+
 
         for i in range(self.__numMeshes):
             i_str = str(i).zfill(5)
-            file_path = f"{out_path}_{i_str}"
+            file_path = f"{out_folder}/{new_file_name}_{i_str}"
 
             # opne3d saves the textures of obj files with a "_0", "_1" etc ending, because multiple textures are
             # possible -> this ending has to be removed from the png file and within the mtl file.
