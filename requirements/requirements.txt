@@ -38,6 +38,6 @@ torchmetrics==1.2.0
 torchvision==0.17.0
 torch-optimizer==0.3.0
 tqdm==4.66.5
-typing-extensions==4.7
+typing-extensions==4.12.2
 vector-quantize-pytorch==1.10.4
 zipfile36==0.1.3
