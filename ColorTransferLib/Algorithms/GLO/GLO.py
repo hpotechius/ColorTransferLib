@@ -54,7 +54,7 @@ class GLO:
             "abstract": "We use a simple statistical analysis to impose one images color characteristics on another. "
                         "We can achieve color correction by choosing an appropriate source image and apply its "
                         "characteristic to another image.",
-            "types": ["Image", "Mesh", "PointCloud", "Video", "VolumetricVideo", "LightField"],
+            "types": ["Image", "Mesh", "PointCloud", "Video", "VolumetricVideo", "LightField", "GaussianSplatting"],
         }
 
         return info

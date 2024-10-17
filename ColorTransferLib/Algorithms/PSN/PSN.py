@@ -27,7 +27,7 @@ om = os.mkdir
 # Based on the paper:
 #   Title: PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color
 #   Author: Cao, Xu and Wang, Weimin and Nagao, Katashi and Nakamura, Ryosuke
-#   Published in: IEEE Computer Graphics and Applications
+#   Published in: IEEE Winter Conference on Applications of Computer Vision (WACV)
 #   Year of Publication: 2020
 #
 # Abstract:
