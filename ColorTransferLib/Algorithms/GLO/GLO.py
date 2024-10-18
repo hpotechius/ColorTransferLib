@@ -222,7 +222,7 @@ class GLO:
         ref_color = ref.get_colors()
         out_img = deepcopy(src)
 
-        out_colors = GLO.color_transfer(src_color, ref_color, opt)
+        out_colors = GLO.__color_transfer(src_color, ref_color, opt)
 
         out_img.set_colors(out_colors)
         outp = out_img
@@ -242,7 +242,7 @@ class GLO:
             ref_color = ref.get_colors()
             out_img = deepcopy(src.get_images()[0])
 
-            out_colors = GLO.color_transfer(src_color, ref_color, opt)
+            out_colors = GLO.__color_transfer(src_color, ref_color, opt)
 
             out_img.set_colors(out_colors)
             out_colors_arr.append(out_img)
@@ -263,7 +263,7 @@ class GLO:
             ref_color = ref.get_colors()
             out_img = deepcopy(src.get_meshes()[i])
 
-            out_colors = GLO.color_transfer(src_color, ref_color, opt)
+            out_colors = GLO.__color_transfer(src_color, ref_color, opt)
 
             out_img.set_colors(out_colors)
             out_colors_arr.append(out_img)
@@ -285,7 +285,7 @@ class GLO:
                 src_color = src_lightfield_array[row][col].get_colors()
                 ref_color = ref.get_colors()
 
-                out_colors = GLO.color_transfer(src_color, ref_color, opt)
+                out_colors = GLO.__color_transfer(src_color, ref_color, opt)
 
                 out_lightfield_array[row][col].set_colors(out_colors)
 
@@ -302,7 +302,7 @@ class GLO:
         ref_color = ref.get_colors()
         out_img = deepcopy(src)
 
-        out_colors = GLO.color_transfer(src_color, ref_color, opt)
+        out_colors = GLO.__color_transfer(src_color, ref_color, opt)
        
         combined_colors = np.concatenate((out_colors.reshape(-1, 3), src.get_colors()[:,3].reshape(-1,1)), axis=1)
         out_img.set_colors(combined_colors)

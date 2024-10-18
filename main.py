@@ -49,11 +49,25 @@ if __name__ == '__main__':
 
     #exit()
 
-    #src = GaussianSplatting(file_path='/home/potechius/Code/ColorTransferLib/testdata/gaussiansplatting/plush.splat')
-    #src = LightField(file_path='/home/potechius/Code/ColorTransferLib/testdata/lightfields/amethyst.mp4', size=(17, 17))
-    src = VolumetricVideo(folder_path='/home/potechius/Code/ColorTransferLib/testdata/volumetricvideos/$volumetric$human', file_name='human')
-    #src = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
-    #src = Video(file_path='/home/potechius/Code/ColorTransferLib/testdata/videos/earth.mp4')
+    src_gs = GaussianSplatting(file_path='/home/potechius/Code/ColorTransferLib/testdata/gaussiansplatting/plush.splat')
+    src_lf = LightField(file_path='/home/potechius/Code/ColorTransferLib/testdata/lightfields/amethyst.mp4', size=(17, 17))
+    src_vv = VolumetricVideo(folder_path='/home/potechius/Code/ColorTransferLib/testdata/volumetricvideos/$volumetric$human', file_name='human')
+    src_im = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+    src_vd = Video(file_path='/home/potechius/Code/ColorTransferLib/testdata/videos/earth.mp4')
+
+    src_array = [
+            # {"type": "GaussianSplatting",
+            # "data": src_gs},
+            {"type": "LightField",
+            "data": src_lf},
+            # {"type": "VolumetricVideo",
+            # "data": src_vv},
+            # {"type": "Image",
+            # "data": src_im},
+            # {"type": "Video",
+            # "data": src_vd}
+    ]
+
     ref = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-06.png')  
     #out = Image(file_path='/media/potechius/External/data/Images/out.png')  
     
@@ -70,19 +84,23 @@ if __name__ == '__main__':
     #ref = Mesh(file_path='/home/potechius/Downloads/3D_mesh/Pillow.obj', datatype="Mesh")  
 
 
-    algo = "GLO"
-    ct = ColorTransfer(src, ref, algo)
-    out = ct.apply()
-    #print(out)
-    #exit()
+    algo = "PDF"
+    for src_elem in src_array:
+        typeE = src_elem["type"]
+        print(typeE)
+        src = src_elem["data"]
+        ct = ColorTransfer(src, ref, algo)
+        out = ct.apply()
+        #print(out)
+        #exit()
 
-    if out["status_code"] == 0:
-        out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/PlushTest")
-        src.write("/home/potechius/Code/ColorTransferLib/testdata/results/src")
-        ref.write("/home/potechius/Code/ColorTransferLib/testdata/results/ref")
-    else:
-        print("Error: " + out["response"])
-    print("Done")
+        if out["status_code"] == 0:
+            out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/out_" + typeE)
+            src.write("/home/potechius/Code/ColorTransferLib/testdata/results/src_" + typeE)
+            ref.write("/home/potechius/Code/ColorTransferLib/testdata/results/ref")
+        else:
+            print("Error: " + out["response"])
+        print("Done")
 
     # Evaluation Example
     # TODO

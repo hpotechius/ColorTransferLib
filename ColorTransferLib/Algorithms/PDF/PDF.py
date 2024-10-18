@@ -1,7 +1,7 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2024 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -96,6 +96,38 @@ class PDF:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None,
+            "process_time": 0
+        }
+
+        start_time = time.time()
+
+        if src.get_type() == "Image":
+            out_obj = PDF.__apply_image(src, ref, opt)
+        elif src.get_type() == "LightField":
+            out_obj = PDF.__apply_lightfield(src, ref, opt)
+        elif src.get_type() == "Video":
+            out_obj = PDF.__apply_video(src, ref, opt)
+        elif src.get_type() == "VolumetricVideo":
+            out_obj = PDF.__apply_volumetricvideo(src, ref, opt)
+        elif src.get_type() == "GaussianSplatting":
+            out_obj = PDF.__apply_gaussiansplatting(src, ref, opt)
+        else:
+            output["response"] = "Incompatible type."
+            output["status_code"] = -1
+
+
+        output["process_time"] = time.time() - start_time
+        output["object"] = out_obj
+
+        #print(output)
+        #exit()
+        return output
+
+
         start_time = time.time()
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, PDF.compatibility)
@@ -162,3 +194,83 @@ class PDF:
         }
 
         return output
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_image(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = PDF.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_lightfield(src, ref, opt):
+        src_lightfield_array = src.get_image_array()
+        out = deepcopy(src)
+        out_lightfield_array = out.get_image_array()
+
+        for row in range(src.get_grid_size()[0]):
+            for col in range(src.get_grid_size()[1]):
+                print(row, col)
+                src_color = src_lightfield_array[row][col].get_colors()
+                ref_color = ref.get_colors()
+
+                out_colors = PDF.__color_transfer(src_color, ref_color, opt)
+
+                out_lightfield_array[row][col].set_colors(out_colors)
+
+        return out
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __color_transfer(src_color, ref_color, opt):
+        # Change range from [0.0, 1.0] to [0, 255]
+        src_color = src_color.squeeze() * 255.0
+        ref_color = ref_color.squeeze() * 255.0
+
+        m = 1.0
+        max_range = 442
+        stretch = round(math.pow(max_range, 1.0 / m))
+        c_range = int(stretch * 2 + 1)
+
+        for t in range(opt.iterations):
+            mat_rot = PDF.random_rotation_matrix()
+            mat_rot_inv = np.linalg.inv(mat_rot)
+
+            src_rotated = np.einsum('ij,kj->ki', mat_rot, src_color)
+            ref_rotated = np.einsum('ij,kj->ki', mat_rot, ref_color)
+
+            # Calculate 1D pdf
+            src_marginals = [np.histogram(src_rotated[:, i], bins=c_range, range=(-max_range, max_range), density=True)[0] for i in range(3)]
+            ref_marginals = [np.histogram(ref_rotated[:, i], bins=c_range, range=(-max_range, max_range), density=True)[0] for i in range(3)]
+
+            # Calculate cumulative 1D pdf
+            src_cum_marginals = [np.cumsum(marg) for marg in src_marginals]
+            ref_cum_marginals = [np.cumsum(marg) for marg in ref_marginals]
+
+            lut = []
+            for src_marg, ref_marg in zip(src_cum_marginals, ref_cum_marginals):
+                lut_channel = np.zeros(c_range)
+                for i, elem in enumerate(src_marg):
+                    lut_channel[i] = np.abs(ref_marg - elem).argmin()
+                lut.append(lut_channel)
+
+            src_rotated_marginals = [(src_rotated[:, i].astype("int64") + stretch) for i in range(3)]
+            transferred_rotated = np.stack([lut_channel[marginal] for lut_channel, marginal in zip(lut, src_rotated_marginals)], axis=-1)
+
+            src_color = np.einsum('ij,kj->ki', mat_rot_inv, transferred_rotated - stretch)
+            src_color = np.clip(src_color, 0, 255)
+
+        return src_color[:,np.newaxis,:]/255.0
