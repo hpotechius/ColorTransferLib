@@ -23,7 +23,8 @@ elif platform == "win32":
 from oct2py import octave
 import cv2
 import numpy as np
-
+# from gbvsnew import gbvs 
+from ColorTransferLib.Evaluation.VSI.saliency_models import gbvs
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Structural similarity index measure (VSI)
@@ -39,6 +40,7 @@ import numpy as np
 # Sources:
 # http://www.animaclock.com/harel/share/gbvs.php
 # https://github.com/Pinoshino/gbvs
+# https://github.com/shreelock/gbvs
 #
 # Good to know:
 # https://ajcr.net/Basic-guide-to-einsum/
@@ -50,7 +52,20 @@ class VSI:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def initOcatve():
-        #octave.run(os.getcwd() + "/ColorTransferLib/Evaluation/VSI/gbvs/gbvs_install.m")
+        # gbvs_install_path = os.path.join(os.getcwd(), "ColorTransferLib/Evaluation/VSI/gbvs/gbvs_install.m")
+        
+        # current_path = os.getcwd()
+        # gbvs_path = os.path.join(current_path, "ColorTransferLib/Evaluation/VSI/gbvs")
+
+
+        # octave.addpath(octave.genpath(gbvs_path))
+        # octave.eval(f"cd '{gbvs_path}'")
+        # octave.eval("warning('off','Octave:shadowed-function')")
+        # octave.eval('pkg load image')
+        # octave.eval('pkg load statistics')
+
+        # octave.eval(f"source('{gbvs_install_path}')")
+        # octave.eval("dir")
 
         # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
         # Necessary to run "gbvs_install" once on a new system
@@ -58,17 +73,17 @@ class VSI:
         octave.eval("warning('off','Octave:shadowed-function')")
         octave.eval('pkg load image')
         octave.eval('pkg load statistics')
-        #octave.gbvs_install()
-        #octave.eval("dir")
 
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def VS(img):
-        outp = octave.gbvs_fast((img * 255).astype("uint8"))
-        sal_map = outp["master_map_resized"]
-        return sal_map
+        #outp = octave.gbvs_fast((img * 255).astype("uint8"))
+        outp = gbvs.compute_saliency((img * 255).astype("uint8"))
+        return outp
+        # sal_map = outp["master_map_resized"]
+        # return sal_map
     
     # ------------------------------------------------------------------------------------------------------------------
     #
@@ -161,7 +176,7 @@ class VSI:
         src = args[0]
         ref = args[2]
         
-        VSI.initOcatve()
+        # VSI.initOcatve()
         C1 = 0.00001
         C2 = 0.00001
         C3 = 0.00001

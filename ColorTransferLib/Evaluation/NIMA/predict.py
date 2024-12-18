@@ -30,4 +30,5 @@ def image_dir_to_json(img_dir, img_type='jpg'):
 
 def predict(model, img):
     out = tf.expand_dims(tf.convert_to_tensor(img), axis=0)
-    return model.predict(out, workers=1, use_multiprocessing=True, verbose=1, steps=1)
+    # return model.predict(out, workers=1, use_multiprocessing=True, verbose=1, steps=1)
+    return model.predict(out)

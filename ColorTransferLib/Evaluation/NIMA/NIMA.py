@@ -14,6 +14,7 @@ from .predict import predict
 from .utils.utils import calc_mean_score
 from .handlers.model_builder import Nima
 
+from ColorTransferLib.Utils.Helper import init_model_files
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -60,7 +61,11 @@ class NIMA:
         imcopy = imcopy.get_raw()
 
         base_model_name = "MobileNet"
-        weights_file = "Models/NIMA/MobileNet/weights_mobilenet_aesthetic_0.07.hdf5"
+
+        model_file_paths = init_model_files("NIMA", [
+            "weights_mobilenet_aesthetic_0.07.hdf5"
+        ])
+        weights_file = model_file_paths["weights_mobilenet_aesthetic_0.07.hdf5"]
 
         # build model and load weights
         nima = Nima(base_model_name, weights=None)

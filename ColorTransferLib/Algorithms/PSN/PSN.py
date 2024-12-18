@@ -10,18 +10,24 @@ Please see the LICENSE file that should have been included as part of this packa
 import numpy as np
 import configparser
 from pprint import pprint as ppt
-import tensorflow as tf
 import os
+import tensorflow as tf
+import json
+import sys
+import pickle
 
 from ColorTransferLib.Algorithms.PSN.psnet import PSNet
 from ColorTransferLib.Algorithms.PSN.utils import *
-from ColorTransferLib.Utils.Helper import check_compatibility
+from ColorTransferLib.Utils.Helper import check_compatibility, init_model_files, get_cache_dir
 
 opj = os.path.join
 ope = os.path.exists
 om = os.mkdir
 
-
+# Eager Execution deaktivieren
+tf.compat.v1.disable_eager_execution()
+# print(tf.__version__)
+# 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Based on the paper:
@@ -30,20 +36,14 @@ om = os.mkdir
 #   Published in: IEEE Winter Conference on Applications of Computer Vision (WACV)
 #   Year of Publication: 2020
 #
-# Abstract:
-#   We propose a neural style transfer method for colored point clouds which allows stylizing the geometry and/or color
-#   property of a point cloud from another. The stylization is achieved by manipulating the content representations and
-#   Gram-based style representations extracted from a pre-trained PointNet-based classification network for colored
-#   point clouds. As Gram-based style representation is invariant to the number or the order of points, the style can
-#   also be an image in the case of stylizing the color property of a point cloud by merely treating the image as a set
-#   of pixels.Experimental results and analysis demonstrate the capability of the proposed method for stylizing a
-#   point cloud either from another point cloud or an image.
-#
 # Info:
 #   Name: PSNetStyleTransfer
 #   Identifier: PSN
 #   Link: https://doi.org/10.1109/WACV45572.2020.9093513
 #   Source: https://github.com/hoshino042/psnet
+#
+# Notes:
+#   TensorFlow 2.14.0 has issues with large point clouds. Use TensorFlow 2.13.0 if necessary.
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class PSN:
@@ -80,21 +80,29 @@ class PSN:
     @staticmethod
     def apply(src, ref, opt): 
         # check if method is compatible with provided source and reference objects
-        output = check_compatibility(src, ref, PSN.compatibility)
-        if output["status_code"] != 0:
-            output["response"] = "Incompatible type."
-            return output
+        # output = check_compatibility(src, ref, PSN.compatibility)
+        # if output["status_code"] != 0:
+        #     output["response"] = "Incompatible type."
+        #     return output
         
         iteration = opt.iterations  # iteration number for style transfer
         geotransfer = opt.geotransfer
 
         os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'  # Uncomment this line if you are using macOS
 
+        model_file_paths = init_model_files("PSN", [
+            "model.data-00000-of-00001",
+            "model.index",
+            "model.meta",
+            "base_config.ini"
+        ])
+
         np.random.seed(42)
-        trained_model = "Models/PSN/model"
+        # trained_model = "Models/PSN/model"
+        trained_model = os.path.join(get_cache_dir(), "PSN/model")
 
         config = configparser.ConfigParser()
-        config.read("Models/PSN/base_config.ini")
+        config.read(model_file_paths["base_config.ini"])
 
         content_layer = list(map(lambda x: int(x), config["style_transfer"]["content_layer"].split(",")))
         style_layer = list(map(lambda x: int(x), config["style_transfer"]["content_layer"].split(",")))
@@ -103,11 +111,23 @@ class PSN:
 
         content_geo = src.get_vertex_positions().reshape(src.get_num_vertices(), 3)
         content_ncolor = src.get_colors().reshape(src.get_num_vertices(), 3)
-        content_color = (255 * content_ncolor).astype(np.int16)
+        # colors have to be in range [-1, 1]
+        # content_ncolor = (content_ncolor * 2 - 1).astype(np.int16)
+        content_ncolor = content_ncolor * 2.0 - 1.0
+        # content_color = (255 * content_ncolor).astype(np.int16)
+
+        gpus = tf.config.experimental.list_physical_devices('GPU')
+        if gpus:
+            try:
+                for gpu in gpus:
+                    tf.config.experimental.set_memory_growth(gpu, True)
+            except RuntimeError as e:
+                print(e)
 
         # get content representations
         tf.compat.v1.reset_default_graph()
         sess = tf.compat.v1.Session()
+
         psnet = PSNet(config=config,
                         sess=sess,
                         train_dir="",
@@ -116,10 +136,12 @@ class PSN:
         psnet.restore_model(trained_model)
         ppt(list(psnet.node.keys()))
 
+
         obtained_content_fvs = sess.run(psnet.node, feed_dict={psnet.color: content_ncolor[None, ...],
                                                                 psnet.geo: content_geo[None, ...],
                                                                 psnet.bn_pl: False,
                                                                 psnet.dropout_prob_pl: 1.0})
+
         sess.close()
 
 
@@ -130,7 +152,7 @@ class PSN:
         else:
             from_image = False
             style_geo = ref.get_vertex_positions().reshape(ref.get_num_vertices(), 3)
-            style_ncolor = ref.get_colors().reshape(ref.get_num_vertices(), 3)
+            style_ncolor = ref.get_colors().reshape(ref.get_num_vertices(), 3) * 2.0 - 1.0
 
         # get style representations
         tf.compat.v1.reset_default_graph()

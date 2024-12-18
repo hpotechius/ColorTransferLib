@@ -16,7 +16,7 @@ from copy import deepcopy
 
 from .utils.face_preprocessing import face_extraction
 from .rehistoGAN import train_from_folder
-from ColorTransferLib.Utils.Helper import check_compatibility
+from ColorTransferLib.Utils.Helper import check_compatibility, get_cache_dir
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -26,17 +26,6 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 #   Author: Mahmoud Afifi, Marcus A. Brubaker, Michael S. Brown
 #   Published in: CVPR
 #   Year of Publication: 2021
-#
-# Abstract:
-#   In this paper, we present HistoGAN, a color histogram-based method for controlling GAN-generated images' colors. 
-#   We focus on color histograms as they provide an intuitive way to describe image color while remaining decoupled 
-#   from domain-specific semantics. Specifically, we introduce an effective modification of the recent StyleGAN 
-#   architecture to control the colors of GAN-generated images specified by a target color histogram feature. We then 
-#   describe how to expand HistoGAN to recolor real images. For image recoloring, we jointly train an encoder network 
-#   along with HistoGAN. The recoloring model, ReHistoGAN, is an unsupervised approach trained to encourage the network 
-#   to keep the original image's content while changing the colors based on the given target histogram. We show that 
-#   this histogram-based approach offers a better way to control GAN-generated and real images' colors while producing 
-#   more compelling results compared to existing alternative strategies.
 #
 # Info:
 #   Name: ReHistoGAN
@@ -88,6 +77,10 @@ class RHG:
     @staticmethod
     def apply(src, ref, opt):
         start_time = time.time()
+
+        opt.models_dir = os.path.join(get_cache_dir(), "RHG")
+        opt.histGAN_models_dir = os.path.join(opt.models_dir, "RHG")
+
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, RHG.compatibility)
 

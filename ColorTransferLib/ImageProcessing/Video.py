@@ -10,6 +10,7 @@ Please see the LICENSE file that should have been included as part of this packa
 import cv2
 import os
 import numpy as np
+import subprocess
 
 from ColorTransferLib.ImageProcessing.Image import Image
 
@@ -72,6 +73,7 @@ class Video:
         fps = 30
 
         # Initialize the VideoWriter
+        avi_path = out_path + ".avi"
         out = cv2.VideoWriter(out_path + ".avi", fourcc, fps, size)
 
         for i, frame in enumerate(self.__imgs):
@@ -83,6 +85,9 @@ class Video:
                 print(f"Frame {i} is not a valid numpy array and will be skipped.")
         
         out.release()
+
+        mp4_path = out_path + ".mp4"
+        subprocess.run(['ffmpeg', '-i', avi_path, '-vcodec', 'libx264', '-acodec', 'aac', mp4_path])
 
 
     # ------------------------------------------------------------------------------------------------------------------

@@ -13,8 +13,9 @@ import csv
 import cv2
 import open3d as o3d
 import time
+import os
 
-from ColorTransferLib.Utils.Helper import check_compatibility
+from ColorTransferLib.Utils.Helper import check_compatibility, init_model_files
 from pyhull.convex_hull import ConvexHull
 from .FaissKNeighbors import FaissKNeighbors
 
@@ -85,12 +86,18 @@ class BCC:
 
         return info
     
+
+
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
         start_time = time.time()
+
+        model_file_paths = init_model_files("BCC", ["colormapping.csv"])
+
+
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, BCC.compatibility)
 
@@ -108,7 +115,7 @@ class BCC:
         # Read Color Dataset
         color_terms = np.array(["Red", "Yellow", "Green", "Blue", "Black", "White", "Grey", "Orange", "Brown", "Pink", "Purple"])
         color_mapping = []
-        with open("Models/BCC/colormapping.csv") as csv_file:
+        with open(model_file_paths["colormapping.csv"]) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             line_count = 0
             for row in csv_reader:

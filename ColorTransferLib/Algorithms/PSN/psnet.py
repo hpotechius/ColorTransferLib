@@ -3,6 +3,7 @@ import os
 import numpy as np
 from pprint import pprint as ppt
 
+
 class PSNet():
     def __init__(self,config, sess, train_dir,
                  mode = "train",
@@ -89,6 +90,7 @@ class PSNet():
         #self.log_fout = open(os.path.join(train_dir, 'log.txt'), 'a')
         self.sess.run(tf.compat.v1.global_variables_initializer())
 
+
     def _fe_layers(self, input_features, scope):
         with tf.compat.v1.variable_scope(scope):
             net = input_features
@@ -113,6 +115,7 @@ class PSNet():
                 self.node[scope + "_FC_" + str(idx + 1)] = net
                 net = tf.nn.dropout(net, rate=1 - (self.dropout_prob_pl), name="dropout_{}".format(idx + 1))
             logits = tf.compat.v1.layers.dense(net, self.num_label)
+            # logits = Dense(self.num_label)(net)
         return logits
 
 
@@ -264,6 +267,7 @@ class PSNet():
         #     "gradients/cls/FE_PTS/FE_1/dense/Tensordot/MatMul_grad/MatMul_1:0")
         # self.summary["grad_pts"] = tf.summary.histogram("grad_pts", grad_pts)
         self.all_summary = tf.compat.v1.summary.merge_all()
+
         return True
 
 

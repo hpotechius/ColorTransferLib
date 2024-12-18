@@ -57,7 +57,7 @@
   },
   {
       "name": "init_img_type",
-      "default": "content",
+      "default": "style",
       "type": "string",
       "values": ["random", "content", "style"],
       "tooltip": "Image used to initialize the network.",

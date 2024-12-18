@@ -35,6 +35,7 @@ from ..utils import color_transfer_MKL as ct
 from ..utils import pyramid_upsampling as upsampling
 from ..histoGAN.histoGAN import GeneratorBlock, HistVectorizer, NanException, Discriminator, Conv2DMod
 from ..histogram_classes.RGBuvHistBlock import RGBuvHistBlock
+from ColorTransferLib.Utils.Helper import init_model_files
 
 try:
     from apex import amp
@@ -1206,8 +1207,12 @@ class recoloringTrainer():
     #
     # ----------------------------------------------------------------------------------------------------------------------
     def load(self, name):
+        model_file_paths = init_model_files("RHG", [name + ".pt"])
+        # opt.model_weights = model_file_paths[name + ".pt"]
+
         self.load_config()
-        mm = "Models/RHG/" + name + ".pt"
+        # mm = "Models/RHG/" + name + ".pt"
+        mm = model_file_paths[name + ".pt"]
         if not torch.cuda.is_available():
             device = torch.device('cpu')
         else:

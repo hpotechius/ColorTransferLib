@@ -1,22 +1,50 @@
 import tensorflow as tf
-import tf_slim as slim
+# from tensorflow.keras.layers import Dense
+# from tensorflow.keras.initializers import TruncatedNormal
+# import tf_slim as slim
 
+# class BatchNorm(object):
+#     def __init__(self, epsilon=1e-5, momentum=0.99, name="batch_norm"):
+#         with tf.compat.v1.variable_scope(name):
+#             self.epsilon = epsilon
+#             self.momentum = momentum
+#             self.name = name
+
+#     def __call__(self, x, is_training):
+#         return slim.layers.batch_norm(x,
+#                                             decay=self.momentum,
+#                                             epsilon=self.epsilon,
+#                                             updates_collections=None,
+#                                             scale=True,
+#                                             is_training=is_training,
+#                                             scope=self.name)
 
 class BatchNorm(object):
     def __init__(self, epsilon=1e-5, momentum=0.99, name="batch_norm"):
-        with tf.compat.v1.variable_scope(name):
-            self.epsilon = epsilon
-            self.momentum = momentum
-            self.name = name
+        self.epsilon = epsilon
+        self.momentum = momentum
+        self.name = name
+        self.batch_norm_layer = tf.keras.layers.BatchNormalization(
+            axis=-1,
+            momentum=self.momentum,
+            epsilon=self.epsilon,
+            center=True,
+            scale=True,
+            beta_initializer='zeros',
+            gamma_initializer='ones',
+            moving_mean_initializer='zeros',
+            moving_variance_initializer='ones',
+            beta_regularizer=None,
+            gamma_regularizer=None,
+            beta_constraint=None,
+            gamma_constraint=None,
+            synchronized=False,
+            name=self.name
+        )
 
     def __call__(self, x, is_training):
-        return slim.layers.batch_norm(x,
-                                            decay=self.momentum,
-                                            epsilon=self.epsilon,
-                                            updates_collections=None,
-                                            scale=True,
-                                            is_training=is_training,
-                                            scope=self.name)
+        return self.batch_norm_layer(x, training=is_training)
+
 
 
 def FE_layer(inputs, cout, aggregate_global=True, bn_is_training=True, scope="FE_layer"):
@@ -38,6 +66,7 @@ def FE_layer(inputs, cout, aggregate_global=True, bn_is_training=True, scope="FE
         point_wise_feature = tf.compat.v1.layers.dense(inputs, channel,
                                                        kernel_initializer=tf.compat.v1.truncated_normal_initializer(
                                                            stddev=0.02))
+        # point_wise_feature = Dense(channel, kernel_initializer=TruncatedNormal(stddev=0.02))(inputs)
 
 
         batch_norm = BatchNorm()
@@ -47,6 +76,10 @@ def FE_layer(inputs, cout, aggregate_global=True, bn_is_training=True, scope="FE
             aggregated_feature = tf.reduce_max(input_tensor=point_wise_feature, axis=1, keepdims=True)  # batch_size, 1, cout//2
             repeated = tf.tile(aggregated_feature, [1, num_pts, 1])  # (batch_size, num_pts, cout // 2)
             point_wise_concatenated_feature = tf.concat(axis=-1, values=[point_wise_feature, repeated])
+            print("-----------------")
+            print(point_wise_concatenated_feature)
+            print("-----------------")
+            # exit()
             return point_wise_feature, point_wise_concatenated_feature
         else:
             return point_wise_feature, point_wise_feature
@@ -76,6 +109,7 @@ def dense_norm_nonlinear(inputs, units,
         #                                              stddev=0.02))(inputs)
         out = tf.compat.v1.layers.dense(inputs, units,
                               kernel_initializer=tf.compat.v1.truncated_normal_initializer(stddev=0.02))
+        # out = Dense(units, kernel_initializer=TruncatedNormal(stddev=0.02))(inputs)
         #  batch_size, num_point, num_features
         if norm_type is not None:
             if norm_type.lower().startswith("b"):

@@ -30,6 +30,13 @@ if ( ~param.useIttiKochInsteadOfGBVS )
   load mypath;
   ufile = sprintf('%s__m%s__%s.mat',num2str(salmapsize),num2str(param.multilevels),num2str(param.cyclic_type));
   ufile(ufile==' ') = '_';
+
+  %currentFilePath = mfilename('fullpath');
+  %[currentFolder, ~, ~] = fileparts(currentFilePath);
+  %[parentPath, ~, ~] = fileparts(currentFolder);
+  %ufile = fullfile( parentPath, 'initcache' ,  ufile );
+  %disp(['Pfad ohne letzten Ordner: ', ufile]);
+
   ufile = fullfile( pathroot , 'initcache' ,  ufile );
   if ( exist(ufile) )
     grframe = load(ufile);

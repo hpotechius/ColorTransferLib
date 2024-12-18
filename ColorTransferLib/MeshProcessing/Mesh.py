@@ -9,6 +9,7 @@ Please see the LICENSE file that should have been included as part of this packa
 import numpy as np
 import open3d as o3d
 import os
+import cv2
 
 class Mesh:
     # ------------------------------------------------------------------------------------------------------------------
@@ -42,6 +43,7 @@ class Mesh:
         # texture properties
         self.__texture_enabled = False
         self.__texture = None
+        self.__texture_mask = None
         self.__texture_size = (0,0,0)
         self.__texture_uvs = []
     
@@ -98,7 +100,26 @@ class Mesh:
         # set all material ids to 0 because they are per default: 1
         self.__pcd.triangle_material_ids = o3d.utility.IntVector(np.asarray(self.__pcd.triangle_material_ids) * 0)
 
+        # Create a mask from the texture using UV mapping
+        # if self.__texture_enabled:
+        #     self.__mask = self.__create_mask_from_uv_mapping(self.__texture, self.__texture_uvs, self.__face_positions, self.__texture_size)
 
+        #     flipped_mask = cv2.flip(self.__mask, 0)
+        #     cv2.imwrite("/home/potechius/Code/ColorTransferLib/testdata/results/ou.png", flipped_mask)
+        #     cv2.imwrite("/home/potechius/Code/ColorTransferLib/testdata/results/ou2.png", self.__texture * 255)
+        # else:
+        #     self.__mask = None
+
+    # def __create_mask_from_uv_mapping(self, texture, uvs, faces, texture_size, scale_factor=1.1):
+    #     mask = np.zeros((texture_size[0], texture_size[1]), dtype=np.uint8)
+    #     uvs = (uvs * np.array([texture_size[1], texture_size[0]])).astype(int)
+    #     for i in range(0, len(faces)):
+    #         pts = uvs[faces[i]].reshape((-1, 2))
+    #         centroid = np.mean(pts, axis=0)
+    #         scaled_pts = (pts - centroid) * scale_factor + centroid
+    #         scaled_pts = scaled_pts.astype(int).reshape((-1, 1, 2))
+    #         cv2.fillPoly(mask, [scaled_pts], 255)
+    #     return mask
 
     # ------------------------------------------------------------------------------------------------------------------
     # 

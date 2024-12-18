@@ -75,14 +75,14 @@ class VolumetricVideo:
             # possible -> this ending has to be removed from the png file and within the mtl file.
             o3d.io.write_triangle_mesh(file_path + ".obj", self.__meshes[i].get_mesh())
             img_path = file_path + "_0.png"
-            new_img_path = file_path + ".png"
+            new_img_path = file_path + ".jpg"
             file_name = file_path.split("/")[-1]
             os.rename(img_path, new_img_path)
 
             mtl_path = file_path + ".mtl"
             readFile = open(mtl_path, "r")
             data = readFile.read()
-            data = data.replace(file_name + "_0.png", file_name + ".png")
+            data = data.replace(file_name + "_0.png", file_name + ".jpg")
             writeFile = open(mtl_path, "w")
             writeFile.write(data)
 

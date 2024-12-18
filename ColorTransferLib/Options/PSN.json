@@ -1,7 +1,7 @@
 [
   {
     "name": "iterations",
-    "default": 100,
+    "default": 2000,
     "type": "int",
     "values": [],
     "tooltip": "Number of iterations for style transfer.",
@@ -9,7 +9,7 @@
   },
   {
     "name": "geotransfer",
-    "default": true,
+    "default": false,
     "type": "bool",
     "values": [true, false],
     "tooltip": "Decides if the geometry is always transferred.",

@@ -16,6 +16,7 @@ from copy import deepcopy
 
 from ColorTransferLib.Algorithms.DPT.photo_style import stylize
 from ColorTransferLib.Utils.Helper import check_compatibility
+from ColorTransferLib.Utils.Helper import init_model_files
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -25,18 +26,7 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 #   Author: Fujun Luan, Sylvain Paris, Eli Shechtman, Kavita Bala
 #   Published in: ...
 #   Year of Publication: 2017
-#
-# Abstract:
-#   This paper introduces a deep-learning approach to photographic style transfer that handles a large variety of image
-#   content while faithfully transferring the reference style. Our approach builds upon the recent work on painterly
-#   transfer that separates style from the content of an image by considering different layers of a neural network.
-#   However, as is, this approach is not suitable for photorealistic style transfer. Even when both the input and
-#   reference images are photographs, the output still exhibits distortions reminiscent of a painting. Our contribution
-#   is to constrain the transformation from the input to the output to be locally affine in colorspace, and to express
-#   this constraint as a custom fully differentiable energy term. We show that this approach successfully suppresses
-#   distortion and yields satisfying photorealistic style transfers in a broad variety of scenarios, including transfer
-#   of the time of day, weather, season, and artistic edits.
-#
+
 # Info:
 #   Name: Deep Photo Style Transfer
 #   Identifier: DPT
@@ -93,6 +83,10 @@ class DPT:
     @staticmethod
     def apply(src, ref, opt):
         start_time = time.time()
+
+        model_file_paths = init_model_files("DPT", ["vgg19.npy"])
+        opt.set_option("vgg19_path", model_file_paths["vgg19.npy"])
+
         # check if method is compatible with provided source and reference objects
         output = check_compatibility(src, ref, DPT.compatibility)
 

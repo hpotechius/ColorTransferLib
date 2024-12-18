@@ -9,6 +9,7 @@ Please see the LICENSE file that should have been included as part of this packa
 import cv2
 import numpy as np
 from ColorTransferLib.ImageProcessing.Image import Image
+import subprocess
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -42,8 +43,8 @@ class LightField:
     # ------------------------------------------------------------------------------------------------------------------
     def write(self, file_path):
         # VideoWriter-Objekt erstellen
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        out = cv2.VideoWriter(file_path + ".mp4", fourcc, 30.0, (self.__image_width, self.__image_height))
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        out = cv2.VideoWriter(file_path + ".avi", fourcc, 30.0, (self.__image_width, self.__image_height))
 
         # Schreibe jedes Bild in die Video-Datei
         for row in self.__image_array:
@@ -54,6 +55,10 @@ class LightField:
 
         # VideoWriter-Objekt freigeben
         out.release()
+        
+        avi_path = file_path + ".avi"
+        mp4_path = file_path + ".mp4"
+        subprocess.run(['ffmpeg', '-i', avi_path, '-vcodec', 'libx264', '-acodec', 'aac', mp4_path])
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------

@@ -11,10 +11,11 @@ import numpy as np
 import time
 import torch
 from copy import deepcopy
+import os
 
 from ColorTransferLib.Algorithms.HIS.models.models import create_model
 from ColorTransferLib.Algorithms.HIS.data.data_loader import CreateDataLoader
-from ColorTransferLib.Utils.Helper import check_compatibility
+from ColorTransferLib.Utils.Helper import check_compatibility, init_model_files, get_cache_dir
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -23,19 +24,7 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 #   Author: Junyong Lee, Hyeongseok Son, Gunhee Lee, Jonghyeop Lee, Sunghyun Cho, Seungyong Lee
 #   Published in: The Visual Computer: International Journal of Computer Graphics, Volume 36, Issue 10-12Oct 2020
 #   Year of Publication: 2020
-#
-# Abstract:
-#   We propose a novel approach to transferring the color of a reference image to a given source image. Although there
-#   can be diverse pairs of source and reference images in terms of content and composition similarity, previous methods
-#   are not capable of covering the whole diversity. To resolve this limitation, we propose a deep neural network that
-#   leverages color histogram analogy for color transfer. A histogram contains essential color information of an image,
-#   and our network utilizes the analogy between the source and reference histograms to modulate the color of the source
-#   image with abstract color features of the reference image. In our approach, histogram analogy is exploited basically
-#   among the whole images, but it can also be applied to semantically corresponding regions in the case that the source
-#   and reference images have similar contents with different compositions. Experimental results show that our approach
-#   effectively transfers the reference colors to the source images in a variety of settings. We also demonstrate a few
-#   applications of our approach, such as palette-based recolorization, color enhancement, and color editing.
-#
+
 # Info:
 #   Name: HistogramAnalogy
 #   Identifier: HIS
@@ -103,7 +92,8 @@ class HIS:
         refT = ref.get_raw()
         out_img = deepcopy(src)
 
-        opt.checkpoints_dir = "Models/HIS"
+        init_model_files("HIS", ["latest_net_C_A.pth", "latest_net_G_A.pth"])
+        opt.checkpoints_dir = os.path.join(get_cache_dir(), "HIS")
 
         data_loader = CreateDataLoader(opt, srcT, refT)
         dataset = data_loader.load_data()

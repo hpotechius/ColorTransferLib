@@ -38,8 +38,8 @@ from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
 # ----------------------------------------------------------------------------------------------------------------------
 class GLO:
     compatibility = {
-        "src": ["Image", "Mesh", "PointCloud", "Video", "VolumetricVideo"],
-        "ref": ["Image", "Mesh", "PointCloud", "Video", "VolumetricVideo"]
+        "src": ["Image", "Mesh", "PointCloud", "Video", "VolumetricVideo", "LightField", "GaussianSplatting"],
+        "ref": ["Image", "Mesh", "PointCloud", "Video", "VolumetricVideo", "LightField", "GaussianSplatting"]
     }
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -71,7 +71,15 @@ class GLO:
             "process_time": 0
         }
 
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+            output["response"] = "Incompatible reference type."
+            output["status_code"] = -1
+            return output
+
         start_time = time.time()
+
+        print(src.get_type())
+        print(ref.get_type())
 
         if src.get_type() == "Image":
             out_obj = GLO.__apply_image(src, ref, opt)
@@ -83,6 +91,10 @@ class GLO:
             out_obj = GLO.__apply_volumetricvideo(src, ref, opt)
         elif src.get_type() == "GaussianSplatting":
             out_obj = GLO.__apply_gaussiansplatting(src, ref, opt)
+        elif src.get_type() == "PointCloud":
+            out_obj = GLO.__apply_pointcloud(src, ref, opt)
+        elif src.get_type() == "Mesh":
+            out_obj = GLO.__apply_mesh(src, ref, opt)
         else:
             output["response"] = "Incompatible type."
             output["status_code"] = -1
@@ -213,6 +225,7 @@ class GLO:
         out_colors = np.clip(out_colors, 0, 1)
         return out_colors
 
+
     # ------------------------------------------------------------------------------------------------------------------
     # Applies the color transfer algorihtm
     # ------------------------------------------------------------------------------------------------------------------
@@ -296,16 +309,41 @@ class GLO:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def __apply_gaussiansplatting(src, ref, opt):
-        # get only the RGB values not the alpha channel
-        # add a new axis to the array to make it 3D, e.g. (100, 3) -> (100, 1, 3)
-        src_color = src.get_colors()[:,:3].reshape(-1, 1, 3)
+        src_color = src.get_colors()
         ref_color = ref.get_colors()
         out_img = deepcopy(src)
 
         out_colors = GLO.__color_transfer(src_color, ref_color, opt)
-       
-        combined_colors = np.concatenate((out_colors.reshape(-1, 3), src.get_colors()[:,3].reshape(-1,1)), axis=1)
-        out_img.set_colors(combined_colors)
-        outp = out_img
 
+        out_img.set_colors(out_colors)
+        outp = out_img
         return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_pointcloud(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = GLO.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_mesh(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = GLO.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+

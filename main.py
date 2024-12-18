@@ -19,6 +19,126 @@ from ColorTransferLib.DataTypes.GaussianSplatting import GaussianSplatting
 
 import cv2
 import numpy as np
+import os
+import glob
+
+
+from sklearn.mixture import GaussianMixture
+from scipy.spatial.distance import cdist
+from scipy.interpolate import Rbf
+
+# ------------------------------------------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------------------------------------------
+def test_colorTransfer_all_combinations(method):
+    src_gs = GaussianSplatting(file_path='/home/potechius/Code/ColorTransferLib/testdata/gaussiansplatting/plush.splat')
+    src_lf = LightField(file_path='/home/potechius/Code/ColorTransferLib/testdata/lightfields/amethyst.mp4', size=(17, 17))
+    src_vv = VolumetricVideo(folder_path='/home/potechius/Code/ColorTransferLib/testdata/volumetricvideos/$volumetric$human', file_name='human')
+    src_im = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+    src_vd = Video(file_path='/home/potechius/Code/ColorTransferLib/testdata/videos/earth.mp4')
+    src_pc = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/pointclouds/Azurit.ply', datatype="PointCloud")
+    src_me = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/meshes/$mesh$Amethyst/Amethyst.obj', datatype="Mesh")
+
+    ref_gs = GaussianSplatting(file_path='/home/potechius/Code/ColorTransferLib/testdata/gaussiansplatting/plush.splat')
+    ref_lf = LightField(file_path='/home/potechius/Code/ColorTransferLib/testdata/lightfields/legolow.mp4', size=(17, 17))
+    ref_vv = VolumetricVideo(folder_path='/home/potechius/Code/ColorTransferLib/testdata/volumetricvideos/$volumetric$human', file_name='human')
+    ref_im = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-06.png')
+    ref_vd = Video(file_path='/home/potechius/Code/ColorTransferLib/testdata/videos/bunny.mp4')
+    ref_pc = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/pointclouds/Violin.ply', datatype="PointCloud")
+    ref_me = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/meshes/$mesh$Apple/Apple.obj', datatype="Mesh")
+
+    src_dict = {
+        "Image": src_im,
+        "Video": src_vd,
+        "GaussianSplatting": src_gs,
+        "LightField": src_lf,
+        "VolumetricVideo": src_vv,
+        "PointCloud": src_pc,
+        "Mesh": src_me
+    }
+
+    ref_dict = {
+        "Image": ref_im,
+        "Video": ref_vd,
+        "GaussianSplatting": ref_gs,
+        "LightField": ref_lf,
+        "VolumetricVideo": ref_vv,
+        "PointCloud": ref_pc,
+        "Mesh": ref_me
+    }
+
+    type_src_array = ["Image", "Video", "GaussianSplatting", "LightField", "VolumetricVideo", "PointCloud", "Mesh"]
+    type_ref_array = ["Image", "GaussianSplatting", "PointCloud", "Mesh"]
+
+    for src_type in type_src_array:
+        for ref_type in type_ref_array:
+            print("Processing: " + method + " - " + src_type + " -> " + ref_type)
+            src = src_dict[src_type]
+            ref = ref_dict[ref_type]
+
+            ct = ColorTransfer(src, ref, method)
+            out = ct.apply()
+
+            if out["status_code"] == 0:
+                out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/out_"+ method + "_" + src_type + "_" + ref_type)
+                # out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/test")
+            else:
+                print("Error: " + out["response"])
+            print("Processed: " + method + " - " + src_type + " -> " + ref_type)
+
+# ------------------------------------------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------------------------------------------
+def test_pointcloud_colorTransfer(method):
+    src = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/pointclouds/Statue_Athena.ply', datatype="PointCloud")
+    # ref = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/pointclouds/Statue_Lion.ply', datatype="PointCloud")
+    ref = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/The_Kiss.png')
+
+    ct = ColorTransfer(src, ref, method)
+    out = ct.apply()
+
+    if out["status_code"] == 0:
+        out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/out_" + method)
+    else:
+        print("Error: " + out["response"])
+
+# ------------------------------------------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------------------------------------------
+def test_evaluation_all():
+    pass
+
+# ------------------------------------------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------------------------------------------
+def test_image_colorTransfer(method):
+    print("Processing: " + method)
+    src = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-06.png')
+    ref = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+
+    ct = ColorTransfer(src, ref, method)
+    out = ct.apply()
+
+    if out["status_code"] == 0:
+        out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/out_" + method)
+    else:
+        print("Error: " + out["response"])
+# ------------------------------------------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------------------------------------------
+def test_image_evaluation(method):
+    src = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+    ref = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-06.png')
+    out = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+
+    cte = ColorTransferEvaluation(src, ref, out)
+    eva = cte.apply(method)
+    print(eva)
+# ------------------------------------------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------------------------------------------
+def apply_color_transfer_localy(src, ref, method):
+    pass
 
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
@@ -26,6 +146,58 @@ import numpy as np
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':  
+ 
+    # test_colorTransfer_all_combinations("GLO")
+    # 
+    # test_pointcloud_colorTransfer("PSN")
+
+    # done = ["GPC", "FUZ", "GLO", "CCS", "DPT", "BCC", "HIS", "MKL", "TPS", "NST", "PDF", "RHG", "CAM"]
+    done = ["DDC"]
+    for elem in done:
+        test_image_colorTransfer(elem)
+    exit()
+
+
+
+
+    # from ColorTransferLib.Algorithms.DDC.DDC import DDC
+    # from ColorTransferLib.Utils.BaseOptions import BaseOptions
+    # import json
+    # with open("/home/potechius/Code/ColorTransferLib/ColorTransferLib/Options/DDC.json", 'r') as f:
+    #     options = json.load(f)
+    #     opt = BaseOptions(options)
+    # src = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+    # ref = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+    # out = DDC.apply(src, ref, opt)    
+    # if out["status_code"] == 0:
+    #     out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/out_DDC")
+    # else:
+    #     print("Error: " + out["response"])
+
+
+
+
+
+    # from ColorTransferLib.Algorithms.PSN.PSN import PSN
+    # from ColorTransferLib.Utils.BaseOptions import BaseOptions
+    # import json
+    # with open("/home/potechius/Code/ColorTransferLib/ColorTransferLib/Options/PSN.json", 'r') as f:
+    #     options = json.load(f)
+    #     opt = BaseOptions(options)
+    # src = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/pointclouds/Orange.ply', datatype="PointCloud")
+    # ref = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/pointclouds/Orange.ply', datatype="PointCloud")
+    # oo = PSN.apply(src, ref, opt)
+    # print(oo)
+
+
+    # done = ["PSN"]
+    # for elem in done:
+    #     test_pointcloud_colorTransfer(elem)
+
+
+    # test_image_evaluation("NIMA")
+    exit()
+
     #src = Video(file_path='/media/potechius/External/data/Videos/sample-5s.mp4')
 
 
@@ -49,58 +221,6 @@ if __name__ == '__main__':
 
     #exit()
 
-    src_gs = GaussianSplatting(file_path='/home/potechius/Code/ColorTransferLib/testdata/gaussiansplatting/plush.splat')
-    src_lf = LightField(file_path='/home/potechius/Code/ColorTransferLib/testdata/lightfields/amethyst.mp4', size=(17, 17))
-    src_vv = VolumetricVideo(folder_path='/home/potechius/Code/ColorTransferLib/testdata/volumetricvideos/$volumetric$human', file_name='human')
-    src_im = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
-    src_vd = Video(file_path='/home/potechius/Code/ColorTransferLib/testdata/videos/earth.mp4')
-
-    src_array = [
-            # {"type": "GaussianSplatting",
-            # "data": src_gs},
-            {"type": "LightField",
-            "data": src_lf},
-            # {"type": "VolumetricVideo",
-            # "data": src_vv},
-            # {"type": "Image",
-            # "data": src_im},
-            # {"type": "Video",
-            # "data": src_vd}
-    ]
-
-    ref = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-06.png')  
-    #out = Image(file_path='/media/potechius/External/data/Images/out.png')  
-    
-    #cte = ColorTransferEvaluation(src, ref, out)
-    #eva = cte.apply("VSI")
-    #print(eva)
-
-    #exit()
-
-    #src = Mesh(file_path='/home/potechius/Downloads/3D/src.ply', datatype="PointCloud")
-    #ref = Mesh(file_path='/home/potechius/Downloads/3D/ref.ply', datatype="PointCloud")  
-
-    #src = Mesh(file_path='/home/potechius/Downloads/3D_mesh/Apple.obj', datatype="Mesh")
-    #ref = Mesh(file_path='/home/potechius/Downloads/3D_mesh/Pillow.obj', datatype="Mesh")  
-
-
-    algo = "PDF"
-    for src_elem in src_array:
-        typeE = src_elem["type"]
-        print(typeE)
-        src = src_elem["data"]
-        ct = ColorTransfer(src, ref, algo)
-        out = ct.apply()
-        #print(out)
-        #exit()
-
-        if out["status_code"] == 0:
-            out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/out_" + typeE)
-            src.write("/home/potechius/Code/ColorTransferLib/testdata/results/src_" + typeE)
-            ref.write("/home/potechius/Code/ColorTransferLib/testdata/results/ref")
-        else:
-            print("Error: " + out["response"])
-        print("Done")
 
     # Evaluation Example
     # TODO
