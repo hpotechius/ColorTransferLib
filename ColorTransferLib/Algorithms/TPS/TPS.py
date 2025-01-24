@@ -158,11 +158,11 @@ class TPS:
         # NOTE: pkg install -forge statistics
 
         # check if method is compatible with provided source and reference objects
-        output = check_compatibility(src, ref, TPS.compatibility)
+        #output = check_compatibility(src, ref, TPS.compatibility)
 
-        if output["status_code"] == -1:
-            output["response"] = "Incompatible type."
-            return output
+        #if output["status_code"] == -1:
+        #    output["response"] = "Incompatible type."
+        #    return output
 
         # Preprocessing
         # NOTE RGB space needs multiplication with 255
