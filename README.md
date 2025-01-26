@@ -22,16 +22,14 @@ The output should resemble a dictionary format, as outlined in Listing 3. A stat
 
 ## Installation
 ### Requirements
-(1) Download the Models-Folder from [here](https://potechius.com/Downloads/Models.zip) and place it in the project's root directory.
-
-(2) Install the following packages:
+(1) Install the following packages:
 ```
 sudo apt-get install octave-dev
 # allows writing of mp4 with h246 codec
 sudo apt-get install ffmpeg
 ```
 
-(3) Install the following octave package:
+(2) Install the following octave package:
 ```
 # activate octave environment
 octave
@@ -40,7 +38,7 @@ octave:1> pkg install -forge image
 octave:2> pkg install -forge statistics
 ```
 
-(4) Run the `gbvs_install.m` to make the evaluation metric VSI runnable:
+(3) Run the `gbvs_install.m` to make the evaluation metric VSI runnable:
 ```
 user@pc:~/<Project Path>/ColorTransferLib/Evaluation/VIS/gbvs$ ocatve
 octave:1> gbvs_install.m

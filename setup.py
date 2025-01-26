@@ -11,7 +11,6 @@ with open('requirements/requirements.txt') as f:
 setuptools.setup(
     name="ColorTransferLib",
     version="2.0.0",
-    # version="1.0.0-4",
     author="Herbert Potechius",
     author_email="potechius.herbert@gmail.com",
     description="This library provides color and tyle transfer algorithms which were published in scientific papers. Additionall a set of IQA metrics are available.",
@@ -29,7 +28,7 @@ setuptools.setup(
                        'Evaluation/VSI/saliency_models/resources/*.mat',
                        'Algorithms/DDC/basicsr/archs/ddcolor_arch_utils/*']},
     include_package_data=True,
-    python_requires='>=3.10',
+    python_requires='>=3.10,<3.11',
     long_description=long_description,
     long_description_content_type='text/markdown',
     install_requires= requirements
