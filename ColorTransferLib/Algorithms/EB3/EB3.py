@@ -1,7 +1,7 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2025 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -11,10 +11,9 @@ import numpy as np
 from sklearn.decomposition import PCA
 from scipy.linalg import fractional_matrix_power
 from copy import deepcopy
+import time
 
 from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
-from ColorTransferLib.Utils.Helper import check_compatibility
-
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -38,35 +37,35 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class EB3:
-    compatibility = {
-        "src": ["PointCloud"],
-        "ref": ["PointCloud"]
-    }
-
     # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Checks source and reference compatibility
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def get_info():
-        info = {
-            "identifier": "EB3",
-            "title": "Example-Based Colour Transfer for 3D Point Clouds",
-            "year": 2021,
-            "abstract": "Example-based colour transfer between images, which has raised a lot of interest in the past "
-                        "decades, consists of transferring the colour of an image to another one. Many methods based "
-                        "on colour distributions have been proposed, and more recently, the efficiency of neural "
-                        "networks has been demonstrated again for colour transfer problems. In this paper, we propose "
-                        "a new pipeline with methods adapted from the image domain to automatically transfer the "
-                        "colour from a target point cloud to an input point cloud. These colour transfer methods are "
-                        "based on colour distributions and account for the geometry of the point clouds to produce a "
-                        "coherent result. The proposed methods rely on simple statistical analysis, are effective, and "
-                        "succeed in transferring the colour style from one point cloud to another. The qualitative "
-                        "results of the colour transfers are evaluated and compared with existing methods.",
-            "types": ["PointCloud"]
+    def apply(src, ref, opt):
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None,
+            "process_time": 0
         }
 
-        return info
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+            output["response"] = "Incompatible reference type."
+            output["status_code"] = -1
+            return output
 
+        start_time = time.time()
+
+        if src.get_type() == "PointCloud":
+            out_obj = EB3.__apply_pointcloud(src, ref, opt)
+        else:
+            output["response"] = "Incompatible type."
+            output["status_code"] = -1
+
+        output["process_time"] = time.time() - start_time
+        output["object"] = out_obj
+
+        return output
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -259,27 +258,22 @@ class EB3:
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref, opt):
-        # check if method is compatible with provided source and reference objects
-        output = check_compatibility(src, ref, EB3.compatibility)
-        if output["status_code"] != 0:
-            output["response"] = "Incompatible type."
-            return output
-
-        # Preprocessing
-        out_img = deepcopy(src)
-
+    def __color_transfer(src, ref, opt):
         if opt.version == "IGD":
             out = EB3.IGD(src, ref, opt.pca)
         else:
             out = EB3.MGD(src, ref, opt.pca)
+        return out
 
-        out_img.set_colors(out)
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_pointcloud(src, ref, opt):
+        out_img = deepcopy(src)
 
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": out_img
-        }
+        out_colors = EB3.__color_transfer(src, ref, opt)
 
-        return output
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp

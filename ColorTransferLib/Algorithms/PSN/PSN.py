@@ -1,7 +1,7 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2025 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -15,10 +15,12 @@ import tensorflow as tf
 import json
 import sys
 import pickle
+from copy import deepcopy
+import time
 
 from ColorTransferLib.Algorithms.PSN.psnet import PSNet
 from ColorTransferLib.Algorithms.PSN.utils import *
-from ColorTransferLib.Utils.Helper import check_compatibility, init_model_files, get_cache_dir
+from ColorTransferLib.Utils.Helper import init_model_files, get_cache_dir
 
 opj = os.path.join
 ope = os.path.exists
@@ -47,44 +49,40 @@ tf.compat.v1.disable_eager_execution()
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class PSN:
-    compatibility = {
-        "src": ["PointCloud"],
-        "ref": ["PointCloud"]
-    }
-
     # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Checks source and reference compatibility
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def get_info():
-        info = {
-            "identifier": "PSN",
-            "title": "PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color",
-            "year": 2020,
-            "abstract": "We propose a neural style transfer method for colored point clouds which allows stylizing the "
-                        "geometry and/or color property of a point cloud from another. The stylization is achieved by "
-                        "manipulating the content representations and Gram-based style representations extracted from "
-                        "a pre-trained PointNet-based classification network for colored point clouds. As Gram-based "
-                        "style representation is invariant to the number or the order of points, the style can also be "
-                        "an image in the case of stylizing the color property of a point cloud by merely treating the "
-                        "image as a set of pixels.Experimental results and analysis demonstrate the capability of the "
-                        "proposed method for stylizing a point cloud either from another point cloud or an image.",
-            "types": ["PointCloud"]
+    def apply(src, ref, opt):
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None,
+            "process_time": 0
         }
 
-        return info
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+            output["response"] = "Incompatible reference type."
+            output["status_code"] = -1
+            return output
 
+        start_time = time.time()
+
+        if src.get_type() == "PointCloud":
+            out_obj = PSN.__apply_pointcloud(src, ref, opt)
+        else:
+            output["response"] = "Incompatible type."
+            output["status_code"] = -1
+
+        output["process_time"] = time.time() - start_time
+        output["object"] = out_obj
+
+        return output
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref, opt): 
-        # check if method is compatible with provided source and reference objects
-        # output = check_compatibility(src, ref, PSN.compatibility)
-        # if output["status_code"] != 0:
-        #     output["response"] = "Incompatible type."
-        #     return output
-        
+    def __color_transfer(src, ref, opt): 
         iteration = opt.iterations  # iteration number for style transfer
         geotransfer = opt.geotransfer
 
@@ -221,10 +219,12 @@ class PSN:
                 previous_loss = current_total_loss
             sess.close()
 
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": src
-        }
+        return src
 
-        return output
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_pointcloud(src, ref, opt):
+        out = PSN.__color_transfer(src, ref, opt)
+        return out

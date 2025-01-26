@@ -1,11 +1,12 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2025 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
+
 
 import numpy as np
 from fcmeans import FCM
@@ -14,7 +15,8 @@ import time
 from copy import deepcopy
 
 from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
-from ColorTransferLib.Utils.Helper import check_compatibility
+from ColorTransferLib.ImageProcessing.Video import Video
+from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -46,53 +48,52 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class FUZ:
-    compatibility = {
-        "src": ["Image", "Mesh", "PointCloud"],
-        "ref": ["Image", "Mesh", "PointCloud"]
-    }
-
     # ------------------------------------------------------------------------------------------------------------------
-    # Returns basic information of the corresponding publication.
+    # Checks source and reference compatibility
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def get_info():
-        info = {
-            "identifier": "FuzzyColorTransfer",
-            "title": "An efficient fuzzy clustering-based color transfer method",
-            "year": 2010,
-            "abstract": "Each image has its own color content that greatly influences the perception of human "
-                        "observer. Recently, color transfer among different images has been under investigation. In "
-                        "this paper, after a brief review on the few efficient works performed in the field, a novel "
-                        "fuzzy clustering based color transfer method is proposed. The proposed method accomplishes "
-                        "the transformation based on a set of corresponding fuzzy clustering algorithm-selected "
-                        "regions in images along with membership degree factors. Results show the presented algorithm "
-                        "is highly automatically and more effective.",
-            "types": ["Image", "Mesh", "PointCloud"]
+    def apply(src, ref, opt):
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None,
+            "process_time": 0
         }
 
-        return info
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+            output["response"] = "Incompatible reference type."
+            output["status_code"] = -1
+            return output
 
+        start_time = time.time()
+
+        if src.get_type() == "Image":
+            out_obj = FUZ.__apply_image(src, ref, opt)
+        elif src.get_type() == "LightField":
+            out_obj = FUZ.__apply_lightfield(src, ref, opt)
+        elif src.get_type() == "Video":
+            out_obj = FUZ.__apply_video(src, ref, opt)
+        elif src.get_type() == "VolumetricVideo":
+            out_obj = FUZ.__apply_volumetricvideo(src, ref, opt)
+        elif src.get_type() == "GaussianSplatting":
+            out_obj = FUZ.__apply_gaussiansplatting(src, ref, opt)
+        elif src.get_type() == "PointCloud":
+            out_obj = FUZ.__apply_pointcloud(src, ref, opt)
+        elif src.get_type() == "Mesh":
+            out_obj = FUZ.__apply_mesh(src, ref, opt)
+        else:
+            output["response"] = "Incompatible type."
+            output["status_code"] = -1
+
+        output["process_time"] = time.time() - start_time
+        output["object"] = out_obj
+
+        return output
     # ------------------------------------------------------------------------------------------------------------------
     # Applies the color transfer algorihtm
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref, opt):
-        # Record the start time for performance measurement
-        start_time = time.time()
-
-        # Check if the source and reference images are compatible for color transfer
-        output = check_compatibility(src, ref, FUZ.compatibility)
-
-        # If not compatible, return the error output
-        if output["status_code"] == -1:
-            output["response"] = "Incompatible type."
-            return output
-
-        # Extract colors from the source and reference images
-        src_color = src.get_colors()
-        ref_color = ref.get_colors()
-        out_img = deepcopy(src)
-
+    def __color_transfer(src_color, ref_color, opt):
         # [1] Extract parameters needed for the algorithm
         src_pix_num = src_color.shape[0]
         ref_pix_num = ref_color.shape[0]
@@ -179,15 +180,127 @@ class FUZ:
         lab_new = ColorSpaces.lab_to_rgb_cpu(lab_new)
         lab_new = np.clip(lab_new, 0.0, 1.0)
 
-        # [9] Set the new colors to the output image
-        out_img.set_colors(lab_new)
+        return lab_new
 
-        # Prepare and return the output with performance metrics
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": out_img,
-            "process_time": time.time() - start_time
-        }
 
-        return output
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_image(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = FUZ.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_video(src, ref, opt): 
+        # check if type is video
+        out_colors_arr = []
+        src_colors = src.get_colors()
+
+        for i, src_color in enumerate(src_colors):
+            # Preprocessing
+            ref_color = ref.get_colors()
+            out_img = deepcopy(src.get_images()[0])
+
+            out_colors = FUZ.__color_transfer(src_color, ref_color, opt)
+
+            out_img.set_colors(out_colors)
+            out_colors_arr.append(out_img)
+
+        outp = Video(imgs=out_colors_arr)
+
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_volumetricvideo(src, ref, opt): 
+        out_colors_arr = []
+        src_colors = src.get_colors()
+
+        for i, src_color in enumerate(src_colors):
+            # Preprocessing
+            ref_color = ref.get_colors()
+            out_img = deepcopy(src.get_meshes()[i])
+
+            out_colors = FUZ.__color_transfer(src_color, ref_color, opt)
+
+            out_img.set_colors(out_colors)
+            out_colors_arr.append(out_img)
+            outp = VolumetricVideo(meshes=out_colors_arr, file_name=src.get_file_name())
+
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_lightfield(src, ref, opt):
+        src_lightfield_array = src.get_image_array()
+        out = deepcopy(src)
+        out_lightfield_array = out.get_image_array()
+
+        for row in range(src.get_grid_size()[0]):
+            for col in range(src.get_grid_size()[1]):
+                src_color = src_lightfield_array[row][col].get_colors()
+                ref_color = ref.get_colors()
+
+                out_colors = FUZ.__color_transfer(src_color, ref_color, opt)
+
+                out_lightfield_array[row][col].set_colors(out_colors)
+
+        return out
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_gaussiansplatting(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = FUZ.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_pointcloud(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = FUZ.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_mesh(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = FUZ.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+

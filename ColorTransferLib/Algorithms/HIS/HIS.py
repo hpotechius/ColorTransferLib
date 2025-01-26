@@ -1,7 +1,7 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2025 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -16,6 +16,8 @@ import os
 from ColorTransferLib.Algorithms.HIS.models.models import create_model
 from ColorTransferLib.Algorithms.HIS.data.data_loader import CreateDataLoader
 from ColorTransferLib.Utils.Helper import check_compatibility, init_model_files, get_cache_dir
+from ColorTransferLib.ImageProcessing.Video import Video
+from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -36,61 +38,54 @@ from ColorTransferLib.Utils.Helper import check_compatibility, init_model_files,
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class HIS:
-    identifier = "HIS"
-    title = "Deep Color Transfer using Histogram Analogy"
-    year = 2020
-
-    compatibility = {
-        "src": ["Image", "Mesh"],
-        "ref": ["Image", "Mesh"]
-    }
-
     # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def get_info():
-        info = {
-            "identifier": "HistogramAnalogy",
-            "title": "Deep Color Transfer using Histogram Analogy",
-            "year": 2020,
-            "abstract": "We propose a novel approach to transferring the color of a reference image to a given source "
-                        "image. Although there can be diverse pairs of source and reference images in terms of content "
-                        "and composition similarity, previous methods are not capable of covering the whole diversity. "
-                        "To resolve this limitation, we propose a deep neural network that leverages color histogram "
-                        "analogy for color transfer. A histogram contains essential color information of an image, and "
-                        "our network utilizes the analogy between the source and reference histograms to modulate the "
-                        "color of the source image with abstract color features of the reference image. In our "
-                        "approach, histogram analogy is exploited basically among the whole images, but it can also be "
-                        "applied to semantically corresponding regions in the case that the source and reference "
-                        "images have similar contents with different compositions. Experimental results show that our "
-                        "approach effectively transfers the reference colors to the source images in a variety of "
-                        "settings. We also demonstrate a few applications of our approach, such as palette-based "
-                        "recolorization, color enhancement, and color editing.",
-            "types": ["Image"]
-        }
-
-        return info
-    # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Checks source and reference compatibility
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
-        start_time = time.time()
-        # check if method is compatible with provided source and reference objects
-        output = check_compatibility(src, ref, HIS.compatibility)
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None,
+            "process_time": 0
+        }
 
-        if output["status_code"] == -1:
-            output["response"] = "Incompatible type."
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+            output["response"] = "Incompatible reference type."
+            output["status_code"] = -1
             return output
-        
+
+        start_time = time.time()
+
+        if src.get_type() == "Image":
+            out_obj = HIS.__apply_image(src, ref, opt)
+        elif src.get_type() == "LightField":
+            out_obj = HIS.__apply_lightfield(src, ref, opt)
+        elif src.get_type() == "Video":
+            out_obj = HIS.__apply_video(src, ref, opt)
+        elif src.get_type() == "VolumetricVideo":
+            out_obj = HIS.__apply_volumetricvideo(src, ref, opt)
+        elif src.get_type() == "Mesh":
+            out_obj = HIS.__apply_mesh(src, ref, opt)
+        else:
+            output["response"] = "Incompatible type."
+            output["status_code"] = -1
+
+        output["process_time"] = time.time() - start_time
+        output["object"] = out_obj
+
+        return output
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __color_transfer(src_img, ref_img, opt):
         if not torch.cuda.is_available():
             opt.gpu_ids = [-1]
 
         # Preprocessing
-        srcT = src.get_raw()
-        refT = ref.get_raw()
-        out_img = deepcopy(src)
+        srcT = src_img
+        refT = ref_img
 
         init_model_files("HIS", ["latest_net_C_A.pth", "latest_net_G_A.pth"])
         opt.checkpoints_dir = os.path.join(get_cache_dir(), "HIS")
@@ -115,12 +110,106 @@ class HIS:
 
         out = ou.cpu().detach().numpy()
 
-        out = out.astype(np.float32)
-        out_img.set_raw(out, normalized=True)
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": out_img,
-            "process_time": time.time() - start_time
-        }
-        return output
+        out = out.astype(np.float32) * 255.0
+        # out_img.set_raw(out, normalized=True)
+        # output = {
+        #     "status_code": 0,
+        #     "response": "",
+        #     "object": out_img,
+        #     "process_time": time.time() - start_time
+        # }
+        return out
+    
+       
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_image(src, ref, opt):
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+        out_img = deepcopy(src)
+
+        out_colors = HIS.__color_transfer(src_img, ref_img, opt)
+        out_img.set_raw(out_colors)
+
+        outp = out_img
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_video(src, ref, opt): 
+        # check if type is video
+        out_raw_arr = []
+        src_raws = src.get_raw()
+
+        for i, src_raw in enumerate(src_raws):
+            # Preprocessing
+            ref_raw = ref.get_raw()
+            out_img = deepcopy(src.get_images()[0])
+
+            out_colors = HIS.__color_transfer(src_raw, ref_raw, opt)
+
+            out_img.set_raw(out_colors)
+            out_raw_arr.append(out_img)
+
+        outp = Video(imgs=out_raw_arr)
+
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_volumetricvideo(src, ref, opt): 
+        out_raw_arr = []
+        src_raws = src.get_raw()
+
+        for i, src_raw in enumerate(src_raws):
+            # Preprocessing
+            ref_raw = ref.get_raw()
+            out_img = deepcopy(src.get_meshes()[i])
+
+            out_colors = HIS.__color_transfer(src_raw, ref_raw, opt)
+
+            out_img.set_raw(out_colors)
+            out_raw_arr.append(out_img)
+            outp = VolumetricVideo(meshes=out_raw_arr, file_name=src.get_file_name())
+
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_lightfield(src, ref, opt):
+        src_lightfield_array = src.get_image_array()
+        out = deepcopy(src)
+        out_lightfield_array = out.get_image_array()
+
+        for row in range(src.get_grid_size()[0]):
+            for col in range(src.get_grid_size()[1]):
+                src_raw = src_lightfield_array[row][col].get_raw()
+                ref_raw = ref.get_raw()
+
+                out_colors = HIS.__color_transfer(src_raw, ref_raw, opt)
+
+                out_lightfield_array[row][col].set_raw(out_colors)
+
+        return out
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_mesh(src, ref, opt):
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+        out_img = deepcopy(src)
+
+        out_colors = HIS.__color_transfer(src_img, ref_img, opt)
+
+        out_img.set_raw(out_colors)
+        outp = out_img
+        return outp

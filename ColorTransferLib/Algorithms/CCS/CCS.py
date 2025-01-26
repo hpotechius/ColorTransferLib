@@ -1,7 +1,7 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2025 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -11,8 +11,8 @@ import numpy as np
 import time
 from copy import deepcopy
 
-from ColorTransferLib.Utils.Helper import check_compatibility
-
+from ColorTransferLib.ImageProcessing.Video import Video
+from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Based on the paper:
@@ -41,64 +41,53 @@ from ColorTransferLib.Utils.Helper import check_compatibility
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class CCS:
-    compatibility = {
-        "src": ["Image", "Mesh", "PointCloud"],
-        "ref": ["Image", "Mesh", "PointCloud"]
-    }
-
     # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def get_info():
-        info = {
-            "identifier": "CCS",
-            "title": "Color Transfer in Correlated Color Space",
-            "year": 2006,
-            "abstract": "In this paper we present a process called color transfer which can borrow one images color "
-                        "characteristics from another. Recently Reinhard and his colleagues reported a pioneering work "
-                        "of color transfer. Their technology can produce very believable results, but has to transform "
-                        "pixel values from RGB to lab. Inspired by their work, we advise an approach which can directly "
-                        "deal with the color transfer in any 3D space. From the view of statistics, we consider pixels "
-                        "value as a threedimension stochastic variable and an image as a set of samples, so the "
-                        "correlations between three components can be measured by covariance. Our method imports "
-                        "covariance between three components of pixel values while calculate the mean along each of the "
-                        "three axes. Then we decompose the covariance matrix using SVD algorithm and get a rotation "
-                        "matrix. Finally we can scale, rotate and shift pixel data of target image to fit data points "
-                        "cluster of source image in the current color space and get resultant image which takes on "
-                        "source images look and feel. Besides the global processing, a swatch-based method is introduced "
-                        "in order to manipulate images color more elaborately. Experimental results confirm the validity "
-                        "and usefulness of our method.",
-            "types": ["Image", "Mesh", "PointCloud"]
-        }
-
-        return info
-
-    # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Checks source and reference compatibility
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
-        start_time = time.time()
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None,
+            "process_time": 0
+        }
 
-        # check if method is compatible with provided source and reference objects
-        output = check_compatibility(src, ref, CCS.compatibility)
-
-        if output["status_code"] == -1:
-            output["response"] = "Incompatible type."
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+            output["response"] = "Incompatible reference type."
+            output["status_code"] = -1
             return output
 
-        # Preprocessing
-        src_color = src.get_colors()
-        ref_color = ref.get_colors()
-        
-        # original src size
-        #size_src = (src.get_height(), src.get_width(), 3)
+        start_time = time.time()
 
-        out_img = deepcopy(src)
-        out = out_img.get_colors()
+        if src.get_type() == "Image":
+            out_obj = CCS.__apply_image(src, ref, opt)
+        elif src.get_type() == "LightField":
+            out_obj = CCS.__apply_lightfield(src, ref, opt)
+        elif src.get_type() == "Video":
+            out_obj = CCS.__apply_video(src, ref, opt)
+        elif src.get_type() == "VolumetricVideo":
+            out_obj = CCS.__apply_volumetricvideo(src, ref, opt)
+        elif src.get_type() == "GaussianSplatting":
+            out_obj = CCS.__apply_gaussiansplatting(src, ref, opt)
+        elif src.get_type() == "PointCloud":
+            out_obj = CCS.__apply_pointcloud(src, ref, opt)
+        elif src.get_type() == "Mesh":
+            out_obj = CCS.__apply_mesh(src, ref, opt)
+        else:
+            output["response"] = "Incompatible type."
+            output["status_code"] = -1
 
-        # 
+        output["process_time"] = time.time() - start_time
+        output["object"] = out_obj
+
+        return output
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __color_transfer(src_color, ref_color, opt):
+
         reshaped_src = np.reshape(src_color, (-1,3))
         reshaped_ref = np.reshape(ref_color, (-1,3))
 
@@ -150,14 +139,127 @@ class CCS:
         # turn homogeneous points into euclidean points 
         out_colors = out[:,:3]
         out_colors = np.clip(out_colors, 0, 1)
-        out_img.set_colors(out_colors)
 
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": out_img,
-            "process_time": time.time() - start_time
-        }
-
-        return output
+        return out_colors
   
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_image(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = CCS.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_video(src, ref, opt): 
+        # check if type is video
+        out_colors_arr = []
+        src_colors = src.get_colors()
+
+        for i, src_color in enumerate(src_colors):
+            # Preprocessing
+            ref_color = ref.get_colors()
+            out_img = deepcopy(src.get_images()[0])
+
+            out_colors = CCS.__color_transfer(src_color, ref_color, opt)
+
+            out_img.set_colors(out_colors)
+            out_colors_arr.append(out_img)
+
+        outp = Video(imgs=out_colors_arr)
+
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_volumetricvideo(src, ref, opt): 
+        out_colors_arr = []
+        src_colors = src.get_colors()
+
+        for i, src_color in enumerate(src_colors):
+            # Preprocessing
+            ref_color = ref.get_colors()
+            out_img = deepcopy(src.get_meshes()[i])
+
+            out_colors = CCS.__color_transfer(src_color, ref_color, opt)
+
+            out_img.set_colors(out_colors)
+            out_colors_arr.append(out_img)
+            outp = VolumetricVideo(meshes=out_colors_arr, file_name=src.get_file_name())
+
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_lightfield(src, ref, opt):
+        src_lightfield_array = src.get_image_array()
+        out = deepcopy(src)
+        out_lightfield_array = out.get_image_array()
+
+        for row in range(src.get_grid_size()[0]):
+            for col in range(src.get_grid_size()[1]):
+                src_color = src_lightfield_array[row][col].get_colors()
+                ref_color = ref.get_colors()
+
+                out_colors = CCS.__color_transfer(src_color, ref_color, opt)
+
+                out_lightfield_array[row][col].set_colors(out_colors)
+
+        return out
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_gaussiansplatting(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = CCS.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_pointcloud(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = CCS.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_mesh(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = CCS.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+

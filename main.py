@@ -34,7 +34,8 @@ def test_colorTransfer_all_combinations(method):
     src_gs = GaussianSplatting(file_path='/home/potechius/Code/ColorTransferLib/testdata/gaussiansplatting/plush.splat')
     src_lf = LightField(file_path='/home/potechius/Code/ColorTransferLib/testdata/lightfields/amethyst.mp4', size=(17, 17))
     src_vv = VolumetricVideo(folder_path='/home/potechius/Code/ColorTransferLib/testdata/volumetricvideos/$volumetric$human', file_name='human')
-    src_im = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+    # src_im = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+    src_im = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/Mona_Lisa.png')
     src_vd = Video(file_path='/home/potechius/Code/ColorTransferLib/testdata/videos/earth.mp4')
     src_pc = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/pointclouds/Azurit.ply', datatype="PointCloud")
     src_me = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/meshes/$mesh$Amethyst/Amethyst.obj', datatype="Mesh")
@@ -42,7 +43,8 @@ def test_colorTransfer_all_combinations(method):
     ref_gs = GaussianSplatting(file_path='/home/potechius/Code/ColorTransferLib/testdata/gaussiansplatting/plush.splat')
     ref_lf = LightField(file_path='/home/potechius/Code/ColorTransferLib/testdata/lightfields/legolow.mp4', size=(17, 17))
     ref_vv = VolumetricVideo(folder_path='/home/potechius/Code/ColorTransferLib/testdata/volumetricvideos/$volumetric$human', file_name='human')
-    ref_im = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-06.png')
+    # ref_im = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-06.png')
+    ref_im = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/The_Scream.png')
     ref_vd = Video(file_path='/home/potechius/Code/ColorTransferLib/testdata/videos/bunny.mp4')
     ref_pc = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/pointclouds/Violin.ply', datatype="PointCloud")
     ref_me = Mesh(file_path='/home/potechius/Code/ColorTransferLib/testdata/meshes/$mesh$Apple/Apple.obj', datatype="Mesh")
@@ -67,8 +69,10 @@ def test_colorTransfer_all_combinations(method):
         "Mesh": ref_me
     }
 
-    type_src_array = ["Image", "Video", "GaussianSplatting", "LightField", "VolumetricVideo", "PointCloud", "Mesh"]
-    type_ref_array = ["Image", "GaussianSplatting", "PointCloud", "Mesh"]
+    # type_src_array = ["Image", "Video", "GaussianSplatting", "LightField", "VolumetricVideo", "PointCloud", "Mesh"]
+    # type_ref_array = ["Image", "GaussianSplatting", "PointCloud", "Mesh"]
+    type_src_array = ["Image"]
+    type_ref_array = ["Image"]
 
     for src_type in type_src_array:
         for ref_type in type_ref_array:
@@ -147,7 +151,9 @@ def apply_color_transfer_localy(src, ref, method):
 # ------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':  
  
-    # test_colorTransfer_all_combinations("GLO")
+    test_colorTransfer_all_combinations("CAM")
+    exit()
+
     # 
     # test_pointcloud_colorTransfer("PSN")
 

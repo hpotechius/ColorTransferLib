@@ -1,7 +1,7 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2025 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -17,6 +17,8 @@ from copy import deepcopy
 from .utils.face_preprocessing import face_extraction
 from .rehistoGAN import train_from_folder
 from ColorTransferLib.Utils.Helper import check_compatibility, get_cache_dir
+from ColorTransferLib.ImageProcessing.Video import Video
+from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -38,63 +40,53 @@ from ColorTransferLib.Utils.Helper import check_compatibility, get_cache_dir
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class RHG:
-    identifier = "RHG"
-    title = "HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms"
-    year = 2021
-    compatibility = {
-        "src": ["Image", "Mesh"],
-        "ref": ["Image", "Mesh"]
-    }
-
     # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def get_info():
-        info = {
-            "identifier": "RHG",
-            "title": "HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms",
-            "year": 2021,
-            "abstract": "In this paper, we present HistoGAN, a color histogram-based method for controlling "
-                        "GAN-generated images colors. We focus on color histograms as they provide an intuitive way "
-                        "to describe image color while remaining decoupled from domain-specific semantics. "
-                        "Specifically, we introduce an effective modification of the recent StyleGAN architecture to "
-                        "control the colors of GAN-generated images specified by a target color histogram feature. We "
-                        "then describe how to expand HistoGAN to recolor real images. For image recoloring, we jointly "
-                        "train an encoder network along with HistoGAN. The recoloring model, ReHistoGAN, is an "
-                        "unsupervised approach trained to encourage the network to keep the original images content "
-                        "while changing the colors based on the given target histogram. We show that this "
-                        "histogram-based approach offers a better way to control GAN-generated and real images colors "
-                        "while producing more compelling results compared to existing alternative strategies.",
-            "types": ["Image"]
-        }
-
-        return info
-
-    # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Checks source and reference compatibility
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None,
+            "process_time": 0
+        }
+
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+            output["response"] = "Incompatible reference type."
+            output["status_code"] = -1
+            return output
+
         start_time = time.time()
 
+        if src.get_type() == "Image":
+            out_obj = RHG.__apply_image(src, ref, opt)
+        elif src.get_type() == "LightField":
+            out_obj = RHG.__apply_lightfield(src, ref, opt)
+        elif src.get_type() == "Video":
+            out_obj = RHG.__apply_video(src, ref, opt)
+        elif src.get_type() == "VolumetricVideo":
+            out_obj = RHG.__apply_volumetricvideo(src, ref, opt)
+        elif src.get_type() == "Mesh":
+            out_obj = RHG.__apply_mesh(src, ref, opt)
+        else:
+            output["response"] = "Incompatible type."
+            output["status_code"] = -1
+            out_obj = None
+
+        output["process_time"] = time.time() - start_time
+        output["object"] = out_obj
+
+        return output
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __color_transfer(img_src, img_ref, opt):
         opt.models_dir = os.path.join(get_cache_dir(), "RHG")
         opt.histGAN_models_dir = os.path.join(opt.models_dir, "RHG")
 
-        # check if method is compatible with provided source and reference objects
-        output = check_compatibility(src, ref, RHG.compatibility)
-
-        if output["status_code"] == -1:
-            output["response"] = "Incompatible type."
-            return output
-
-        # START PROCESSING
-        img_src = src.get_raw()
-        img_ref = ref.get_raw()
-
         src_orig_wh = img_src.shape[:2]
-
-        out_img = deepcopy(src)
 
         if torch.cuda.is_available():
             torch.cuda.set_device(opt.gpu)
@@ -169,19 +161,102 @@ class RHG:
         out_temp = np.swapaxes(out_temp,0,1)
         out_temp = np.swapaxes(out_temp,1,2)
 
-        # resize output to src size
-        out_temp = cv2.resize(out_temp, src_orig_wh, interpolation = cv2.INTER_AREA)
+        new_size = (src_orig_wh[1], src_orig_wh[0])
+        out_temp = cv2.resize(out_temp, new_size, interpolation = cv2.INTER_AREA)
 
-        out_img.set_colors(out_temp)
+        return out_temp
 
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": out_img,
-            "process_time": time.time() - start_time
-        }
-   
-        
-        return output
 
-    
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_image(src, ref, opt):
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+        out_img = deepcopy(src)
+
+        out_colors = RHG.__color_transfer(src_img, ref_img, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_video(src, ref, opt): 
+        # check if type is video
+        out_raw_arr = []
+        src_raws = src.get_raw()
+
+        for i, src_raw in enumerate(src_raws):
+            # Preprocessing
+            ref_raw = ref.get_raw()
+            out_img = deepcopy(src.get_images()[0])
+
+            out_colors = RHG.__color_transfer(src_raw, ref_raw, opt)
+
+            out_img.set_colors(out_colors)
+            out_raw_arr.append(out_img)
+
+        outp = Video(imgs=out_raw_arr)
+
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_volumetricvideo(src, ref, opt): 
+        out_raw_arr = []
+        src_raws = src.get_raw()
+
+        for i, src_raw in enumerate(src_raws):
+            # Preprocessing
+            ref_raw = ref.get_cget_rawolors()
+            out_img = deepcopy(src.get_meshes()[i])
+
+            out_colors = RHG.__color_transfer(src_raw, ref_raw, opt)
+
+            out_img.set_colors(out_colors)
+            out_raw_arr.append(out_img)
+            outp = VolumetricVideo(meshes=out_raw_arr, file_name=src.get_file_name())
+
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_lightfield(src, ref, opt):
+        src_lightfield_array = src.get_image_array()
+        out = deepcopy(src)
+        out_lightfield_array = out.get_image_array()
+
+        for row in range(src.get_grid_size()[0]):
+            for col in range(src.get_grid_size()[1]):
+                src_raw = src_lightfield_array[row][col].get_raw()
+                ref_raw = ref.get_raw()
+
+                out_colors = RHG.__color_transfer(src_raw, ref_raw, opt)
+
+                out_lightfield_array[row][col].set_colors(out_colors)
+
+        return out
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_mesh(src, ref, opt):
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+        out_img = deepcopy(src)
+
+        out_colors = RHG.__color_transfer(src_img, ref_img, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+

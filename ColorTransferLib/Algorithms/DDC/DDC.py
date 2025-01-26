@@ -1,5 +1,5 @@
 """
-Copyright 2024 by Herbert Potechius,
+Copyright 2025 by Herbert Potechius,
 Technical University of Berlin
 Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
@@ -35,36 +35,11 @@ from .predict import Predictor
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class DDC:
-    compatibility = {
-        "src": ["Image", "Mesh", "PointCloud", "Video", "VolumetricVideo", "LightField", "GaussianSplatting"],
-        "ref": ["Image", "Mesh", "PointCloud", "Video", "VolumetricVideo", "LightField", "GaussianSplatting"]
-    }
-
     # ------------------------------------------------------------------------------------------------------------------
-    # Returns basic information of the corresponding publication.
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def get_info():
-        info = {
-            "identifier": "GLO",
-            "title": "Color Transfer between Images",
-            "year": 2001,
-            "abstract": "We use a simple statistical analysis to impose one images color characteristics on another. "
-                        "We can achieve color correction by choosing an appropriate source image and apply its "
-                        "characteristic to another image.",
-            "types": ["Image", "Mesh", "PointCloud", "Video", "VolumetricVideo", "LightField", "GaussianSplatting"],
-        }
-
-        return info
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # Applies the color transfer algorihtm
+    # Checks source and reference compatibility
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
-
-        model_file_paths = init_model_files("DDC", [opt.model + ".pth"])
-
         output = {
             "status_code": 0,
             "response": "",
@@ -72,28 +47,54 @@ class DDC:
             "process_time": 0
         }
 
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+            output["response"] = "Incompatible reference type."
+            output["status_code"] = -1
+            return output
+
         start_time = time.time()
 
-        src_img = src.get_raw()
-
         if src.get_type() == "Image":
-            print("Image")
-            if "ddcolor_paper_tiny.pth" in model_file_paths:
-                model_size = "tiny"
-            else:
-                model_size = "large"
-            pred = Predictor()
-            pred.setup(model_file_paths)
-            img_out = pred.predict(image=src_img, model_size=model_size)
-
-            out_img = deepcopy(src)
-            out_img.set_raw(img_out)
+            out_obj = DDC.__apply_image(src, ref, opt)
         else:
             output["response"] = "Incompatible type."
             output["status_code"] = -1
 
-
         output["process_time"] = time.time() - start_time
-        output["object"] = out_img
+        output["object"] = out_obj
 
         return output
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __color_transfer(src, ref, opt):
+        model_file_paths = init_model_files("DDC", [opt.model + ".pth"])
+
+        src_img = src.get_raw()
+
+        if "ddcolor_paper_tiny.pth" in model_file_paths:
+            model_size = "tiny"
+        else:
+            model_size = "large"
+        pred = Predictor()
+        pred.setup(model_file_paths)
+        img_out = pred.predict(image=src_img, model_size=model_size)
+
+        out_img = deepcopy(src)
+
+        return img_out
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_image(src, ref, opt):
+
+        out_img = deepcopy(src)
+
+        out_raw = DDC.__color_transfer(src, ref, opt)
+
+        out_img.set_raw(out_raw)
+        outp = out_img
+        return outp

@@ -1,7 +1,7 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2025 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -13,11 +13,12 @@ import csv
 import cv2
 import open3d as o3d
 import time
-import os
 
-from ColorTransferLib.Utils.Helper import check_compatibility, init_model_files
+from ColorTransferLib.Utils.Helper import init_model_files
 from pyhull.convex_hull import ConvexHull
 from .FaissKNeighbors import FaissKNeighbors
+from ColorTransferLib.ImageProcessing.Video import Video
+from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -47,11 +48,6 @@ from .FaissKNeighbors import FaissKNeighbors
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class BCC:
-    compatibility = {
-        "src": ["Image", "Mesh", "PointCloud"],
-        "ref": ["Image", "Mesh", "PointCloud"]
-    }
-
     color_samples = {
         "Red": np.array([1.0,0.0,0.0]),
         "Yellow":np.array([1.0,1.0,0.0]),
@@ -65,52 +61,58 @@ class BCC:
         "Pink": np.array([0.85,0.5,0.75]),
         "Purple": np.array([0.4,0.01,0.77]),
     }
-
     # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def get_info():
-        info = {
-            "identifier": "BCC",
-            "title": "A Framework for Transfer Colors Based on the Basic Color Categories",
-            "year": 2003,
-            "abstract": "Usually, paintings are more appealing than photographic images. This is because paintings have "
-                        "styles. This style can be distinguished by looking at elements such as motif, color, shape "
-                        "deformation and brush texture. We focus on the effect of color element and devise a method "
-                        "for transforming the color of an input photograph according to a reference painting. To do "
-                        "this, we consider basic color category concepts in the color transformation process. By doing "
-                        "so, we achieve large but natural color transformations of an image.",
-            "types": ["Image", "Mesh", "PointCloud"]
-        }
-
-        return info
-    
-
-
-    # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Checks source and reference compatibility
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
-        start_time = time.time()
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None,
+            "process_time": 0
+        }
 
-        model_file_paths = init_model_files("BCC", ["colormapping.csv"])
-
-
-        # check if method is compatible with provided source and reference objects
-        output = check_compatibility(src, ref, BCC.compatibility)
-
-        if output["status_code"] == -1:
-            output["response"] = "Incompatible type."
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+            output["response"] = "Incompatible reference type."
+            output["status_code"] = -1
             return output
 
+        start_time = time.time()
+
+        if src.get_type() == "Image":
+            out_obj = BCC.__apply_image(src, ref, opt)
+        elif src.get_type() == "LightField":
+            out_obj = BCC.__apply_lightfield(src, ref, opt)
+        elif src.get_type() == "Video":
+            out_obj = BCC.__apply_video(src, ref, opt)
+        elif src.get_type() == "VolumetricVideo":
+            out_obj = BCC.__apply_volumetricvideo(src, ref, opt)
+        elif src.get_type() == "GaussianSplatting":
+            out_obj = BCC.__apply_gaussiansplatting(src, ref, opt)
+        elif src.get_type() == "PointCloud":
+            out_obj = BCC.__apply_pointcloud(src, ref, opt)
+        elif src.get_type() == "Mesh":
+            out_obj = BCC.__apply_mesh(src, ref, opt)
+        else:
+            output["response"] = "Incompatible type."
+            output["status_code"] = -1
+
+        output["process_time"] = time.time() - start_time
+        output["object"] = out_obj
+
+        return output
+
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __color_transfer(src_color, ref_color, opt):
+        model_file_paths = init_model_files("BCC", ["colormapping.csv"])
+
         # Preprocessing
-        src_color = src.get_colors()
         src_color = cv2.cvtColor(src_color, cv2.COLOR_RGB2Lab)
-        ref_color = ref.get_colors()
         ref_color = cv2.cvtColor(ref_color, cv2.COLOR_RGB2Lab)
-        out_img = deepcopy(src)
 
         # Read Color Dataset
         color_terms = np.array(["Red", "Yellow", "Green", "Blue", "Black", "White", "Grey", "Orange", "Brown", "Pink", "Purple"])
@@ -232,16 +234,7 @@ class BCC:
         output_colors = cv2.cvtColor(sorted_colors.astype("float32"), cv2.COLOR_Lab2RGB)
         output_colors = np.clip(output_colors, 0, 1)
 
-        out_img.set_colors(output_colors)
-
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": out_img,
-            "process_time": time.time() - start_time
-        }
-
-        return output
+        return output_colors
 
     # ------------------------------------------------------------------------------------------------------------------
     # checks if the given data does not lie on a plane -> this would lead to a convex hull with volume = 0
@@ -354,3 +347,125 @@ class BCC:
         out = shift + mass_center_ref
         output_colors = np.concatenate((output_colors, out))
         return output_colors
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_image(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = BCC.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_video(src, ref, opt): 
+        # check if type is video
+        out_colors_arr = []
+        src_colors = src.get_colors()
+
+        for i, src_color in enumerate(src_colors):
+            # Preprocessing
+            ref_color = ref.get_colors()
+            out_img = deepcopy(src.get_images()[0])
+
+            out_colors = BCC.__color_transfer(src_color, ref_color, opt)
+
+            out_img.set_colors(out_colors)
+            out_colors_arr.append(out_img)
+
+        outp = Video(imgs=out_colors_arr)
+
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_volumetricvideo(src, ref, opt): 
+        out_colors_arr = []
+        src_colors = src.get_colors()
+
+        for i, src_color in enumerate(src_colors):
+            # Preprocessing
+            ref_color = ref.get_colors()
+            out_img = deepcopy(src.get_meshes()[i])
+
+            out_colors = BCC.__color_transfer(src_color, ref_color, opt)
+
+            out_img.set_colors(out_colors)
+            out_colors_arr.append(out_img)
+            outp = VolumetricVideo(meshes=out_colors_arr, file_name=src.get_file_name())
+
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_lightfield(src, ref, opt):
+        src_lightfield_array = src.get_image_array()
+        out = deepcopy(src)
+        out_lightfield_array = out.get_image_array()
+
+        for row in range(src.get_grid_size()[0]):
+            for col in range(src.get_grid_size()[1]):
+                src_color = src_lightfield_array[row][col].get_colors()
+                ref_color = ref.get_colors()
+
+                out_colors = BCC.__color_transfer(src_color, ref_color, opt)
+
+                out_lightfield_array[row][col].set_colors(out_colors)
+
+        return out
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_gaussiansplatting(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = BCC.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_pointcloud(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = BCC.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_mesh(src, ref, opt):
+        src_color = src.get_colors()
+        ref_color = ref.get_colors()
+        out_img = deepcopy(src)
+
+        out_colors = BCC.__color_transfer(src_color, ref_color, opt)
+
+        out_img.set_colors(out_colors)
+        outp = out_img
+        return outp
+

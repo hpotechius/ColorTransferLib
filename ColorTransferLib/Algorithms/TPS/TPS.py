@@ -1,7 +1,7 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2025 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -26,6 +26,8 @@ elif platform == "win32":
     pass
 
 from oct2py import octave
+from ColorTransferLib.ImageProcessing.Video import Video
+from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -56,103 +58,55 @@ from oct2py import octave
 #   ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class TPS:
-    identifier = "TpsColorTransfer"
-    title = "L2 Divergence for robust colour transfer"
-    year = 2019
-    compatibility = {
-        "src": ["Image", "Mesh"],
-        "ref": ["Image", "Mesh"]
-    }
-
     # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # HOST METHODS
-    # ------------------------------------------------------------------------------------------------------------------
+    # Checks source and reference compatibility
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def get_info():
-        info = {
-            "identifier": "TpsColorTransfer",
-            "title": "L2 Divergence for robust colour transfer",
-            "year": 2019,
-            "abstract": "Optimal Transport (OT) is a very popular framework for performing colour transfer in images "
-                        "and videos. We have proposed an alternative framework where the cost function used for "
-                        "inferring a parametric transfer function is defined as the robust L2 divergence between two "
-                        "probability density functions Grogan and Dahyot (2015). In this paper, we show that our "
-                        "approach combines many advantages of state of the art techniques and outperforms many recent "
-                        "algorithms as measured quantitatively with standard quality metrics, and qualitatively using "
-                        "perceptual studies Grogan and Dahyot (2017). Mathematically, our formulation is presented in "
-                        "contrast to the OT cost function that shares similarities with our cost function. Our "
-                        "formulation, however, is more flexible as it allows colour correspondences that may be "
-                        "available to be taken into account and performs well despite potential occurrences of "
-                        "correspondence outlier pairs. Our algorithm is shown to be fast, robust and it easily allows "
-                        "for user interaction providing freedom for artists to fine tune the recoloured images and "
-                        "videos Grogan et al. (2017).",
-            "types": ["Image"]
-        }
+    def apply(src, ref, opt):
 
-        return info
-    # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def apply_old(src, ref, opt):
-        start_time = time.time()
-        # NOTE: sudo apt-get install liboctave-dev
-        # NOTE: pkg install -forge image
-        # NOTE: pkg install -forge statistics
+        print()
 
-        # check if method is compatible with provided source and reference objects
-        output = check_compatibility(src, ref, TPS.compatibility)
-
-        if output["status_code"] == -1:
-            output["response"] = "Incompatible type."
-            return output
-
-        # Preprocessing
-        # NOTE RGB space needs multiplication with 255
-        src_img = src.get_raw() * 255
-        ref_img = ref.get_raw() * 255
-        out_img = deepcopy(src)
-
-        # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
-
-        # octave.addpath(octave.genpath('.'))
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        # print("-----------------")
-        # print(os.path.join(current_dir, 'L2RegistrationForCT'))
-        # print("-----------------")
-        octave.addpath(octave.genpath(os.path.join(current_dir, 'L2RegistrationForCT')))
-        # octave.addpath(octave.genpath('module/Algorithms/TpsColorTransfer/L2RegistrationForCT'))
-        octave.eval('pkg load image')
-        octave.eval('pkg load statistics')
-
-        outp = octave.ctfunction(ref_img, src_img, opt.cluster_method, opt.cluster_num, opt.colorspace)
-        outp = outp.astype(np.float32)
-        out_img.set_raw(outp)
         output = {
             "status_code": 0,
             "response": "",
-            "object": out_img,
-            "process_time": time.time() - start_time
+            "object": None,
+            "process_time": 0
         }
+
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+            output["response"] = "Incompatible reference type."
+            output["status_code"] = -1
+            return output
+
+        start_time = time.time()
+
+        if src.get_type() == "Image":
+            out_obj = TPS.__apply_image(src, ref, opt)
+        elif src.get_type() == "LightField":
+            out_obj = TPS.__apply_lightfield(src, ref, opt)
+        elif src.get_type() == "Video":
+            out_obj = TPS.__apply_video(src, ref, opt)
+        elif src.get_type() == "VolumetricVideo":
+            out_obj = TPS.__apply_volumetricvideo(src, ref, opt)
+        elif src.get_type() == "GaussianSplatting":
+            out_obj = TPS.__apply_gaussiansplatting(src, ref, opt)
+        elif src.get_type() == "PointCloud":
+            out_obj = TPS.__apply_pointcloud(src, ref, opt)
+        elif src.get_type() == "Mesh":
+            out_obj = TPS.__apply_mesh(src, ref, opt)
+        else:
+            output["response"] = "Incompatible type."
+            output["status_code"] = -1
+
+        output["process_time"] = time.time() - start_time
+        output["object"] = out_obj
 
         return output
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def apply(src, ref, opt):
-        # pass
-        start_time = time.time()
+    def __color_transfer(src_img, ref_img, opt):
         # NOTE: sudo apt-get install liboctave-dev
         # NOTE: pkg install -forge image
         # NOTE: pkg install -forge statistics
@@ -166,9 +120,8 @@ class TPS:
 
         # Preprocessing
         # NOTE RGB space needs multiplication with 255
-        src_img = src.get_raw() * 255
-        ref_img = ref.get_raw() * 255
-        out_img = deepcopy(src)
+        src_img = src_img * 255
+        ref_img = ref_img * 255
 
         # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
         #octave.addpath(octave.genpath('.'))
@@ -184,12 +137,99 @@ class TPS:
 
         outp = octave.ctfunction(ref_img, src_img, opt.cluster_method, opt.cluster_num, opt.colorspace)
         outp = outp.astype(np.float32)
-        out_img.set_raw(outp)
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": out_img,
-            "process_time": time.time() - start_time
-        }
 
-        return output
+        return outp
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_image(src, ref, opt):
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+        out_img = deepcopy(src)
+
+        out_colors = TPS.__color_transfer(src_img, ref_img, opt)
+        out_img.set_raw(out_colors)
+
+        outp = out_img
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_video(src, ref, opt): 
+        # check if type is video
+        out_raw_arr = []
+        src_raws = src.get_raw()
+
+        for i, src_raw in enumerate(src_raws):
+            # Preprocessing
+            ref_raw = ref.get_raw()
+            out_img = deepcopy(src.get_images()[0])
+
+            out_colors = TPS.__color_transfer(src_raw, ref_raw, opt)
+
+            out_img.set_raw(out_colors)
+            out_raw_arr.append(out_img)
+
+        outp = Video(imgs=out_raw_arr)
+
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_volumetricvideo(src, ref, opt): 
+        out_raw_arr = []
+        src_raws = src.get_raw()
+
+        for i, src_raw in enumerate(src_raws):
+            # Preprocessing
+            ref_raw = ref.get_raw()
+            out_img = deepcopy(src.get_meshes()[i])
+
+            out_colors = TPS.__color_transfer(src_raw, ref_raw, opt)
+
+            out_img.set_raw(out_colors)
+            out_raw_arr.append(out_img)
+            outp = VolumetricVideo(meshes=out_raw_arr, file_name=src.get_file_name())
+
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_lightfield(src, ref, opt):
+        src_lightfield_array = src.get_image_array()
+        out = deepcopy(src)
+        out_lightfield_array = out.get_image_array()
+
+        for row in range(src.get_grid_size()[0]):
+            for col in range(src.get_grid_size()[1]):
+                src_raw = src_lightfield_array[row][col].get_raw()
+                ref_raw = ref.get_raw()
+
+                out_colors = TPS.__color_transfer(src_raw, ref_raw, opt)
+
+                out_lightfield_array[row][col].set_raw(out_colors)
+
+        return out
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_mesh(src, ref, opt):
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+        out_img = deepcopy(src)
+
+        out_colors = TPS.__color_transfer(src_img, ref_img, opt)
+
+        out_img.set_raw(out_colors)
+        outp = out_img
+        return outp
+

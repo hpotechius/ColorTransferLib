@@ -1090,5 +1090,5 @@ def apply(src, ref, opt):
     output = np.swapaxes(output, 1, 2)
     output = output.cpu().detach().numpy()
     output = output * 255
-    output = output.astype(np.uint8)
+    # output = output.astype(np.uint8)
     return output

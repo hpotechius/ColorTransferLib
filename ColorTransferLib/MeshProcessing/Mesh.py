@@ -230,8 +230,10 @@ class Mesh:
             tex_height = self.__texture_size[0]
             tex_width = self.__texture_size[1]
             tex_channel = self.__texture_size[2]
-            return self.__texture.reshape(tex_width * tex_height, 1, tex_channel)
-            # return self.__texture.astype("float32").reshape(tex_width * tex_height, 1, tex_channel)  / 255.0
+            # print(tex_height, tex_width, tex_channel)
+
+            reshaped_texture = self.__texture.reshape(tex_width * tex_height, 1, tex_channel)
+            return reshaped_texture
 
     # ------------------------------------------------------------------------------------------------------------------
     # TEMPORARY because some color transfer algorithms need this
@@ -240,7 +242,10 @@ class Mesh:
         if self.__type == "PointCloud":
             return np.expand_dims(self.__vertex_colors, 1)
         elif self.__type == "Mesh":
-            return np.resize(self.__texture,(256,256,3))
+            tex_channel = self.__texture_size[2]
+            return np.resize(self.__texture,(512,512,tex_channel))
+            # Note: Resizing leads to a wrongs ordered pixel values
+            # return np.resize(self.__texture,(256,256,3))
     # ------------------------------------------------------------------------------------------------------------------
     # TEMPORARY because some color transfer algorithms need this
     # ------------------------------------------------------------------------------------------------------------------

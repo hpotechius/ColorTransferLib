@@ -1,7 +1,7 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2025 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -15,8 +15,9 @@ import time
 from copy import deepcopy
 
 from ColorTransferLib.Algorithms.DPT.photo_style import stylize
-from ColorTransferLib.Utils.Helper import check_compatibility
 from ColorTransferLib.Utils.Helper import init_model_files
+from ColorTransferLib.ImageProcessing.Video import Video
+from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -35,69 +36,61 @@ from ColorTransferLib.Utils.Helper import init_model_files
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class DPT:
-    compatibility = {
-        "src": ["Image", "Mesh"],
-        "ref": ["Image", "Mesh"]
-    }
     # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # CONSTRUCTOR
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-    # HOST METHODS
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-
-    # ------------------------------------------------------------------------------------------------------------------
-    #
-    # ------------------------------------------------------------------------------------------------------------------
-    @staticmethod
-    def get_info():
-        info = {
-            "identifier": "DPT",
-            "title": "Deep Photo Style Transfer",
-            "year": 2017,
-            "abstract": "This paper introduces a deep-learning approach to photographic style transfer that handles a "
-                        "large variety of image content while faithfully transferring the reference style. Our "
-                        "approach builds upon the recent work on painterly transfer that separates style from the "
-                        "content of an image by considering different layers of a neural network. However, as is, this "
-                        "approach is not suitable for photorealistic style transfer. Even when both the input and "
-                        "reference images are photographs, the output still exhibits distortions reminiscent of a "
-                        "painting. Our contribution is to constrain the transformation from the input to the output to "
-                        "be locally affine in colorspace, and to express this constraint as a custom fully "
-                        "differentiable energy term. We show that this approach successfully suppresses distortion and "
-                        "yields satisfying photorealistic style transfers in a broad variety of scenarios, including "
-                        "transfer of the time of day, weather, season, and artistic edits.",
-            "types": ["Image"]
-        }
-
-        return info
-    # ------------------------------------------------------------------------------------------------------------------
-    #
+    # Checks source and reference compatibility
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
+
+        print()
+
+        output = {
+            "status_code": 0,
+            "response": "",
+            "object": None,
+            "process_time": 0
+        }
+
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+            output["response"] = "Incompatible reference type."
+            output["status_code"] = -1
+            return output
+
         start_time = time.time()
 
+        if src.get_type() == "Image":
+            out_obj = DPT.__apply_image(src, ref, opt)
+        elif src.get_type() == "LightField":
+            out_obj = DPT.__apply_lightfield(src, ref, opt)
+        elif src.get_type() == "Video":
+            out_obj = DPT.__apply_video(src, ref, opt)
+        elif src.get_type() == "VolumetricVideo":
+            out_obj = DPT.__apply_volumetricvideo(src, ref, opt)
+        elif src.get_type() == "GaussianSplatting":
+            out_obj = DPT.__apply_gaussiansplatting(src, ref, opt)
+        elif src.get_type() == "PointCloud":
+            out_obj = DPT.__apply_pointcloud(src, ref, opt)
+        elif src.get_type() == "Mesh":
+            out_obj = DPT.__apply_mesh(src, ref, opt)
+        else:
+            output["response"] = "Incompatible type."
+            output["status_code"] = -1
+
+        output["process_time"] = time.time() - start_time
+        output["object"] = out_obj
+
+        return output
+    # ------------------------------------------------------------------------------------------------------------------
+    #
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __color_transfer(src_img, ref_img, opt):
         model_file_paths = init_model_files("DPT", ["vgg19.npy"])
         opt.set_option("vgg19_path", model_file_paths["vgg19.npy"])
 
-        # check if method is compatible with provided source and reference objects
-        output = check_compatibility(src, ref, DPT.compatibility)
-
-        if output["status_code"] == -1:
-            output["response"] = "Incompatible type."
-            return output
-
         # Preprocessing
-        src_img = src.get_raw() * 255.0
-        ref_img = ref.get_raw() * 255.0
-        out_img = deepcopy(src)
+        src_img = src_img * 255.0
+        ref_img = ref_img * 255.0
 
         if opt.style_option == 0:
             best_image_bgr = stylize(opt, False, src_img, ref_img)
@@ -114,12 +107,100 @@ class DPT:
             best_image_bgr = stylize(opt, True, src_img, ref_img)
             out = np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0))
 
-        out_img.set_raw(out.astype(np.float32))
-        output = {
-            "status_code": 0,
-            "response": "",
-            "object": out_img,
-            "process_time": time.time() - start_time
-        }
 
-        return output
+
+        return out.astype(np.float32)
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_image(src, ref, opt):
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+        out_img = deepcopy(src)
+
+        out_colors = DPT.__color_transfer(src_img, ref_img, opt)
+        out_img.set_raw(out_colors)
+
+        outp = out_img
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_video(src, ref, opt): 
+        # check if type is video
+        out_raw_arr = []
+        src_raws = src.get_raw()
+
+        for i, src_raw in enumerate(src_raws):
+            # Preprocessing
+            ref_raw = ref.get_raw()
+            out_img = deepcopy(src.get_images()[0])
+
+            out_colors = DPT.__color_transfer(src_raw, ref_raw, opt)
+
+            out_img.set_raw(out_colors)
+            out_raw_arr.append(out_img)
+
+        outp = Video(imgs=out_raw_arr)
+
+        return outp
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_volumetricvideo(src, ref, opt): 
+        out_raw_arr = []
+        src_raws = src.get_raw()
+
+        for i, src_raw in enumerate(src_raws):
+            # Preprocessing
+            ref_raw = ref.get_raw()
+            out_img = deepcopy(src.get_meshes()[i])
+
+            out_colors = DPT.__color_transfer(src_raw, ref_raw, opt)
+
+            out_img.set_raw(out_colors)
+            out_raw_arr.append(out_img)
+            outp = VolumetricVideo(meshes=out_raw_arr, file_name=src.get_file_name())
+
+        return outp
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_lightfield(src, ref, opt):
+        src_lightfield_array = src.get_image_array()
+        out = deepcopy(src)
+        out_lightfield_array = out.get_image_array()
+
+        for row in range(src.get_grid_size()[0]):
+            for col in range(src.get_grid_size()[1]):
+                src_raw = src_lightfield_array[row][col].get_raw()
+                ref_raw = ref.get_raw()
+
+                out_colors = DPT.__color_transfer(src_raw, ref_raw, opt)
+
+                out_lightfield_array[row][col].set_raw(out_colors)
+
+        return out
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __apply_mesh(src, ref, opt):
+        src_img = src.get_raw()
+        ref_img = ref.get_raw()
+        out_img = deepcopy(src)
+
+        out_colors = DPT.__color_transfer(src_img, ref_img, opt)
+
+        out_img.set_raw(out_colors)
+        outp = out_img
+        return outp
+
