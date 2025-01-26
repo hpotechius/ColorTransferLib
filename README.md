@@ -1,4 +1,4 @@
-![279368591-928791b0-b734-4835-92c9-cdcb12fcddc7](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/80644bb0-ef7e-4916-a9d5-c8b63d86cccd)
+![colortransfer_example](https://github.com/user-attachments/assets/582bac9e-d38d-4318-8b05-874b030e602c)
 # ColorTransferLib
 ![python3.10.12](https://img.shields.io/badge/build-3.10.12-blue?logo=python&label=Python) ![](https://img.shields.io/badge/build-22.04.3%20LTS-orange?logo=ubuntu&label=Ubuntu
 ) ![](https://img.shields.io/badge/build-MIT-purple?label=License) ![](https://img.shields.io/badge/build-6.4.0-brown?logo=octave&label=Octave) ![](https://img.shields.io/badge/build-GeForce%20RTX%203060-white?logo=nvidia&label=GPU) ![](https://img.shields.io/badge/build-intel%20Core%20i7--13700KF-white?logo=intel&label=CPU)
