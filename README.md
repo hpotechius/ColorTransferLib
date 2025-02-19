@@ -87,7 +87,7 @@ else:
     print("Error: " + out["response"])
 ```
 
-## Available Color Transfer Methods:
+## Available Methods:
 The following color transfer, style transfer and colorization methods are integrated in the library. Some of them are reimplemented based on the algorithm's description in the the published papers and others are adopted from existing repositories and adpated to fit the API. The original implementation of the latter methods can be found next to the publication's name. Highlighted icon within the Support Column indicates the supported data types (From left to right: (1) Gaussian Splatting, (2) Light Field, (3) Volumetric Video, (4) Video, (5) Point Cloud, (6) Mesh, (7) Image)
 ### Color Transfer
 | Year | ID  | Support |  Publication |
