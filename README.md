@@ -99,20 +99,20 @@ The following color and style transfer methods are integrated in the library. So
 | 2021 | $`EB3`$ | <img src="https://github.com/user-attachments/assets/2c875956-1eaa-4ad4-bdfe-b2a0dd895b64" alt="Logo" style="width: 140px; height: 20px;"> | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
 
 ### Style Transfer
-| Year | ID  | Publication |
-| ---  | --- | --- |
-| 2015 | $`NST`$ | [A Neural Algorithm of Artistic Style](https://doi.org/10.48550/arXiv.1508.06576) - [Original Implementation](https://github.com/cysmith/neural-style-tf) |
-| 2017 | $`DPT`$ | [Deep Photo Style Transfer](https://doi.org/10.48550/arXiv.1703.07511) - [Original Implementation](https://github.com/LouieYang/deep-photo-styletransfer-tf) |
-| 2020 | $`PSN`$ | [PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color](https://doi.org/10.1109/WACV45572.2020.9093513) - [Original Implementation](https://github.com/hoshino042/psnet) |
-| 2021 | $`CAM`$ | [CAMS: Color-Aware Multi-Style Transfer](https://doi.org/10.48550/arXiv.2106.13920) - [Original Implementation](https://github.com/mahmoudnafifi/color-aware-style-transfer) |
-| 2022 | $`ST2`$ | [Stytr2: Image style transfer with transformers](https://doi.org/10.48550/arXiv.2105.14576) - [Original Implementation](https://github.com/diyiiyiii/StyTR-2) |
+| Year | ID | Support | Publication |
+| ---  | --- | --- | --- |
+| 2015 | $`NST`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [A Neural Algorithm of Artistic Style](https://doi.org/10.48550/arXiv.1508.06576) - [Original Implementation](https://github.com/cysmith/neural-style-tf) |
+| 2017 | $`DPT`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Deep Photo Style Transfer](https://doi.org/10.48550/arXiv.1703.07511) - [Original Implementation](https://github.com/LouieYang/deep-photo-styletransfer-tf) |
+| 2020 | $`PSN`$ | <img src="https://github.com/user-attachments/assets/2c875956-1eaa-4ad4-bdfe-b2a0dd895b64" alt="Logo" style="width: 140px; height: 20px;"> | [PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color](https://doi.org/10.1109/WACV45572.2020.9093513) - [Original Implementation](https://github.com/hoshino042/psnet) |
+| 2021 | $`CAM`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [CAMS: Color-Aware Multi-Style Transfer](https://doi.org/10.48550/arXiv.2106.13920) - [Original Implementation](https://github.com/mahmoudnafifi/color-aware-style-transfer) |
+| 2022 | $`ST2`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Stytr2: Image style transfer with transformers](https://doi.org/10.48550/arXiv.2105.14576) - [Original Implementation](https://github.com/diyiiyiii/StyTR-2) |
 
 ### Colorization
-| Year | ID  | Publication |
-| ---  | --- | --- |
-| 2020 | $`IIC`$ | [Instance-aware image colorization](https://doi.org/10.48550/arXiv.2005.10825) - [Original Implementation](https://github.com/ericsujw/InstColorization) |
-| 2022 | $`CFM`$ | [Colorformer: Image colorization via color memory assisted hybrid-attention transformer](https://doi.org/10.1007/978-3-031-19787-1_2) - [Original Implementation](https://github.com/jixiaozhong/ColorFormer) |
-| 2023 | $`DDC`$ | [DDColor: Towards Photo-Realistic Image Colorization via Dual Decoders](https://doi.org/10.48550/arXiv.2212.11613) - [Original Implementation](https://github.com/piddnad/DDColor) |
+| Year | ID | Support | Publication |
+| ---  | --- | --- | --- |
+| 2020 | $`IIC`$ | ... | [Instance-aware image colorization](https://doi.org/10.48550/arXiv.2005.10825) - [Original Implementation](https://github.com/ericsujw/InstColorization) |
+| 2022 | $`CFM`$ | ... | [Colorformer: Image colorization via color memory assisted hybrid-attention transformer](https://doi.org/10.1007/978-3-031-19787-1_2) - [Original Implementation](https://github.com/jixiaozhong/ColorFormer) |
+| 2023 | $`DDC`$ | ... | [DDColor: Towards Photo-Realistic Image Colorization via Dual Decoders](https://doi.org/10.48550/arXiv.2212.11613) - [Original Implementation](https://github.com/piddnad/DDColor) |
 
 ## Available Objective Evaluation Metrics
 Three classes of evaluation metrics are considered here. Metrics that evaluate the color consistency with the reference image (indicated with $`^r`$), metrics that evaluate the structural similarity with the source image (indicated with $`^s`$) and metrics that evaluates the overall quality of the output (indicated with $`^o`$).
