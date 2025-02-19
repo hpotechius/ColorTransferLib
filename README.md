@@ -94,9 +94,9 @@ The following color and style transfer methods are integrated in the library. So
 | 2009 | $`GPC`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Color Transfer between Images](https://doi.org/10.1109/38.946629) | [Gradient-Preserving Color Transfer](http://dx.doi.org/10.1111/j.1467-8659.2009.01566.x) |
 | 2010 | $`FUZ`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [An efficient fuzzy clustering-based color transfer method](https://doi.org/10.1109/FSKD.2010.5569560) |
 | 2019 | $`TPS`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [L2 Divergence for robust colour transfer](https://doi.org/10.1016/j.cviu.2019.02.002) - [Original Implementation](https://github.com/groganma/gmm-colour-transfer) |
-| 2020 | $`HIS`$ | ... | [Deep Color Transfer using Histogram Analogy](https://doi.org/10.1007/s00371-020-01921-6) - [Original Implementation](https://github.com/codeslake/Color_Transfer_Histogram_Analogy) |
+| 2020 | $`HIS`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Deep Color Transfer using Histogram Analogy](https://doi.org/10.1007/s00371-020-01921-6) - [Original Implementation](https://github.com/codeslake/Color_Transfer_Histogram_Analogy) |
 | 2021 | $`RHG`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms](https://doi.org/10.48550/arXiv.2011.11731) |
-| 2021 | $`EB3`$ | ... | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
+| 2021 | $`EB3`$ | <img src="https://github.com/user-attachments/assets/2c875956-1eaa-4ad4-bdfe-b2a0dd895b64" alt="Logo" style="width: 140px; height: 20px;"> | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
 
 ### Style Transfer
 | Year | ID  | Publication |
