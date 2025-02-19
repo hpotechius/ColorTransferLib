@@ -110,9 +110,9 @@ The following color and style transfer methods are integrated in the library. So
 ### Colorization
 | Year | ID | Support | Publication |
 | ---  | --- | --- | --- |
-| 2020 | $`IIC`$ | ... | [Instance-aware image colorization](https://doi.org/10.48550/arXiv.2005.10825) - [Original Implementation](https://github.com/ericsujw/InstColorization) |
-| 2022 | $`CFM`$ | ... | [Colorformer: Image colorization via color memory assisted hybrid-attention transformer](https://doi.org/10.1007/978-3-031-19787-1_2) - [Original Implementation](https://github.com/jixiaozhong/ColorFormer) |
-| 2023 | $`DDC`$ | ... | [DDColor: Towards Photo-Realistic Image Colorization via Dual Decoders](https://doi.org/10.48550/arXiv.2212.11613) - [Original Implementation](https://github.com/piddnad/DDColor) |
+| 2020 | $`IIC`$ | <img src="https://github.com/user-attachments/assets/b2dd7598-3fe4-4d9a-abb5-8ee67bf64956" alt="Logo" style="width: 140px; height: 20px;"> | [Instance-aware image colorization](https://doi.org/10.48550/arXiv.2005.10825) - [Original Implementation](https://github.com/ericsujw/InstColorization) |
+| 2022 | $`CFM`$ | <img src="https://github.com/user-attachments/assets/b2dd7598-3fe4-4d9a-abb5-8ee67bf64956" alt="Logo" style="width: 140px; height: 20px;"> | [Colorformer: Image colorization via color memory assisted hybrid-attention transformer](https://doi.org/10.1007/978-3-031-19787-1_2) - [Original Implementation](https://github.com/jixiaozhong/ColorFormer) |
+| 2023 | $`DDC`$ | <img src="https://github.com/user-attachments/assets/b2dd7598-3fe4-4d9a-abb5-8ee67bf64956" alt="Logo" style="width: 140px; height: 20px;"> | [DDColor: Towards Photo-Realistic Image Colorization via Dual Decoders](https://doi.org/10.48550/arXiv.2212.11613) - [Original Implementation](https://github.com/piddnad/DDColor) |
 
 ## Available Objective Evaluation Metrics
 Three classes of evaluation metrics are considered here. Metrics that evaluate the color consistency with the reference image (indicated with $`^r`$), metrics that evaluate the structural similarity with the source image (indicated with $`^s`$) and metrics that evaluates the overall quality of the output (indicated with $`^o`$).
