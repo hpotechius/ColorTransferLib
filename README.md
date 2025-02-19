@@ -85,19 +85,19 @@ else:
 The following color and style transfer methods are integrated in the library. Some of them are reimplemented based on the algorithm's description in the the published papers and others are adopted from existing repositories and adpated to fit the API. The original implementation of the latter methods can be found next to the publication's name. The superscripts (2D, 3D) indicated wether the algorithm is applicable to 2D structures like images and mesh textures or to 3D structures like point clouds. The subscript (CT, ST) describs wether the algorithm is a color or a style transfer algorithm.
 
 ### Color Transfer
-| Year | ID  | Publication |
-| ---  | --- | --- |
-| 2001 | $`GLO`$ | [Color Transfer between Images](https://doi.org/10.1109/38.946629) |
-| 2003 | $`BCC`$ | [A Framework for Transfer Colors Based on the Basic Color Categories](https://doi.org/10.1109/CGI.2003.1214463) |
-| 2005 | $`PDF`$ | [N-dimensional probability density function transfer and its application to color transfer](https://doi.org/10.1109/ICCV.2005.166) |
-| 2006 | $`CCS`$ | [Color transfer in correlated color space](https://doi.org/10.1145/1128923.1128974) |
-| 2007 | $`MKL`$ | [The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer](https://doi.org/10.1049/cp:20070055) |
-| 2009 | $`GPC`$ | [Gradient-Preserving Color Transfer](http://dx.doi.org/10.1111/j.1467-8659.2009.01566.x) |
-| 2010 | $`FUZ`$ | [An efficient fuzzy clustering-based color transfer method](https://doi.org/10.1109/FSKD.2010.5569560) |
-| 2019 | $`TPS`$ | [L2 Divergence for robust colour transfer](https://doi.org/10.1016/j.cviu.2019.02.002) - [Original Implementation](https://github.com/groganma/gmm-colour-transfer) |
-| 2020 | $`HIS`$ | [Deep Color Transfer using Histogram Analogy](https://doi.org/10.1007/s00371-020-01921-6) - [Original Implementation](https://github.com/codeslake/Color_Transfer_Histogram_Analogy) |
-| 2021 | $`RHG`$ | [HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms](https://doi.org/10.48550/arXiv.2011.11731) |
-| 2021 | $`EB3`$ | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
+| Year | ID  | Support |  Publication |
+| ---  | --- | --- | --- |
+| 2001 | $`GLO`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" height="20"> | [Color Transfer between Images](https://doi.org/10.1109/38.946629) |
+| 2003 | $`BCC`$ | ... | [A Framework for Transfer Colors Based on the Basic Color Categories](https://doi.org/10.1109/CGI.2003.1214463) |
+| 2005 | $`PDF`$ | ... | [N-dimensional probability density function transfer and its application to color transfer](https://doi.org/10.1109/ICCV.2005.166) |
+| 2006 | $`CCS`$ | ... | [Color transfer in correlated color space](https://doi.org/10.1145/1128923.1128974) |
+| 2007 | $`MKL`$ | ... | [The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer](https://doi.org/10.1049/cp:20070055) |
+| 2009 | $`GPC`$ | ... | [Gradient-Preserving Color Transfer](http://dx.doi.org/10.1111/j.1467-8659.2009.01566.x) |
+| 2010 | $`FUZ`$ | ... | [An efficient fuzzy clustering-based color transfer method](https://doi.org/10.1109/FSKD.2010.5569560) |
+| 2019 | $`TPS`$ | ... | [L2 Divergence for robust colour transfer](https://doi.org/10.1016/j.cviu.2019.02.002) - [Original Implementation](https://github.com/groganma/gmm-colour-transfer) |
+| 2020 | $`HIS`$ | ... | [Deep Color Transfer using Histogram Analogy](https://doi.org/10.1007/s00371-020-01921-6) - [Original Implementation](https://github.com/codeslake/Color_Transfer_Histogram_Analogy) |
+| 2021 | $`RHG`$ | ... | [HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms](https://doi.org/10.48550/arXiv.2011.11731) |
+| 2021 | $`EB3`$ | ... | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
 
 ### Style Transfer
 | Year | ID  | Publication |
