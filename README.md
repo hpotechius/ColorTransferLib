@@ -22,7 +22,7 @@ Save each new color transfer class in the ColorTransferLib Repository under the 
 
 The output should resemble a dictionary format, as outlined in Listing 3. A status code of 0 signifies a valid algorithm output, while -1 indicates invalidity. The process time denotes the algorithm's execution duration, useful for subsequent evaluations. The 'object' key in the dictionary holds the result, which should match the class type of the Source input.
 
-![280261362-2b9e196c-597d-4d57-a079-999564328d1e](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/066f02ca-001b-44cf-be2b-9f864b2bc545)
+![CT-API_new](https://github.com/user-attachments/assets/e52ed0ba-3106-435d-b7f1-fbac67145251)
 
 ![listings](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/42e78a4f-89dc-4afe-876c-a1950044d514)
 
