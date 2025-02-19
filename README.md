@@ -3,7 +3,13 @@
 ![python3.10.12](https://img.shields.io/badge/build-3.10.16-blue?logo=python&label=Python) ![](https://img.shields.io/badge/build-24.04.1%20LTS-orange?logo=ubuntu&label=Ubuntu
 ) ![](https://img.shields.io/badge/build-MIT-purple?label=License) ![](https://img.shields.io/badge/build-6.4.0-brown?logo=octave&label=Octave) ![](https://img.shields.io/badge/build-GeForce%20RTX%204060%20Ti-white?logo=nvidia&label=GPU) ![](https://img.shields.io/badge/build-intel%20Core%20i7--14700KF-white?logo=intel&label=CPU)
 
-The ColorTransferLib is a library focused on color transfer, featuring a range of published algorithms. Some algorithms have been re-implemented, while others are integrated from public repositories. The primary objective of this project is to compile all existing color and style transfer methods into one library with a standardized API. This aids the research community in both development and comparison of algorithms. Currently, the library supports 15 color and style transfer methods for images (PNG-Format), 3D point clouds (PLY-Format), and textured triangle meshes (OBJ-Format with corresponding MTL and PNG). Additionally, it includes 20 metrics for evaluating color transfer results. A detailed list of all algorithms is available below.
+ColorTransferLib is a library dedicated to color transfer, style transfer, and colorization, featuring a diverse range of published algorithms. Some methods have been re-implemented, while others are integrated from public repositories.
+
+The primary goal of this project is to consolidate all existing color transfer, style transfer, and colorization techniques into a single library with a standardized API. This facilitates both the development and comparison of algorithms within the research community.
+
+Currently, the library supports 11 color transfer, 5 style transfer, and 3 colorization methods across various data types, including images, point clouds, textured meshes, light fields, videos, volumetric videos, and Gaussian splatting. Additionally, it provides 20 evaluation metrics for assessing image-to-image color transfer performance.
+
+A compatibility chart for supported data types and a detailed list of all algorithms can be found below.
 
 ![ColorTransferLabV2_DataTypes_wFiles](https://github.com/user-attachments/assets/3852256a-8547-4a36-be63-82f064d9f9b5)
 
