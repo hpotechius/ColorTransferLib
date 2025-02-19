@@ -12,8 +12,8 @@ import time
 from scipy.linalg import fractional_matrix_power
 from copy import deepcopy
 
-from ColorTransferLib.ImageProcessing.Video import Video
-from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
+from ColorTransferLib.DataTypes.Video import Video
+from ColorTransferLib.DataTypes.VolumetricVideo import VolumetricVideo
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ class MKL:
             out_img.set_colors(out_colors)
             out_colors_arr.append(out_img)
 
-        outp = Video(imgs=out_colors_arr)
+        outp = Video(imgs=out_colors_arr, fps=src.get_fps())
 
         return outp
     # ------------------------------------------------------------------------------------------------------------------

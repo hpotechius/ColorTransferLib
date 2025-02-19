@@ -19,8 +19,8 @@ from copy import deepcopy
 
 from ColorTransferLib.Utils.Helper import check_compatibility, init_model_files
 from ColorTransferLib.Algorithms.NST.Model import Model
-from ColorTransferLib.ImageProcessing.Video import Video
-from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
+from ColorTransferLib.DataTypes.Video import Video
+from ColorTransferLib.DataTypes.VolumetricVideo import VolumetricVideo
 
 
 physical_devices = tf.config.list_physical_devices('GPU')
@@ -472,7 +472,7 @@ class NST:
             out_img.set_raw(out_colors)
             out_raw_arr.append(out_img)
 
-        outp = Video(imgs=out_raw_arr)
+        outp = Video(imgs=out_raw_arr, fps=src.get_fps())
 
         return outp
     # ------------------------------------------------------------------------------------------------------------------

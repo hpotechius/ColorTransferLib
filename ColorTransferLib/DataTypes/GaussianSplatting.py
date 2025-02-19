@@ -1,5 +1,5 @@
 """
-Copyright 2024 by Herbert Potechius,
+Copyright 2025 by Herbert Potechius,
 Technical University of Berlin
 Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.

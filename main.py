@@ -7,11 +7,11 @@ This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
 
-from ColorTransferLib.MeshProcessing.Mesh import Mesh
-from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
+from ColorTransferLib.DataTypes.Mesh import Mesh
+from ColorTransferLib.DataTypes.VolumetricVideo import VolumetricVideo
 
-from ColorTransferLib.ImageProcessing.Image import Image
-from ColorTransferLib.ImageProcessing.Video import Video
+from ColorTransferLib.DataTypes.Image import Image
+from ColorTransferLib.DataTypes.Video import Video
 from ColorTransferLib.ColorTransfer import ColorTransfer, ColorTransferEvaluation
 
 from ColorTransferLib.DataTypes.LightField import LightField
@@ -151,34 +151,38 @@ def apply_color_transfer_localy(src, ref, method):
 # ------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':  
  
-    test_colorTransfer_all_combinations("CAM")
-    exit()
+    # test_colorTransfer_all_combinations("ST2")
+    # exit()
 
     # 
     # test_pointcloud_colorTransfer("PSN")
 
+
+
+
     # done = ["GPC", "FUZ", "GLO", "CCS", "DPT", "BCC", "HIS", "MKL", "TPS", "NST", "PDF", "RHG", "CAM"]
-    done = ["DDC"]
-    for elem in done:
-        test_image_colorTransfer(elem)
-    exit()
+    # done = ["CFM"]
+    # for elem in done:
+    #     test_image_colorTransfer(elem)
+    # exit()
 
 
 
 
-    # from ColorTransferLib.Algorithms.DDC.DDC import DDC
-    # from ColorTransferLib.Utils.BaseOptions import BaseOptions
-    # import json
-    # with open("/home/potechius/Code/ColorTransferLib/ColorTransferLib/Options/DDC.json", 'r') as f:
-    #     options = json.load(f)
-    #     opt = BaseOptions(options)
-    # src = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
-    # ref = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
-    # out = DDC.apply(src, ref, opt)    
-    # if out["status_code"] == 0:
-    #     out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/out_DDC")
-    # else:
-    #     print("Error: " + out["response"])
+    from ColorTransferLib.Algorithms.GLO.GLO import GLO
+    from ColorTransferLib.Utils.BaseOptions import BaseOptions
+    import json
+    with open("/home/potechius/Code/ColorTransferLib/ColorTransferLib/Options/GLO.json", 'r') as f:
+        options = json.load(f)
+        opt = BaseOptions(options)
+    # src = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/Mona_Lisa.png')
+    src = Video(file_path='/home/potechius/Code/ColorTransferLib/testdata/videos/output.mp4')
+    ref = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
+    out = GLO.apply(src, ref, opt)    
+    if out["status_code"] == 0:
+        out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/out_GLO")
+    else:
+        print("Error: " + out["response"])
 
 
 
@@ -230,5 +234,3 @@ if __name__ == '__main__':
 
     # Evaluation Example
     # TODO
-
-

@@ -12,10 +12,10 @@ import time
 from copy import deepcopy
 from joblib import Parallel, delayed
 
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
+from ColorTransferLib.Utils.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.Helper import check_compatibility
-from ColorTransferLib.ImageProcessing.Video import Video
-from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
+from ColorTransferLib.DataTypes.Video import Video
+from ColorTransferLib.DataTypes.VolumetricVideo import VolumetricVideo
 from ColorTransferLib.Utils.Helper import check_compatibility, init_model_files
 
 from .predict import Predictor

@@ -16,8 +16,8 @@ import os
 from ColorTransferLib.Algorithms.HIS.models.models import create_model
 from ColorTransferLib.Algorithms.HIS.data.data_loader import CreateDataLoader
 from ColorTransferLib.Utils.Helper import check_compatibility, init_model_files, get_cache_dir
-from ColorTransferLib.ImageProcessing.Video import Video
-from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
+from ColorTransferLib.DataTypes.Video import Video
+from ColorTransferLib.DataTypes.VolumetricVideo import VolumetricVideo
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ class HIS:
             out_img.set_raw(out_colors)
             out_raw_arr.append(out_img)
 
-        outp = Video(imgs=out_raw_arr)
+        outp = Video(imgs=out_raw_arr, fps=src.get_fps())
 
         return outp
     # ------------------------------------------------------------------------------------------------------------------

@@ -13,7 +13,7 @@ from scipy.linalg import fractional_matrix_power
 from copy import deepcopy
 import time
 
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
+from ColorTransferLib.Utils.ColorSpaces import ColorSpaces
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
