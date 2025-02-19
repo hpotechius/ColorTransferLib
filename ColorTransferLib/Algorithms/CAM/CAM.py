@@ -13,8 +13,8 @@ import torch
 import cv2
 
 import ColorTransferLib.Algorithms.CAM.color_aware_st as cwst
-from ColorTransferLib.ImageProcessing.Video import Video
-from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
+from ColorTransferLib.DataTypes.Video import Video
+from ColorTransferLib.DataTypes.VolumetricVideo import VolumetricVideo
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ class CAM:
             out_img.set_raw(out_colors)
             out_raw_arr.append(out_img)
 
-        outp = Video(imgs=out_raw_arr)
+        outp = Video(imgs=out_raw_arr, fps=src.get_fps())
 
         return outp
     # ------------------------------------------------------------------------------------------------------------------

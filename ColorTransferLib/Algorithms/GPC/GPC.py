@@ -13,9 +13,9 @@ from copy import deepcopy
 import pyamg
 from scipy.sparse import lil_matrix
 
-from ColorTransferLib.ImageProcessing.Image import Image as Img
-from ColorTransferLib.ImageProcessing.Video import Video
-from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
+from ColorTransferLib.DataTypes.Image import Image as Img
+from ColorTransferLib.DataTypes.Video import Video
+from ColorTransferLib.DataTypes.VolumetricVideo import VolumetricVideo
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -240,7 +240,7 @@ class GPC:
             out_img.set_colors(out_colors)
             out_raw_arr.append(out_img)
 
-        outp = Video(imgs=out_raw_arr)
+        outp = Video(imgs=out_raw_arr, fps=src.get_fps())
 
         return outp
     # ------------------------------------------------------------------------------------------------------------------

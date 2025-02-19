@@ -16,8 +16,8 @@ from copy import deepcopy
 
 from ColorTransferLib.Algorithms.DPT.photo_style import stylize
 from ColorTransferLib.Utils.Helper import init_model_files
-from ColorTransferLib.ImageProcessing.Video import Video
-from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
+from ColorTransferLib.DataTypes.Video import Video
+from ColorTransferLib.DataTypes.VolumetricVideo import VolumetricVideo
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ class DPT:
             out_img.set_raw(out_colors)
             out_raw_arr.append(out_img)
 
-        outp = Video(imgs=out_raw_arr)
+        outp = Video(imgs=out_raw_arr, fps=src.get_fps())
 
         return outp
     # ------------------------------------------------------------------------------------------------------------------

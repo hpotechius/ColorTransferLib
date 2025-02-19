@@ -11,9 +11,9 @@ import numpy as np
 import time
 from copy import deepcopy
 
-from ColorTransferLib.ImageProcessing.ColorSpaces import ColorSpaces
-from ColorTransferLib.ImageProcessing.Video import Video
-from ColorTransferLib.MeshProcessing.VolumetricVideo import VolumetricVideo
+from ColorTransferLib.Utils.ColorSpaces import ColorSpaces
+from ColorTransferLib.DataTypes.Video import Video
+from ColorTransferLib.DataTypes.VolumetricVideo import VolumetricVideo
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -140,6 +140,7 @@ class GLO:
         src_colors = src.get_colors()
 
         for i, src_color in enumerate(src_colors):
+            print(f"Processing frame {i+1}/{len(src_colors)}")
             # Preprocessing
             ref_color = ref.get_colors()
             out_img = deepcopy(src.get_images()[0])
@@ -149,7 +150,7 @@ class GLO:
             out_img.set_colors(out_colors)
             out_colors_arr.append(out_img)
 
-        outp = Video(imgs=out_colors_arr)
+        outp = Video(imgs=out_colors_arr, fps=src.get_fps())
 
         return outp
     # ------------------------------------------------------------------------------------------------------------------

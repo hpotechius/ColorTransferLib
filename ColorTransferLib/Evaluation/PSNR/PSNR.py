@@ -11,7 +11,7 @@ import cv2
 import math
 import numpy as np
 
-from ColorTransferLib.ImageProcessing.Image import Image
+from ColorTransferLib.DataTypes.Image import Image
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
