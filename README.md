@@ -20,11 +20,11 @@ Each class demands three inputs: Source, Reference, and Options. The Source and 
 
 Save each new color transfer class in the ColorTransferLib Repository under the **Algorithms** folder. The class should have the **apply(...)** function, which ingests the inputs and embodies the core logic for color transfer.
 
-The output should resemble a dictionary format, as outlined in Listing 3. A status code of 0 signifies a valid algorithm output, while -1 indicates invalidity. The process time denotes the algorithm's execution duration, useful for subsequent evaluations. The 'object' key in the dictionary holds the result, which should match the class type of the Source input.
+The output should resemble a dictionary format, as outlined in Listing 2. A status code of 0 signifies a valid algorithm output, while -1 indicates invalidity. The process time denotes the algorithm's execution duration, useful for subsequent evaluations. The 'object' key in the dictionary holds the result, which should match the class type of the Source input.
 
 ![CT-API_new](https://github.com/user-attachments/assets/e52ed0ba-3106-435d-b7f1-fbac67145251)
 
-![listings](https://github.com/ImmersiveMediaLaboratory/ColorTransferLib/assets/15614886/42e78a4f-89dc-4afe-876c-a1950044d514)
+<img alt="280272638-42e78a4f-89dc-4afe-876c-a1950044d514" src="https://github.com/user-attachments/assets/afde3c2a-a72f-4f9e-9be3-e5505faf46a7" />
 
 ## Installation
 ### Requirements
