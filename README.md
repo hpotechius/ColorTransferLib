@@ -24,6 +24,7 @@ The output should resemble a dictionary format, as outlined in Listing 3. A stat
 ### Requirements
 (1) Install the following packages:
 ```
+# for running matlab code
 sudo apt-get install octave-dev
 # allows writing of mp4 with h246 codec
 sudo apt-get install ffmpeg
