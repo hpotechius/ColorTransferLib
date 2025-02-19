@@ -16,9 +16,9 @@ A compatibility chart for supported data types and a detailed list of all algori
 ## API
 For seamless integration, adhere to the API specifications of the new color transfer algorithm, depicted in the Figure below.
 
-Each class demands three inputs: Source, Reference, and Options. The Source and Reference should be of the **Image** or **Mesh** class type, with the latter encompassing 3D point clouds and textured triangle meshes. The Options input consists of dictionaries, stored as a JSON file in the **Options** folder. For a sample option, see Listings 1. Every option details an adjustable parameter for the algorithm.
+Each class demands three inputs: Source, Reference, and Options. The Source and Reference should be of the **Image**, **Video**, **VolumetricVideo**, **LightField**, **GaussianSplatting** or **Mesh** class type, with the latter encompassing 3D point clouds and textured triangle meshes. The Options input consists of dictionaries, stored as a JSON file in the **Options** folder. For a sample option, see Listings 1. Every option details an adjustable parameter for the algorithm.
 
-Save each new color transfer class in the ColorTransferLib Repository under the **Algorithms** folder. This ensures its automatic integration into the user interface. The class should have two essential functions: **get_info()** and **apply(...)**. The **get_info()** function yields vital details about the algorithm (refer to Listing 2). It also provides data type details, facilitating the identification of compatible objects for the algorithm. The **apply(...)** function ingests the inputs and embodies the core logic for color transfer.
+Save each new color transfer class in the ColorTransferLib Repository under the **Algorithms** folder. The class should have the **apply(...)** function, which ingests the inputs and embodies the core logic for color transfer.
 
 The output should resemble a dictionary format, as outlined in Listing 3. A status code of 0 signifies a valid algorithm output, while -1 indicates invalidity. The process time denotes the algorithm's execution duration, useful for subsequent evaluations. The 'object' key in the dictionary holds the result, which should match the class type of the Source input.
 
