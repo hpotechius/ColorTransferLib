@@ -87,7 +87,7 @@ The following color and style transfer methods are integrated in the library. So
 ### Color Transfer
 | Year | ID  | Support |  Publication |
 | ---  | --- | --- | --- |
-| 2001 | $`GLO`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: auto; height: 20px;"> | [Color Transfer between Images](https://doi.org/10.1109/38.946629) |
+| 2001 | $`GLO`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [Color Transfer between Images](https://doi.org/10.1109/38.946629) |
 | 2003 | $`BCC`$ | ... | [A Framework for Transfer Colors Based on the Basic Color Categories](https://doi.org/10.1109/CGI.2003.1214463) |
 | 2005 | $`PDF`$ | ... | [N-dimensional probability density function transfer and its application to color transfer](https://doi.org/10.1109/ICCV.2005.166) |
 | 2006 | $`CCS`$ | ... | [Color transfer in correlated color space](https://doi.org/10.1145/1128923.1128974) |
