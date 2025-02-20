@@ -11,6 +11,8 @@ import time
 from copy import deepcopy
 import torch
 import cv2
+import sys
+import os
 
 import ColorTransferLib.Algorithms.CAM.color_aware_st as cwst
 from ColorTransferLib.DataTypes.Video import Video
@@ -64,7 +66,7 @@ class CAM:
             "process_time": 0
         }
 
-        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField" or ref.get_type() == "GaussianSplatting" or ref.get_type() == "PointCloud":
             output["response"] = "Incompatible reference type."
             output["status_code"] = -1
             return output
@@ -79,13 +81,10 @@ class CAM:
             out_obj = CAM.__apply_video(src, ref, opt)
         elif src.get_type() == "VolumetricVideo":
             out_obj = CAM.__apply_volumetricvideo(src, ref, opt)
-        elif src.get_type() == "GaussianSplatting":
-            out_obj = CAM.__apply_gaussiansplatting(src, ref, opt)
-        elif src.get_type() == "PointCloud":
-            out_obj = CAM.__apply_pointcloud(src, ref, opt)
         elif src.get_type() == "Mesh":
             out_obj = CAM.__apply_mesh(src, ref, opt)
         else:
+            out_obj = None
             output["response"] = "Incompatible type."
             output["status_code"] = -1
 
@@ -110,7 +109,15 @@ class CAM:
 
         ref_img = cv2.resize(ref_img, dsize=(src_img.shape[1], src_img.shape[0]), interpolation=cv2.INTER_CUBIC)
 
+        # suppress output
+        devnull = open(os.devnull, 'w')
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+
         out = cwst.apply(src_img, ref_img, options)
+
+        sys.stdout = old_stdout
+        devnull.close()
 
         # out_img.set_raw(out, normalized=True)
         # output = {

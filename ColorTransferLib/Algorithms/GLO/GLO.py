@@ -140,7 +140,7 @@ class GLO:
         src_colors = src.get_colors()
 
         for i, src_color in enumerate(src_colors):
-            print(f"Processing frame {i+1}/{len(src_colors)}")
+            # print(f"Processing frame {i+1}/{len(src_colors)}")
             # Preprocessing
             ref_color = ref.get_colors()
             out_img = deepcopy(src.get_images()[0])

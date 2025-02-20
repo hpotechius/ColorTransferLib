@@ -1,11 +1,16 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2025 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
+
+import os
+import sys
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import copy
 import tensorflow as tf
@@ -67,6 +72,12 @@ class NIMA:
         ])
         weights_file = model_file_paths["weights_mobilenet_aesthetic_0.07.hdf5"]
 
+
+        # suppress output
+        devnull = open(os.devnull, 'w')
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+
         # build model and load weights
         nima = Nima(base_model_name, weights=None)
         nima.build()
@@ -75,6 +86,10 @@ class NIMA:
         # get predictions
         predictions = predict(nima.nima_model, imcopy)
         nim = calc_mean_score(predictions[0])
+
+        sys.stdout = old_stdout
+        devnull.close()
+
 
         tf.keras.backend.clear_session()
 

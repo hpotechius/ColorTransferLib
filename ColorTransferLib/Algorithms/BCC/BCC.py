@@ -193,7 +193,7 @@ class BCC:
         output_colors = np.empty([0, 3])
         output_ids = np.empty([0, 1])
         for color_cat in color_cats_src.keys():
-            print(color_cat)
+            #print(color_cat)
             output_ids = np.concatenate((output_ids, np.asarray(color_cats_src_ids[color_cat])[:, np.newaxis]))
             # Create Convex Hulls
             # Check if color categories are not empty

@@ -28,7 +28,6 @@ class GaussianSplatting:
     # ------------------------------------------------------------------------------------------------------------------
     def __init__(self, file_path=None):
         self.__type = "GaussianSplatting"
-        print("GaussianSplatting: ", file_path)
 
         self._file_extension = file_path.split('.')[-1]
 

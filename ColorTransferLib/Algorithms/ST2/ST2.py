@@ -11,6 +11,8 @@ import numpy as np
 import time
 from copy import deepcopy
 from joblib import Parallel, delayed
+import sys
+import os
 
 from ColorTransferLib.Utils.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.Helper import check_compatibility
@@ -50,7 +52,7 @@ class ST2:
             "process_time": 0
         }
 
-        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField" or ref.get_type() == "GaussianSplatting" or ref.get_type() == "PointCloud":
             output["response"] = "Incompatible reference type."
             output["status_code"] = -1
             return output
@@ -65,13 +67,10 @@ class ST2:
             out_obj = ST2.__apply_video(src, ref, opt)
         elif src.get_type() == "VolumetricVideo":
             out_obj = ST2.__apply_volumetricvideo(src, ref, opt)
-        elif src.get_type() == "GaussianSplatting":
-            out_obj = ST2.__apply_gaussiansplatting(src, ref, opt)
-        elif src.get_type() == "PointCloud":
-            out_obj = ST2.__apply_pointcloud(src, ref, opt)
         elif src.get_type() == "Mesh":
             out_obj = ST2.__apply_mesh(src, ref, opt)
         else:
+            out_obj = None
             output["response"] = "Incompatible type."
             output["status_code"] = -1
 
@@ -86,7 +85,15 @@ class ST2:
     def __color_transfer(src_img, ref_img, opt):
         model_file_paths = init_model_files("ST2", ["decoder_iter_160000.pth", "embedding_iter_160000.pth", "transformer_iter_160000.pth", "vgg_normalised.pth"])
 
+        # suppress output
+        devnull = open(os.devnull, 'w')
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+
         out_img = predict(model_file_paths, src_img, ref_img, opt)
+
+        sys.stdout = old_stdout
+        devnull.close()
 
         return out_img
 

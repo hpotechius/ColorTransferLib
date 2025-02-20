@@ -36,7 +36,6 @@ class VolumetricVideo:
 
             if os.path.exists(file_path):
                 self.__numMeshes += 1
-                print(f"Loading {file_path}")
                 mesh = Mesh(file_path=file_path, datatype="Mesh")
                 self.__meshes.append(mesh)
             else:
@@ -52,7 +51,6 @@ class VolumetricVideo:
     # Writes the mesh to the specified path
     # ------------------------------------------------------------------------------------------------------------------
     def write(self, path):
-        print(path)
         new_file_name = path.split("/")[-1]
         out_folder, _ = os.path.split(path)
 
@@ -61,9 +59,6 @@ class VolumetricVideo:
         # Erstelle den Ordner, falls er nicht existiert
         if not os.path.exists(out_folder):
             os.makedirs(out_folder)
-            print(f"Ordner {out_folder} wurde erstellt.")
-        else:
-            print(f"Ordner {out_folder} existiert bereits.")
 
 
 

@@ -56,14 +56,16 @@ class EB3:
 
         start_time = time.time()
 
-        if src.get_type() == "PointCloud":
+        if src.get_type() == "PointCloud" and ref.get_type() == "PointCloud":
             out_obj = EB3.__apply_pointcloud(src, ref, opt)
+            output["object"] = out_obj
         else:
             output["response"] = "Incompatible type."
             output["status_code"] = -1
 
+
         output["process_time"] = time.time() - start_time
-        output["object"] = out_obj
+
 
         return output
     # ------------------------------------------------------------------------------------------------------------------
@@ -248,6 +250,10 @@ class EB3:
 
         lab_new = f_out[:,:3]
         lab_new = lab_new.reshape(src.get_num_vertices(), 1, 3)
+
+        # Remove imaginary part
+        lab_new = np.real(lab_new)
+
         lab_new = ColorSpaces.lab_to_rgb_cpu(np.ascontiguousarray(lab_new, dtype=np.float32))
         lab_new = np.clip(lab_new, 0.0, 1.0)
 

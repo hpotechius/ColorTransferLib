@@ -12,8 +12,9 @@ import time
 import os
 from copy import deepcopy
 from sys import platform
-
-from ColorTransferLib.Utils.Helper import check_compatibility
+from contextlib import contextmanager
+import sys
+from io import StringIO
 
 if platform == "linux" or platform == "linux2":
     # linux
@@ -29,6 +30,19 @@ from oct2py import octave
 from ColorTransferLib.DataTypes.Video import Video
 from ColorTransferLib.DataTypes.VolumetricVideo import VolumetricVideo
 
+
+@contextmanager
+def suppress_stdout_stderr():
+    with open(os.devnull, 'w') as devnull:
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        sys.stdout = devnull
+        sys.stderr = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -63,9 +77,6 @@ class TPS:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
-
-        print()
-
         output = {
             "status_code": 0,
             "response": "",
@@ -73,7 +84,7 @@ class TPS:
             "process_time": 0
         }
 
-        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField" or ref.get_type() == "GaussianSplatting" or ref.get_type() == "PointCloud":
             output["response"] = "Incompatible reference type."
             output["status_code"] = -1
             return output
@@ -88,13 +99,10 @@ class TPS:
             out_obj = TPS.__apply_video(src, ref, opt)
         elif src.get_type() == "VolumetricVideo":
             out_obj = TPS.__apply_volumetricvideo(src, ref, opt)
-        elif src.get_type() == "GaussianSplatting":
-            out_obj = TPS.__apply_gaussiansplatting(src, ref, opt)
-        elif src.get_type() == "PointCloud":
-            out_obj = TPS.__apply_pointcloud(src, ref, opt)
         elif src.get_type() == "Mesh":
             out_obj = TPS.__apply_mesh(src, ref, opt)
         else:
+            out_obj = None
             output["response"] = "Incompatible type."
             output["status_code"] = -1
 
@@ -111,13 +119,6 @@ class TPS:
         # NOTE: pkg install -forge image
         # NOTE: pkg install -forge statistics
 
-        # check if method is compatible with provided source and reference objects
-        #output = check_compatibility(src, ref, TPS.compatibility)
-
-        #if output["status_code"] == -1:
-        #    output["response"] = "Incompatible type."
-        #    return output
-
         # Preprocessing
         # NOTE RGB space needs multiplication with 255
         src_img = src_img * 255
@@ -126,16 +127,19 @@ class TPS:
         # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
         #octave.addpath(octave.genpath('.'))
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        print("-----------------")
-        print(os.path.join(current_dir, 'L2RegistrationForCT'))
-        print("-----------------")
+        #print("-----------------")
+        #print(os.path.join(current_dir, 'L2RegistrationForCT'))
+        #print("-----------------")
+
         octave.addpath(octave.genpath(os.path.join(current_dir, 'L2RegistrationForCT')))
+
         # octave.addpath(octave.genpath('module/Algorithms/TpsColorTransfer/L2RegistrationForCT'))
         #octave.addpath(octave.genpath('module/Algorithms/TpsColorTransfer/L2RegistrationForCT'))
+        octave.eval('warning("off", "all")')
         octave.eval('pkg load image')
         octave.eval('pkg load statistics')
-
         outp = octave.ctfunction(ref_img, src_img, opt.cluster_method, opt.cluster_num, opt.colorspace)
+
         outp = outp.astype(np.float32)
 
         return outp

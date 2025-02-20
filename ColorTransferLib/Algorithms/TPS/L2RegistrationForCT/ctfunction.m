@@ -49,7 +49,7 @@ close all;
 if(strcmp(colourSpace, 'CIELab') && strcmp(clusterFun, 'KMeans'))
         he1	= rgb2lab(he1);
 elseif(strcmp(colourSpace, 'CIELab') && strcmp(clusterFun, 'MVQ'))
-    disp('MVQ clustering cannot be applied in CIELAB space in this implementation. Using RGB space instead.');
+    %disp('MVQ clustering cannot be applied in CIELAB space in this implementation. Using RGB space instead.');
     colourSpace = 'RGB';
 end
 dfull1 = double(he1);
@@ -64,7 +64,7 @@ if(strcmp(colourSpace, 'CIELab'))
 end
 
 %cluster target and palette image to get most dominant colours
-disp('Clustering of palette and target image started...');
+%disp('Clustering of palette and target image started...');
 switch(clusterFun)
     case 'KMeans'
         X = mg_applyKMeans(he1,nColors);
@@ -73,11 +73,11 @@ switch(clusterFun)
         X = mg_quantImage(he1, nColors);
         Y = mg_quantImage(he2, nColors);
 end
-disp('Clustering of palette and target image finished.');
+%disp('Clustering of palette and target image finished.');
 
 %initialise some parameters used to control the registration 
 [config] = mg_initialize_config(X,Y, colourSpace);
-disp('Registration of colours started...');
+%disp('Registration of colours started...');
 %register the colours using an annealling scheme, estimate a TPS transformation 
 for i = 1:config.AnnSteps
     config.iter = (config.AnnSteps-i+1);
@@ -86,13 +86,13 @@ for i = 1:config.AnnSteps
         config.scale = .5*config.scale;
     end
 end
-disp('Registration of colours finished.');
+%disp('Registration of colours finished.');
 
 %apply the colour transformation to the target image to get the result
 %image
-disp('Applying colour transfer to target image...');
+%disp('Applying colour transfer to target image...');
 fullTransform = mg_transform_tps_parallel(param, full_transform, config.ctrl_pts);
-disp('Finished.');
+%disp('Finished.');
 if(strcmp(colourSpace, 'CIELab'))
        fullTransform = lab2rgb(fullTransform);
        ind1 = find(fullTransform < 0);

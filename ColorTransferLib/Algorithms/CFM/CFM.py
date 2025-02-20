@@ -49,16 +49,17 @@ class CFM:
             "process_time": 0
         }
 
-        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
-            output["response"] = "Incompatible reference type."
-            output["status_code"] = -1
-            return output
+        # if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+        #     output["response"] = "Incompatible reference type."
+        #     output["status_code"] = -1
+        #     return output
 
         start_time = time.time()
 
         if src.get_type() == "Image":
-            out_obj = CFM.__apply_image(src, ref, opt)
+            out_obj = CFM.__apply_image(src, opt)
         else:
+            out_obj = None
             output["response"] = "Incompatible type."
             output["status_code"] = -1
 
@@ -70,7 +71,7 @@ class CFM:
     # Applies the color transfer algorihtm
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def __color_transfer(src, ref, opt):
+    def __color_transfer(src, opt):
         model_file_paths = init_model_files("CFM", ["color_embed_10000.npy", "semantic_embed_10000.npy", "GLH.pth", "net_g_200000.pth"])
 
         #print(model_file_paths)
@@ -84,11 +85,11 @@ class CFM:
     # Applies the color transfer algorihtm
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def __apply_image(src, ref, opt):
+    def __apply_image(src, opt):
 
         out_img = deepcopy(src)
 
-        out_raw = CFM.__color_transfer(src, ref, opt)
+        out_raw = CFM.__color_transfer(src, opt)
 
         out_img.set_raw(out_raw)
         outp = out_img

@@ -59,7 +59,7 @@ class GPC:
             "process_time": 0
         }
 
-        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField" or ref.get_type() == "GaussianSplatting" or ref.get_type() == "PointCloud":
             output["response"] = "Incompatible reference type."
             output["status_code"] = -1
             return output
@@ -184,12 +184,14 @@ class GPC:
         #histogram matching
         matched_img = GPC.histogram_matching(src_img, ref_img)
 
+
         # original src size
         #size_src = (src.get_height(), src.get_width(), 3)
 
         pad = 50
 
         M, N = src_img.shape[0]+2*pad, src_img.shape[1]+2*pad
+
         lambda_val = 1.0  # Setzen Sie hier den gewünschten Wert für Lambda ein
         Dx, Dy = GPC.gradient_matrices(M, N)
 
@@ -253,12 +255,13 @@ class GPC:
 
         for i, src_raw in enumerate(src_raws):
             # Preprocessing
-            ref_raw = ref.get_cget_rawolors()
+            ref_raw = ref.get_raw()
             out_img = deepcopy(src.get_meshes()[i])
 
             out_colors = GPC.__color_transfer(src_raw, ref_raw, opt)
 
             out_img.set_colors(out_colors)
+
             out_raw_arr.append(out_img)
             outp = VolumetricVideo(meshes=out_raw_arr, file_name=src.get_file_name())
 
