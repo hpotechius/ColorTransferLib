@@ -55,22 +55,22 @@ octave:1> gbvs_install.m
 ### Install via PyPI
 ```
 pip install colortransferlib
-# manual installation to allow h246 codec
+pip install colortransferlib[detectron2]
 ```
 
 ### Install from source
 ```
 pip install -r requirements/requirements.txt
 python setup.py bdist_wheel
-pip install --force-reinstall ../ColorTransferLib/dist/ColorTransferLib-2.0.3-py3-none-any.whl 
-# manual installation to allow h246 codec
+pip install ../ColorTransferLib/dist/ColorTransferLib-2.0.3-py3-none-any.whl 
+pip install ../ColorTransferLib/dist/ColorTransferLib-2.0.3-py3-none-any.whl[detectron2]
 ```
 
 ## Usage
 ### Color Transfer
 ```python
 from ColorTransferLib.ColorTransfer import ColorTransfer
-from ColorTransferLib.ImageProcessing.Image import Image
+from ColorTransferLib.DataTypes.Image import Image
 
 src = Image(file_path='/media/source.png')
 ref = Image(file_path='/media/reference.png') 
@@ -89,7 +89,7 @@ else:
 ### Evaluation
 ```python
 from ColorTransferLib.ColorTransfer import ColorTransferEvaluation
-from ColorTransferLib.ImageProcessing.Image import Image
+from ColorTransferLib.DataTypes.Image import Image
 
 src = Image(file_path='/media/source.png')
 ref = Image(file_path='/media/reference.png') 
