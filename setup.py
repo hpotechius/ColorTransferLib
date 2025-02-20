@@ -31,7 +31,10 @@ setuptools.setup(
     python_requires='>=3.10,<3.11',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    install_requires= requirements
+    install_requires= requirements,
+    extras_require={
+        'detectron2': ['detectron2 @ git+https://github.com/facebookresearch/detectron2.git@main']
+    }
 )
 
 # run seperately: "pip install opencv-python==4.9.0.80 --no-binary opencv-python"
