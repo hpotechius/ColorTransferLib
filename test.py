@@ -58,7 +58,7 @@ def test_all_CT_all_datatypes(out_path):
     ref_vv = VolumetricVideo(folder_path='testdata/volumetricvideos/$volumetric$human', file_name='human')
     ref_im = Image(file_path='testdata/images/The_Scream.png')
     ref_vd = Video(file_path='testdata/videos/test_vid_00.mp4')
-    ref_pc = Mesh(file_path='testdata/pointclouds/Azurit.ply', datatype="PointCloud")
+    ref_pc = Mesh(file_path='testdata/pointclouds/Orange.ply', datatype="PointCloud")
     ref_me = Mesh(file_path='testdata/meshes/$mesh$Apple/Apple.obj', datatype="Mesh")
 
     src_dict = {
