@@ -67,6 +67,7 @@ pip install --force-reinstall ../ColorTransferLib/dist/ColorTransferLib-2.0.3-py
 ```
 
 ## Usage
+### Color Transfer
 ```python
 from ColorTransferLib.ColorTransfer import ColorTransfer
 from ColorTransferLib.ImageProcessing.Image import Image
@@ -83,6 +84,20 @@ if out["status_code"] == 0:
     out["object"].write("/media/out")
 else:
     print("Error: " + out["response"])
+```
+
+### Evaluation
+```python
+from ColorTransferLib.ColorTransfer import ColorTransferEvaluation
+from ColorTransferLib.ImageProcessing.Image import Image
+
+src = Image(file_path='/media/source.png')
+ref = Image(file_path='/media/reference.png') 
+out = Image(file_path='/media/output.png') 
+
+cte = ColorTransferEvaluation(src, ref, out)
+eva = cte.apply(method)
+print(eva)
 ```
 
 ## Test
