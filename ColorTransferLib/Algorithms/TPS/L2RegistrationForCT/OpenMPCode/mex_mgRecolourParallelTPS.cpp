@@ -73,5 +73,5 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			*/
 		}
 	
-	mexPrintf("nThreads = %i\n",nThreads);mexEvalString("drawnow");
+	//mexPrintf("nThreads = %i\n",nThreads);mexEvalString("drawnow");
 }

@@ -9,13 +9,19 @@ Please see the LICENSE file that should have been included as part of this packa
 Adaptation of https://github.com/cysmith/neural-style-tf
 """
 
+import sys
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import tensorflow as tf
 import numpy as np
 import torch
 import time
 import cv2
-import os
 from copy import deepcopy
+
+
 
 from ColorTransferLib.Utils.Helper import check_compatibility, init_model_files
 from ColorTransferLib.Algorithms.NST.Model import Model
@@ -61,7 +67,7 @@ class NST:
             "process_time": 0
         }
 
-        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField" or ref.get_type() == "GaussianSplatting" or ref.get_type() == "PointCloud":
             output["response"] = "Incompatible reference type."
             output["status_code"] = -1
             return output
@@ -123,9 +129,19 @@ class NST:
         ref_img = NST.preprocess(ref_img)
         style_imgs.append(ref_img)
 
+        # suppress output
+        devnull = open(os.devnull, 'w')
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+
         out = NST.render_single_image(src_img, style_imgs, opt)
+
+        sys.stdout = old_stdout
+        devnull.close()
+        
         out = NST.postprocess(out)
         tf.compat.v1.reset_default_graph()
+
 
         # out_img.set_raw(out, normalized=True)
         # output = {

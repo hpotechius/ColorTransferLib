@@ -13,6 +13,7 @@ import numpy as np
 import os
 import time
 from copy import deepcopy
+import sys
 
 from ColorTransferLib.Algorithms.DPT.photo_style import stylize
 from ColorTransferLib.Utils.Helper import init_model_files
@@ -41,9 +42,6 @@ class DPT:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def apply(src, ref, opt):
-
-        print()
-
         output = {
             "status_code": 0,
             "response": "",
@@ -51,7 +49,7 @@ class DPT:
             "process_time": 0
         }
 
-        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField" or ref.get_type() == "GaussianSplatting" or ref.get_type() == "PointCloud":
             output["response"] = "Incompatible reference type."
             output["status_code"] = -1
             return output
@@ -66,13 +64,10 @@ class DPT:
             out_obj = DPT.__apply_video(src, ref, opt)
         elif src.get_type() == "VolumetricVideo":
             out_obj = DPT.__apply_volumetricvideo(src, ref, opt)
-        elif src.get_type() == "GaussianSplatting":
-            out_obj = DPT.__apply_gaussiansplatting(src, ref, opt)
-        elif src.get_type() == "PointCloud":
-            out_obj = DPT.__apply_pointcloud(src, ref, opt)
         elif src.get_type() == "Mesh":
             out_obj = DPT.__apply_mesh(src, ref, opt)
         else:
+            out_obj = None
             output["response"] = "Incompatible type."
             output["status_code"] = -1
 
@@ -91,6 +86,11 @@ class DPT:
         # Preprocessing
         src_img = src_img * 255.0
         ref_img = ref_img * 255.0
+        
+        # suppress output
+        devnull = open(os.devnull, 'w')
+        old_stdout = sys.stdout
+        sys.stdout = devnull
 
         if opt.style_option == 0:
             best_image_bgr = stylize(opt, False, src_img, ref_img)
@@ -107,6 +107,8 @@ class DPT:
             best_image_bgr = stylize(opt, True, src_img, ref_img)
             out = np.uint8(np.clip(best_image_bgr[:, :, ::-1], 0, 255.0))
 
+        sys.stdout = old_stdout
+        devnull.close()
 
 
         return out.astype(np.float32)

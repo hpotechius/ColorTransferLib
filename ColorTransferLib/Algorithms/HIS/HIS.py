@@ -50,7 +50,7 @@ class HIS:
             "process_time": 0
         }
 
-        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField" or ref.get_type() == "GaussianSplatting" or ref.get_type() == "PointCloud":
             output["response"] = "Incompatible reference type."
             output["status_code"] = -1
             return output
@@ -68,6 +68,7 @@ class HIS:
         elif src.get_type() == "Mesh":
             out_obj = HIS.__apply_mesh(src, ref, opt)
         else:
+            out_obj = None
             output["response"] = "Incompatible type."
             output["status_code"] = -1
 

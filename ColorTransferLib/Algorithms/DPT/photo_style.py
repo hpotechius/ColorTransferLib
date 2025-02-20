@@ -1,5 +1,7 @@
 from __future__ import division, print_function
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import numpy as np
 import tensorflow as tf
 from ColorTransferLib.Algorithms.DPT.vgg19.vgg import Vgg19
@@ -9,7 +11,6 @@ from ColorTransferLib.Algorithms.DPT.closed_form_matting import getLaplacian
 import math
 from functools import partial
 import copy
-import os
 import cv2
 import copy
 

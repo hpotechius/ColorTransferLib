@@ -79,8 +79,6 @@ class Video:
         avi_path = out_path + ".avi"
         out = cv2.VideoWriter(out_path + ".avi", fourcc, self.__fps, size)
 
-        print(self.__fps)
-
         for i, frame in enumerate(self.__imgs):
             ff = (cv2.cvtColor(frame.get_raw(), cv2.COLOR_RGB2BGR) * 255.0).astype(np.uint8)
 
@@ -88,11 +86,18 @@ class Video:
                 out.write(ff)
             else:
                 print(f"Frame {i} is not a valid numpy array and will be skipped.")
+
+        
         
         out.release()
 
         mp4_path = out_path + ".mp4"
-        subprocess.run(['ffmpeg', '-i', avi_path, '-vcodec', 'libx264', '-acodec', 'aac', mp4_path])
+        subprocess.run(['ffmpeg', '-y', '-i', avi_path, '-vcodec', 'libx264', '-acodec', 'aac', mp4_path],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+        # Delete the temporary AVI file
+        if os.path.exists(avi_path):
+            os.remove(avi_path)
 
 
     # ------------------------------------------------------------------------------------------------------------------

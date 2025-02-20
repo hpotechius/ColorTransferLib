@@ -1,5 +1,5 @@
 function outp = ct_apply(val);
-disp(val)
+#disp(val)
 outp = 9.7
 end
 %% No correspondences [ctfunction(paletteFile, targetFile, clusterFun, nColors,colourSpace )]

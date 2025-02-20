@@ -11,6 +11,8 @@ import numpy as np
 import time
 from copy import deepcopy
 from joblib import Parallel, delayed
+import os
+import sys
 
 from ColorTransferLib.Utils.ColorSpaces import ColorSpaces
 from ColorTransferLib.Utils.Helper import check_compatibility
@@ -51,16 +53,17 @@ class IIC:
             "process_time": 0
         }
 
-        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
-            output["response"] = "Incompatible reference type."
-            output["status_code"] = -1
-            return output
+        # if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+        #     output["response"] = "Incompatible reference type."
+        #     output["status_code"] = -1
+        #     return output
 
         start_time = time.time()
 
         if src.get_type() == "Image":
-            out_obj = IIC.__apply_image(src, ref, opt)
+            out_obj = IIC.__apply_image(src, opt)
         else:
+            out_obj = None
             output["response"] = "Incompatible type."
             output["status_code"] = -1
 
@@ -72,7 +75,7 @@ class IIC:
     # Applies the color transfer algorihtm
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def __color_transfer(src, ref, opt):
+    def __color_transfer(src, opt):
         model_file_paths = init_model_files("IIC", ["coco_finetuned_mask_256_ffs_latest_net_G.pth", "coco_finetuned_mask_256_ffs_latest_net_GComp.pth", "coco_finetuned_mask_256_ffs_latest_net_GF.pth",
         "coco_finetuned_mask_256_latest_net_G.pth",
         "coco_finetuned_mask_256_latest_net_GComp.pth",
@@ -81,6 +84,11 @@ class IIC:
 
         src_img = src.get_raw()
 
+        # suppress output
+        devnull = open(os.devnull, 'w')
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+
         pred_bbox, pred_scores = predict_bbox(src_img)
 
         opt.A = 2 * opt.ab_max / opt.ab_quant + 1
@@ -88,17 +96,20 @@ class IIC:
 
         img_out = predict(src_img, pred_bbox, pred_scores, opt, model_file_paths)
 
+        sys.stdout = old_stdout
+        devnull.close()
+
         return img_out
 
     # ------------------------------------------------------------------------------------------------------------------
     # Applies the color transfer algorihtm
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def __apply_image(src, ref, opt):
+    def __apply_image(src, opt):
 
         out_img = deepcopy(src)
 
-        out_raw = IIC.__color_transfer(src, ref, opt)
+        out_raw = IIC.__color_transfer(src, opt)
 
         out_img.set_raw(out_raw)
         outp = out_img

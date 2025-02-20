@@ -1,5 +1,5 @@
 """
-Copyright 2024 by Herbert Potechius,
+Copyright 2025 by Herbert Potechius,
 Technical University of Berlin
 Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
@@ -10,6 +10,7 @@ import cv2
 import numpy as np
 from ColorTransferLib.DataTypes.Image import Image
 import subprocess
+import os
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -58,7 +59,14 @@ class LightField:
         
         avi_path = file_path + ".avi"
         mp4_path = file_path + ".mp4"
-        subprocess.run(['ffmpeg', '-i', avi_path, '-vcodec', 'libx264', '-acodec', 'aac', mp4_path])
+
+        subprocess.run(['ffmpeg', '-y', '-i', avi_path, '-vcodec', 'libx264', '-acodec', 'aac', mp4_path],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        # Delete the temporary AVI file
+        if os.path.exists(avi_path):
+            os.remove(avi_path)
+
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------

@@ -79,7 +79,7 @@ class Mesh:
         self.__num_faces = self.__face_positions.shape[0] if self.__faces_enabled else 0
 
         texture_path = file_path.split(".")[0] + ".png"
-        print(texture_path)
+
         if os.path.isfile(texture_path):
             self.__pcd.textures =  [o3d.io.read_image(texture_path).flip_vertical()]
         else:
@@ -90,6 +90,7 @@ class Mesh:
         self.__texture_enabled = self.__pcd.has_textures()
         self.__texture = np.asarray(self.__pcd.textures[0]).astype("float32") / 255 if self.__texture_enabled else None
 
+
         # remove alpha channel
         if self.__texture.shape[2] == 4:
             self.__texture = self.__texture[:,:,:3]
@@ -99,6 +100,8 @@ class Mesh:
 
         # set all material ids to 0 because they are per default: 1
         self.__pcd.triangle_material_ids = o3d.utility.IntVector(np.asarray(self.__pcd.triangle_material_ids) * 0)
+
+
 
         # Create a mask from the texture using UV mapping
         # if self.__texture_enabled:
@@ -243,7 +246,8 @@ class Mesh:
             return np.expand_dims(self.__vertex_colors, 1)
         elif self.__type == "Mesh":
             tex_channel = self.__texture_size[2]
-            return np.resize(self.__texture,(512,512,tex_channel))
+            return self.__texture       
+            #return np.resize(self.__texture,(512,512,tex_channel))
             # Note: Resizing leads to a wrongs ordered pixel values
             # return np.resize(self.__texture,(256,256,3))
     # ------------------------------------------------------------------------------------------------------------------
@@ -419,7 +423,6 @@ class Mesh:
     # ------------------------------------------------------------------------------------------------------------------
     def get_voxel_grid(self, voxel_level):
         scale_f = voxel_level
-        print(voxel_level)
         # Initialize a point cloud object
         pcd = self.__pcd
         # fit to unit cube

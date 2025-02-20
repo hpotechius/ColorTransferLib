@@ -52,7 +52,7 @@ class RHG:
             "process_time": 0
         }
 
-        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField" or ref.get_type() == "GaussianSplatting" or ref.get_type() == "PointCloud":
             output["response"] = "Incompatible reference type."
             output["status_code"] = -1
             return output
@@ -164,6 +164,8 @@ class RHG:
         new_size = (src_orig_wh[1], src_orig_wh[0])
         out_temp = cv2.resize(out_temp, new_size, interpolation = cv2.INTER_AREA)
 
+        out_temp = np.clip(out_temp, 0, 1)
+
         return out_temp
 
 
@@ -214,7 +216,7 @@ class RHG:
 
         for i, src_raw in enumerate(src_raws):
             # Preprocessing
-            ref_raw = ref.get_cget_rawolors()
+            ref_raw = ref.get_raw()
             out_img = deepcopy(src.get_meshes()[i])
 
             out_colors = RHG.__color_transfer(src_raw, ref_raw, opt)

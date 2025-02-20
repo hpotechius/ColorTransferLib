@@ -7,10 +7,22 @@ This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
 """
 
+import sys
+import os
+
+#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+os.environ["TF_GPU_ALLOCATOR"] = "cuda_malloc_async"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+os.environ["TF_ENABLE_GPU_GARBAGE_COLLECTION"] = "1"
+
+
+
 import numpy as np
 import configparser
 from pprint import pprint as ppt
-import os
 import tensorflow as tf
 import json
 import sys
@@ -61,7 +73,7 @@ class PSN:
             "process_time": 0
         }
 
-        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField":
+        if ref.get_type() == "Video" or ref.get_type() == "VolumetricVideo" or ref.get_type() == "LightField" or ref.get_type() == "GaussianSplatting" or ref.get_type() == "Mesh" or ref.get_type() == "Image":
             output["response"] = "Incompatible reference type."
             output["status_code"] = -1
             return output
@@ -71,6 +83,7 @@ class PSN:
         if src.get_type() == "PointCloud":
             out_obj = PSN.__apply_pointcloud(src, ref, opt)
         else:
+            out_obj = None
             output["response"] = "Incompatible type."
             output["status_code"] = -1
 
@@ -118,7 +131,11 @@ class PSN:
         if gpus:
             try:
                 for gpu in gpus:
-                    tf.config.experimental.set_memory_growth(gpu, True)
+                    tf.config.experimental.set_virtual_device_configuration(
+                        gpus[0], 
+                        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=4096)]  # Max. 4GB verwenden
+                    )
+                    #tf.config.experimental.set_memory_growth(gpu, True)
             except RuntimeError as e:
                 print(e)
 
@@ -135,10 +152,13 @@ class PSN:
         ppt(list(psnet.node.keys()))
 
 
+
         obtained_content_fvs = sess.run(psnet.node, feed_dict={psnet.color: content_ncolor[None, ...],
                                                                 psnet.geo: content_geo[None, ...],
                                                                 psnet.bn_pl: False,
                                                                 psnet.dropout_prob_pl: 1.0})
+
+
 
         sess.close()
 
@@ -226,5 +246,11 @@ class PSN:
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def __apply_pointcloud(src, ref, opt):
+        # suppress output
+        # devnull = open(os.devnull, 'w')
+        # old_stdout = sys.stdout
+        # sys.stdout = devnull
         out = PSN.__color_transfer(src, ref, opt)
+        # sys.stdout = old_stdout
+        # devnull.close()
         return out
