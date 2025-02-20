@@ -56,7 +56,6 @@ octave:1> gbvs_install.m
 ```
 pip install colortransferlib
 # manual installation to allow h246 codec
-pip install opencv-python==4.9.0.80 --no-binary opencv-python --force-reinstall
 ```
 
 ### Install from source
@@ -65,7 +64,6 @@ pip install -r requirements/requirements.txt
 python setup.py bdist_wheel
 pip install --force-reinstall ../ColorTransferLib/dist/ColorTransferLib-2.0.3-py3-none-any.whl 
 # manual installation to allow h246 codec
-pip install opencv-python==4.9.0.80 --no-binary opencv-python 
 ```
 
 ## Usage
@@ -147,7 +145,7 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 | 2019 | $`CSS^{sr}_{rgb}`$ | Color and Structure Similarity | [Selective color transfer with multi-source images](https://doi.org/10.1016/j.patrec.2009.01.004) |
 
 ## Issues
-...
+- PSN crashes if the point clouds are too large
 
 ## Citation
 If you utilize this code in your research, kindly provide a citation:
