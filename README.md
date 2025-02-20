@@ -55,7 +55,7 @@ octave:1> gbvs_install.m
 ### Install via PyPI
 ```
 pip install colortransferlib
-pip install colortransferlib[detectron2]
+pip install git+https://github.com/facebookresearch/detectron2.git@main
 ```
 
 ### Install from source
@@ -63,7 +63,7 @@ pip install colortransferlib[detectron2]
 pip install -r requirements/requirements.txt
 python setup.py bdist_wheel
 pip install ../ColorTransferLib/dist/ColorTransferLib-2.0.3-py3-none-any.whl 
-pip install ../ColorTransferLib/dist/ColorTransferLib-2.0.3-py3-none-any.whl[detectron2]
+pip install git+https://github.com/facebookresearch/detectron2.git@main
 ```
 
 ## Usage
