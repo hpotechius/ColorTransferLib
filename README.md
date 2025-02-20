@@ -85,6 +85,21 @@ else:
     print("Error: " + out["response"])
 ```
 
+## Test
+```python
+# Test all Color Transfer algorithms with all data type combinations
+python main.py --test all_CT --out_path "/media/out"
+
+# Test all Style Transfer algorithms with all data type combinations
+python main.py --test all_ST --out_path "/media/out"
+
+# Test all Colorization algorithms with all data type combinations
+python main.py --test all_CT --out_path "/media/out"
+
+# Test all evaluation metric on src, ref and out images
+python main.py --test all_EVAL
+```
+
 ## Available Methods:
 The following color transfer, style transfer and colorization methods are integrated in the library. Some of them are reimplemented based on the algorithm's description in the the published papers and others are adopted from existing repositories and adpated to fit the API. The original implementation of the latter methods can be found next to the publication's name. Highlighted icon within the Support Column indicates the supported data types (From left to right: (1) Gaussian Splatting, (2) Light Field, (3) Volumetric Video, (4) Video, (5) Point Cloud, (6) Mesh, (7) Image)
 ### Color Transfer
