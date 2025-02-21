@@ -1,7 +1,7 @@
 ![colortransfer_example](https://github.com/user-attachments/assets/582bac9e-d38d-4318-8b05-874b030e602c)
 # ColorTransferLib
-![python3.10.12](https://img.shields.io/badge/build-3.10.16-blue?logo=python&label=Python) ![](https://img.shields.io/badge/build-24.04.1%20LTS-orange?logo=ubuntu&label=Ubuntu
-) ![](https://img.shields.io/badge/build-MIT-purple?label=License) ![](https://img.shields.io/badge/build-6.4.0-brown?logo=octave&label=Octave) ![](https://img.shields.io/badge/build-GeForce%20RTX%204060%20Ti-white?logo=nvidia&label=GPU) ![](https://img.shields.io/badge/build-intel%20Core%20i7--14700KF-white?logo=intel&label=CPU)
+![](https://img.shields.io/badge/ColorTransferLabV2-1.0.0-black?link=https%3A%2F%2Fgithub.com%2Fhpotechius%2FColorTransferLab) ![python3.10.12](https://img.shields.io/badge/build-3.10.16-blue?logo=python&label=Python) ![](https://img.shields.io/badge/build-24.04.1%20LTS-orange?logo=ubuntu&label=Ubuntu
+) ![](https://img.shields.io/badge/build-MIT-purple?label=License) ![](https://img.shields.io/badge/build-6.4.0-brown?logo=octave&label=Octave) ![](https://img.shields.io/badge/build-GeForce%20RTX%204060%20Ti-white?logo=nvidia&label=GPU) ![](https://img.shields.io/badge/build-intel%20Core%20i7--14700KF-white?logo=intel&label=CPU) 
 
 ColorTransferLib is a library dedicated to color transfer, style transfer, and colorization, featuring a diverse range of published algorithms. Some methods have been re-implemented, while others are integrated from public repositories.
 
