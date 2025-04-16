@@ -1,7 +1,7 @@
 [
   {
     "name": "cluster_num",
-    "default": 3,
+    "default": 5,
     "type": "int",
     "values": [],
     "tooltip": "Number of clusters",
@@ -17,7 +17,7 @@
   },
   {
     "name": "max_iterations",
-    "default": 100,
+    "default": 1000,
     "type": "int",
     "values": [],
     "tooltip": "Maximum number of iterations for updating clusters.",
