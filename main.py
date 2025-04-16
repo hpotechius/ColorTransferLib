@@ -39,17 +39,18 @@ if __name__ == '__main__':
 
     # Example without the ColorTransfer Class
     
-    # from ColorTransferLib.Algorithms.GLO.GLO import GLO
+    # from ColorTransferLib.Algorithms.FUZ.FUZ import FUZ
     # from ColorTransferLib.Utils.BaseOptions import BaseOptions
     # import json
-    # with open("/home/potechius/Code/ColorTransferLib/ColorTransferLib/Options/GLO.json", 'r') as f:
+    # with open("ColorTransferLib/Options/FUZ.json", 'r') as f:
     #     options = json.load(f)
     #     opt = BaseOptions(options)
-    # # src = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/Mona_Lisa.png')
-    # src = Video(file_path='/home/potechius/Code/ColorTransferLib/testdata/videos/output.mp4')
-    # ref = Image(file_path='/home/potechius/Code/ColorTransferLib/testdata/images/256_interior-00.png')
-    # out = GLO.apply(src, ref, opt)    
+    # #src = Image(file_path='testdata/images/256_interior-02.png')
+    # src = Image(file_path='testdata/images/The_Kiss.png')
+    # #src = Video(file_path='testdata/videos/output.mp4')
+    # ref = Image(file_path='testdata/images/The_Scream.png')
+    # out = FUZ.apply(src, ref, opt)    
     # if out["status_code"] == 0:
-    #     out["object"].write("/home/potechius/Code/ColorTransferLib/testdata/results/out_GLO")
+    #     out["object"].write("testdata/results/out_FUZ")
     # else:
     #     print("Error: " + out["response"])

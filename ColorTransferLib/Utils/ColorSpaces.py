@@ -1,7 +1,7 @@
 """
-Copyright 2022 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2025 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -195,7 +195,8 @@ class ColorSpaces:
 
         result = np.einsum("ijk,ij->ik", eigen_device_m_lab2lms1,  np.squeeze(img))
         result = np.einsum("ijk,ij->ik", eigen_device_m_lab2lms2,  result)
-        result = np.exp(result)
+        result = np.exp(np.clip(result, -50, 50))
+
         result = np.einsum("ijk,ij->ik", eigen_device_m_lms2rgb,  result)  
         result = np.expand_dims(result, 1)
 

@@ -93,7 +93,7 @@ class FUZ:
     # Applies the color transfer algorihtm
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def __color_transfer(src_color, ref_color, opt):
+    def __color_transfer_old(src_color, ref_color, opt):
         # [1] Extract parameters needed for the algorithm
         src_pix_num = src_color.shape[0]
         ref_pix_num = ref_color.shape[0]
@@ -181,6 +181,88 @@ class FUZ:
         lab_new = np.clip(lab_new, 0.0, 1.0)
 
         return lab_new
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applies the color transfer algorihtm
+    # ------------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def __color_transfer(src_color, ref_color, opt):
+        src_pix_num, ref_pix_num = src_color.shape[0], ref_color.shape[0]
+        dim = src_color.shape[2]
+        c = opt.cluster_num
+        m = opt.fuzzier
+        max_iter = opt.max_iterations
+        term_error = opt.error
+        eps = 1e-5  # for numerical stability
+
+        # Convert RGB to Lab color space
+        src_lab = ColorSpaces.rgb_to_lab_cpu(src_color).reshape(src_pix_num, dim)
+        ref_lab = ColorSpaces.rgb_to_lab_cpu(ref_color).reshape(ref_pix_num, dim)
+
+        # Validate input
+        if not np.all(np.isfinite(src_lab)) or not np.all(np.isfinite(ref_lab)):
+            raise ValueError("Invalid color values detected in src_lab or ref_lab (NaN or Inf)")
+        if np.std(src_lab) < 1e-5 or np.std(ref_lab) < 1e-5:
+            raise ValueError("Insufficient color variance – image may be nearly uniform")
+
+        # Run FCM clustering (explicit .fit call, no chaining)
+        fcm_src = FCM(n_clusters=c, max_iter=max_iter, m=m, error=term_error, random_state=42)
+        fcm_src.fit(src_lab)
+
+        fcm_ref = FCM(n_clusters=c, max_iter=max_iter, m=m, error=term_error, random_state=42)
+        fcm_ref.fit(ref_lab)
+
+        # Helper: compute per-cluster standard deviation and weight
+        def compute_std_weights(data, centers, membership):
+            norm_factor = membership.sum(axis=0)
+            std = np.zeros_like(centers)
+            weights = np.zeros(c)
+            for i in range(c):
+                delta = data - centers[i]
+                weighted_sq = membership[:, i][:, None] * (delta ** 2)
+                std[i] = np.sqrt(weighted_sq.sum(axis=0) / max(norm_factor[i], eps))
+                weights[i] = np.mean(std[i])
+            return std, weights
+
+        std_s, weights_s = compute_std_weights(src_lab, fcm_src.centers, fcm_src.u)
+        std_r, weights_r = compute_std_weights(ref_lab, fcm_ref.centers, fcm_ref.u)
+
+        # Validate weights
+        if not np.all(np.isfinite(weights_s)) or not np.all(np.isfinite(weights_r)):
+            weights_s = np.nan_to_num(weights_s, nan=0.0, posinf=1e3, neginf=-1e3)
+            weights_r = np.nan_to_num(weights_r, nan=0.0, posinf=1e3, neginf=-1e3)
+
+        # Perform cluster matching (bipartite graph)
+        G = nx.Graph()
+        G.add_nodes_from(range(c), bipartite=0)
+        G.add_nodes_from(range(c, 2 * c), bipartite=1)
+        for i in range(c):
+            for j in range(c):
+                diff = np.linalg.norm(weights_s[i] - weights_r[j])
+                G.add_edge(i, j + c, weight=diff)
+
+        try:
+            matching = nx.bipartite.minimum_weight_full_matching(G, range(c), "weight")
+        except ValueError as e:
+            raise ValueError(f"Cluster matching failed: {e}. Cluster weights may be invalid.")
+
+        mapping = [matching[i] - c for i in range(c)]
+
+        # Perform color transfer using soft cluster assignments
+        lab_new = np.zeros((src_pix_num, dim))
+        for i in range(c):
+            ms = fcm_src.u[:, i][:, None]
+            mu_s = fcm_src.centers[i]
+            mu_r = fcm_ref.centers[mapping[i]]
+            std_s_i = np.where(std_s[i] < eps, eps, std_s[i])
+            scale = std_r[mapping[i]] / std_s_i
+            shifted = (src_lab - mu_s) * scale + mu_r
+            lab_new += ms * shifted
+
+        # Convert Lab back to RGB
+        lab_new = lab_new.reshape(src_pix_num, 1, dim)
+        rgb_new = ColorSpaces.lab_to_rgb_cpu(lab_new)
+        return np.clip(rgb_new, 0.0, 1.0)
 
 
     # ------------------------------------------------------------------------------------------------------------------
