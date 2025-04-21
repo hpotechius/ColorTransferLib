@@ -65,7 +65,7 @@
   },
   {
     "name": "max_iter",
-    "default": 100,
+    "default": 1000,
     "type": "int",
     "values": [],
     "tooltip": "Training Optimizer Options: Maximum image iteration.",
@@ -105,7 +105,7 @@
   },
   {
     "name": "content_weight",
-    "default": 5e0,
+    "default": 1e2,
     "type": "float",
     "values": [],
     "tooltip": "Weight of content loss.",

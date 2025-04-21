@@ -113,7 +113,7 @@
   },
   {
     "name": "iterations",
-    "default": 100,
+    "default": 1000,
     "type": "int",
     "values": [],
     "tooltip": "No description yet!",
