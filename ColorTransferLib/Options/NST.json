@@ -249,7 +249,7 @@
   },
   {
       "name": "max_iterations",
-      "default": 100,
+      "default": 1000,
       "type": "int",
       "values": [],
       "tooltip": "Max number of iterations for the Adam or L-BFGS optimizer.",
