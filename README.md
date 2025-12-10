@@ -4,7 +4,7 @@ https://github.com/hpotechius/ColorTransferLab and https://potechius.com/ColorTr
 
 ![colortransfer_example](https://github.com/user-attachments/assets/582bac9e-d38d-4318-8b05-874b030e602c)
 # ColorTransferLib
-![](https://img.shields.io/badge/ColorTransferLabV2-1.0.0-black?link=https%3A%2F%2Fgithub.com%2Fhpotechius%2FColorTransferLab) ![python3.10.12](https://img.shields.io/badge/build-3.10.16-blue?logo=python&label=Python) ![](https://img.shields.io/badge/build-24.04.1%20LTS-orange?logo=ubuntu&label=Ubuntu
+![](https://img.shields.io/badge/ColorTransferLabV2-1.0.0-black?link=https%3A%2F%2Fgithub.com%2Fhpotechius%2FColorTransferLab) ![python3.12.6](https://img.shields.io/badge/build-3.12.6-blue?logo=python&label=Python) ![](https://img.shields.io/badge/build-24.04.3%20LTS-orange?logo=ubuntu&label=Ubuntu
 ) ![](https://img.shields.io/badge/build-MIT-purple?label=License) ![](https://img.shields.io/badge/build-6.4.0-brown?logo=octave&label=Octave) ![](https://img.shields.io/badge/build-GeForce%20RTX%204060%20Ti-white?logo=nvidia&label=GPU) ![](https://img.shields.io/badge/build-intel%20Core%20i7--14700KF-white?logo=intel&label=CPU) 
 
 ColorTransferLib is a library dedicated to color transfer, style transfer, and colorization, featuring a diverse range of published algorithms. Some methods have been re-implemented, while others are integrated from public repositories.
@@ -64,7 +64,7 @@ pip install git+https://github.com/facebookresearch/detectron2.git@main
 
 ### Install from source
 ```
-pip install -r requirements/requirements.txt
+pip install -r requirements/requirements.txt -c requirements/constraints.txt
 python setup.py bdist_wheel
 pip install ../ColorTransferLib/dist/ColorTransferLib-2.0.3-py3-none-any.whl 
 pip install git+https://github.com/facebookresearch/detectron2.git@main
@@ -124,33 +124,33 @@ The following color transfer, style transfer and colorization methods are integr
 ### Color Transfer
 | Year | ID  | Support |  Publication |
 | ---  | --- | --- | --- |
-| 2001 | $`GLO`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [Color Transfer between Images](https://doi.org/10.1109/38.946629) |
-| 2003 | $`BCC`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [A Framework for Transfer Colors Based on the Basic Color Categories](https://doi.org/10.1109/CGI.2003.1214463) |
+| 2001 | $`Reinhard01`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [Color Transfer between Images](https://doi.org/10.1109/38.946629) |
+| 2003 | $`Chang03`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [A Framework for Transfer Colors Based on the Basic Color Categories](https://doi.org/10.1109/CGI.2003.1214463) |
 | 2005 | $`PDF`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [N-dimensional probability density function transfer and its application to color transfer](https://doi.org/10.1109/ICCV.2005.166) |
-| 2006 | $`CCS`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [Color transfer in correlated color space](https://doi.org/10.1145/1128923.1128974) |
-| 2007 | $`MKL`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer](https://doi.org/10.1049/cp:20070055) |
-| 2009 | $`GPC`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Color Transfer between Images](https://doi.org/10.1109/38.946629) | [Gradient-Preserving Color Transfer](http://dx.doi.org/10.1111/j.1467-8659.2009.01566.x) |
-| 2010 | $`FUZ`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [An efficient fuzzy clustering-based color transfer method](https://doi.org/10.1109/FSKD.2010.5569560) |
-| 2019 | $`TPS`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [L2 Divergence for robust colour transfer](https://doi.org/10.1016/j.cviu.2019.02.002) - [Original Implementation](https://github.com/groganma/gmm-colour-transfer) |
-| 2020 | $`HIS`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Deep Color Transfer using Histogram Analogy](https://doi.org/10.1007/s00371-020-01921-6) - [Original Implementation](https://github.com/codeslake/Color_Transfer_Histogram_Analogy) |
-| 2021 | $`RHG`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms](https://doi.org/10.48550/arXiv.2011.11731) |
-| 2021 | $`EB3`$ | <img src="https://github.com/user-attachments/assets/2c875956-1eaa-4ad4-bdfe-b2a0dd895b64" alt="Logo" style="width: 140px; height: 20px;"> | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
+| 2006 | $`Xiao06`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [Color transfer in correlated color space](https://doi.org/10.1145/1128923.1128974) |
+| 2007 | $`Reinhard07`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer](https://doi.org/10.1049/cp:20070055) |
+| 2009 | $`Xiao09`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Color Transfer between Images](https://doi.org/10.1109/38.946629) | [Gradient-Preserving Color Transfer](http://dx.doi.org/10.1111/j.1467-8659.2009.01566.x) |
+| 2010 | $`Qian10`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [An efficient fuzzy clustering-based color transfer method](https://doi.org/10.1109/FSKD.2010.5569560) |
+| 2019 | $`Grogan19`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [L2 Divergence for robust colour transfer](https://doi.org/10.1016/j.cviu.2019.02.002) - [Original Implementation](https://github.com/groganma/gmm-colour-transfer) |
+| 2020 | $`Lee20`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Deep Color Transfer using Histogram Analogy](https://doi.org/10.1007/s00371-020-01921-6) - [Original Implementation](https://github.com/codeslake/Color_Transfer_Histogram_Analogy) |
+| 2021 | $`Afifi21_2`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms](https://doi.org/10.48550/arXiv.2011.11731) |
+| 2021 | $`Goude21`$ | <img src="https://github.com/user-attachments/assets/2c875956-1eaa-4ad4-bdfe-b2a0dd895b64" alt="Logo" style="width: 140px; height: 20px;"> | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
 
 ### Style Transfer
 | Year | ID | Support | Publication |
 | ---  | --- | --- | --- |
-| 2015 | $`NST`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [A Neural Algorithm of Artistic Style](https://doi.org/10.48550/arXiv.1508.06576) - [Original Implementation](https://github.com/cysmith/neural-style-tf) |
-| 2017 | $`DPT`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Deep Photo Style Transfer](https://doi.org/10.48550/arXiv.1703.07511) - [Original Implementation](https://github.com/LouieYang/deep-photo-styletransfer-tf) |
-| 2020 | $`PSN`$ | <img src="https://github.com/user-attachments/assets/2c875956-1eaa-4ad4-bdfe-b2a0dd895b64" alt="Logo" style="width: 140px; height: 20px;"> | [PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color](https://doi.org/10.1109/WACV45572.2020.9093513) - [Original Implementation](https://github.com/hoshino042/psnet) |
-| 2021 | $`CAM`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [CAMS: Color-Aware Multi-Style Transfer](https://doi.org/10.48550/arXiv.2106.13920) - [Original Implementation](https://github.com/mahmoudnafifi/color-aware-style-transfer) |
-| 2022 | $`ST2`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Stytr2: Image style transfer with transformers](https://doi.org/10.48550/arXiv.2105.14576) - [Original Implementation](https://github.com/diyiiyiii/StyTR-2) |
+| 2015 | $`Gatys15`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [A Neural Algorithm of Artistic Style](https://doi.org/10.48550/arXiv.1508.06576) - [Original Implementation](https://github.com/cysmith/neural-style-tf) |
+| 2017 | $`Luan17`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Deep Photo Style Transfer](https://doi.org/10.48550/arXiv.1703.07511) - [Original Implementation](https://github.com/LouieYang/deep-photo-styletransfer-tf) |
+| 2020 | $`Cao20`$ | <img src="https://github.com/user-attachments/assets/2c875956-1eaa-4ad4-bdfe-b2a0dd895b64" alt="Logo" style="width: 140px; height: 20px;"> | [PSNet: A Style Transfer Network for Point Cloud Stylization on Geometry and Color](https://doi.org/10.1109/WACV45572.2020.9093513) - [Original Implementation](https://github.com/hoshino042/psnet) |
+| 2021 | $`Afifi21`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [CAMS: Color-Aware Multi-Style Transfer](https://doi.org/10.48550/arXiv.2106.13920) - [Original Implementation](https://github.com/mahmoudnafifi/color-aware-style-transfer) |
+| 2022 | $`Deng22`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Stytr2: Image style transfer with transformers](https://doi.org/10.48550/arXiv.2105.14576) - [Original Implementation](https://github.com/diyiiyiii/StyTR-2) |
 
 ### Colorization
 | Year | ID | Support | Publication |
 | ---  | --- | --- | --- |
-| 2020 | $`IIC`$ | <img src="https://github.com/user-attachments/assets/b2dd7598-3fe4-4d9a-abb5-8ee67bf64956" alt="Logo" style="width: 140px; height: 20px;"> | [Instance-aware image colorization](https://doi.org/10.48550/arXiv.2005.10825) - [Original Implementation](https://github.com/ericsujw/InstColorization) |
-| 2022 | $`CFM`$ | <img src="https://github.com/user-attachments/assets/b2dd7598-3fe4-4d9a-abb5-8ee67bf64956" alt="Logo" style="width: 140px; height: 20px;"> | [Colorformer: Image colorization via color memory assisted hybrid-attention transformer](https://doi.org/10.1007/978-3-031-19787-1_2) - [Original Implementation](https://github.com/jixiaozhong/ColorFormer) |
-| 2023 | $`DDC`$ | <img src="https://github.com/user-attachments/assets/b2dd7598-3fe4-4d9a-abb5-8ee67bf64956" alt="Logo" style="width: 140px; height: 20px;"> | [DDColor: Towards Photo-Realistic Image Colorization via Dual Decoders](https://doi.org/10.48550/arXiv.2212.11613) - [Original Implementation](https://github.com/piddnad/DDColor) |
+| 2020 | $`Su20`$ | <img src="https://github.com/user-attachments/assets/b2dd7598-3fe4-4d9a-abb5-8ee67bf64956" alt="Logo" style="width: 140px; height: 20px;"> | [Instance-aware image colorization](https://doi.org/10.48550/arXiv.2005.10825) - [Original Implementation](https://github.com/ericsujw/InstColorization) |
+| 2022 | $`Ji22`$ | <img src="https://github.com/user-attachments/assets/b2dd7598-3fe4-4d9a-abb5-8ee67bf64956" alt="Logo" style="width: 140px; height: 20px;"> | [Colorformer: Image colorization via color memory assisted hybrid-attention transformer](https://doi.org/10.1007/978-3-031-19787-1_2) - [Original Implementation](https://github.com/jixiaozhong/ColorFormer) |
+| 2023 | $`Kang23`$ | <img src="https://github.com/user-attachments/assets/b2dd7598-3fe4-4d9a-abb5-8ee67bf64956" alt="Logo" style="width: 140px; height: 20px;"> | [DDColor: Towards Photo-Realistic Image Colorization via Dual Decoders](https://doi.org/10.48550/arXiv.2212.11613) - [Original Implementation](https://github.com/piddnad/DDColor) |
 
 ## Available Objective Evaluation Metrics
 Three classes of evaluation metrics are considered here. Metrics that evaluate the color consistency with the reference image (indicated with $`^r`$), metrics that evaluate the structural similarity with the source image (indicated with $`^s`$) and metrics that evaluates the overall quality of the output (indicated with $`^o`$).
@@ -160,10 +160,10 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 | / | $`PSNR^s_{rgb}`$ | Peak Signal-to-Noise Ratio | / |
 | / | $`HI^r_{rgb}`$ | Histogram Intersection | / |
 | / | $`Corr^r_{rgb}`$ | Correlation | / |
-| / | $`BA^r_{rgb}`$ | Bhattacharyya Distance | / |
+| / | $`Bhattacharyya^r_{rgb}`$ | Bhattacharyya Distance | / |
 | / | $`MSE^s_{rgb}`$ | Mean-Squared Error | / |
 | / | $`RMSE^s_{rgb}`$ | Root-Mean-Squared Error | / |
-| 2003 | $`CF^o_{rgyb}`$ | Colorfulness | [Measuring Colourfulness in Natural Images](http://dx.doi.org/10.1117/12.477378) |
+| 2003 | $`Colorfulness^o_{rgyb}`$ | Colorfulness | [Measuring Colourfulness in Natural Images](http://dx.doi.org/10.1117/12.477378) |
 | 2003 | $`MSSSIM^s_{rgb}`$ | Multi-Scale Structural Similarity Index | [Multiscale structural similarity for image quality assessment](https://doi.org/10.1109/ACSSC.2003.1292216) |
 | 2004 | $`SSIM^s_{rgb}`$ | Structural Similarity Index | [Image quality assessment: from error visibility to structural similarity](https://doi.org/10.1109/TIP.2003.819861) |
 | 2006 | $`GSSIM^s_{rgb}`$ | Gradient-based Structural Similarity Index | [Gradient-Based Structural Similarity for Image Quality Assessment](https://doi.org/10.1109/ICIP.2006.313132) |

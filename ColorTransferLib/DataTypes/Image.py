@@ -29,7 +29,9 @@ class Image:
     # ------------------------------------------------------------------------------------------------------------------
     def __init__(self, file_path=None, array=None, size=(0, 0), color="RGB", normalized=False):
         if file_path is None and array is None:
-            self.__img = np.zeros((size[1], size[0]), dtype=np.float32)
+            # previously: np.zeros((size[1], size[0]), ...) -> single-channel
+            # fixed: create 3-channel image
+            self.__img = np.zeros((size[1], size[0], 3), dtype=np.float32)
         elif file_path is not None and array is None:
             self.__img = cv2.imread(file_path)
             #self.__img = cv2.resize(self.__img, (self.__img.shape[1] //3, self.__img.shape[0] //3))
@@ -86,8 +88,8 @@ class Image:
         self.__width = width
         self.__height = height
         self.__img = cv2.resize(self.__img, (width, height), interpolation=cv2.INTER_AREA)
-        #print(self.__width)
-        #print(self.__width)
+        # update pixel count after resize
+        self.__pixelnum = self.__width * self.__height
 
     # ------------------------------------------------------------------------------------------------------------------
     # Shows the image using OpenCV. The showed image can be scaled by providing a <resize>-values. If the
@@ -177,18 +179,32 @@ class Image:
     # ------------------------------------------------------------------------------------------------------------------
     def get_color_statistic_3D(self, bins=[256,256,256], normalized=False):
         color = self.get_colors()
-        rgb_c = (color * 255.0).astype(int).reshape(color.shape[0], color.shape[2])
-        histo = np.asarray(np.histogramdd(rgb_c, bins)[0])
+        rgb_c = (color * 255.0).astype(np.float32).reshape(color.shape[0], color.shape[2])
+
+        # use fixed range for all images to make histograms comparable
+        histo, _ = np.histogramdd(
+            rgb_c,
+            bins=bins,
+            range=((0.0, 256.0), (0.0, 256.0), (0.0, 256.0)),
+        )
 
         if normalized:
             sum_h = np.sum(histo)
-            histo /= sum_h
+            if sum_h > 0:
+                histo /= sum_h
+            else:
+                # empty histogram -> keep it as zeros
+                histo = np.zeros_like(histo, dtype=np.float32)
+
         return histo
 
     # ------------------------------------------------------------------------------------------------------------------
     # returns the quantized 3D color histogram
     # ------------------------------------------------------------------------------------------------------------------
     def get_3D_color_histogram(self):
+        # attribute may be missing because initialization in constructor is commented out
+        if not hasattr(self, "_Image__3D_color_histogram"):
+            self.__3D_color_histogram = self.__calculate_3D_color_histogram()
         return self.__3D_color_histogram
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -233,6 +249,8 @@ class Image:
             self.__img = self.__img / 255.0
         self.__width = self.__img.shape[1]
         self.__height = self.__img.shape[0]
+        # update pixel count after replacing raw array
+        self.__pixelnum = self.__width * self.__height
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 """
-Copyright 2025 by Herbert Potechius,
+Copyright 2026 by Herbert Potechius,
 Technical University of Berlin
 Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
@@ -15,9 +15,9 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import copy
 import tensorflow as tf
 
-from .predict import predict
-from .utils.utils import calc_mean_score
-from .handlers.model_builder import Nima
+from .third_party.predict import predict
+from .third_party.utils.utils import calc_mean_score
+from .third_party.handlers.model_builder import Nima
 
 from ColorTransferLib.Utils.Helper import init_model_files
 

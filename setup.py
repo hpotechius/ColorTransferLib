@@ -10,7 +10,7 @@ with open('requirements/requirements.txt') as f:
 
 setuptools.setup(
     name="ColorTransferLib",
-    version="2.0.1-3",
+    version="2.1.0",
     author="Herbert Potechius",
     author_email="potechius.herbert@gmail.com",
     description="This library provides color and tyle transfer algorithms which were published in scientific papers. Additionall a set of IQA metrics are available.",
@@ -21,14 +21,11 @@ setuptools.setup(
         "Operating System :: POSIX :: Linux",
     ],
     package_data={"": ['Options/*.json',
-                       'Config/*.json',
-                       'Algorithms/TPS/L2RegistrationForCT/*',
-                       'Algorithms/TPS/L2RegistrationForCT/*/*',
-                       'Algorithms/TPS/L2RegistrationForCT/*/*/*',  
+                       'Config/*.json', 
                        'Evaluation/VSI/saliency_models/resources/*.mat',
-                       'Algorithms/DDC/basicsr/archs/ddcolor_arch_utils/*']},
+                       'Algorithms/Kang23/basicsr/archs/ddcolor_arch_utils/*']},
     include_package_data=True,
-    python_requires='>=3.10,<3.11',
+    python_requires='>=3.12,<3.13',
     long_description=long_description,
     long_description_content_type='text/markdown',
     install_requires= requirements

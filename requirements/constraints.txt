@@ -1,1 +1,5 @@
-opencv-python --no-binary opencv-python
+#opencv-python --no-binary opencv-python
+
+# Detectron2 (passt Version automatisch zu deinem PyTorch/CUDA beim Build).
+# Falls du eine bestimmte Version brauchst, kannst du z.B. `@v0.6` anhängen.
+detectron2 @ git+https://github.com/facebookresearch/detectron2.git

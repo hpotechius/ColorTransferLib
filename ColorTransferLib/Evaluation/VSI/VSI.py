@@ -1,7 +1,7 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2026 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -10,21 +10,22 @@ Please see the LICENSE file that should have been included as part of this packa
 import os
 from sys import platform
 
-if platform == "linux" or platform == "linux2":
-    # linux
-    os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
-elif platform == "darwin":
-    # OS X
-    os.environ["OCTAVE_EXECUTABLE"] = "/opt/homebrew/bin/octave-cli"
-elif platform == "win32":
-    # Windows...
-    pass
+# if platform == "linux" or platform == "linux2":
+#     # linux
+#     os.environ["OCTAVE_EXECUTABLE"] = "/usr/bin/octave-cli"
+# elif platform == "darwin":
+#     # OS X
+#     os.environ["OCTAVE_EXECUTABLE"] = "/opt/homebrew/bin/octave-cli"
+# elif platform == "win32":
+#     # Windows...
+#     pass
 
-from oct2py import octave
+# from oct2py import octave
 import cv2
 import numpy as np
-# from gbvsnew import gbvs 
-from ColorTransferLib.Evaluation.VSI.saliency_models import gbvs
+# from .third_party.gbvs import compute_gbvs_saliency
+from .third_party.saliency_models import gbvs as gbvs_module
+
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Structural similarity index measure (VSI)
@@ -69,21 +70,26 @@ class VSI:
 
         # mex -g  mex_mgRecolourParallel_1.cpp COMPFLAGS="/openmp $COMPFLAGS"
         # Necessary to run "gbvs_install" once on a new system
-        octave.addpath(octave.genpath('.'))
-        octave.eval("warning('off','Octave:shadowed-function')")
-        octave.eval('pkg load image')
-        octave.eval('pkg load statistics')
 
+        pass
+
+        # octave.addpath(octave.genpath('.'))
+        # octave.eval("warning('off','Octave:shadowed-function')")
+        # octave.eval('pkg load image')
+        # octave.eval('pkg load statistics')
+
+    
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def VS(img):
-        #outp = octave.gbvs_fast((img * 255).astype("uint8"))
-        outp = gbvs.compute_saliency((img * 255).astype("uint8"))
+        # outp = gbvs.compute_saliency((img * 255).astype("uint8"))
+        # return outp
+
+        outp = gbvs_module.compute_saliency(img)
         return outp
-        # sal_map = outp["master_map_resized"]
-        # return sal_map
+
     
     # ------------------------------------------------------------------------------------------------------------------
     #

@@ -1,9 +1,3 @@
 include Evaluation/VIS/saliency_models/resources/28__32__m__2.mat
 include Options/*.json
 include Config/*.json
-include Algorithms/TPS/L2RegistrationForCT/*
-include Algorithms/TPS/L2RegistrationForCT/*/*
-include Algorithms/TPS/L2RegistrationForCT/*/*/*
-include Evaluation/VIS/gbvs/*
-include Evaluation/VIS/gbvs/*/*
-include Evaluation/VIS/gbvs/*/*/*

@@ -21,11 +21,11 @@ import os
 
 
 # List of abbreviations for all style transfer methods
-st_methods = ["NST", "DPT", "PSN", "CAM", "ST2"]
+st_methods = ["Gatys15", "Luan17", "Cao20", "Afifi21", "Deng22"]
 # List of abbreviations for colorization methods
-cz_methods = ["IIC", "CFM", "DDC"]
+cz_methods = ["Su20", "Ji22", "Kang23"]
 # List of abbreviations for all evaluation methods
-ev_methods = ["PSNR", "HI", "Corr", "BA", "MSE", "RMSE", "CF", "MSSSIM", "SSIM", "GSSIM", "IVSSIM", "IVEGSSIM", "FSIM", "BRISQUE", "NIQE", "VSI", "CTQM", "LPIPS", "NIMA", "CSS"]
+ev_methods = ["PSNR", "HI", "Corr", "BD", "MSE", "RMSE", "CF", "MSSSIM", "SSIM", "GSSIM", "IVSSIM", "IVEGSSIM", "FSIM", "BRISQUE", "NIQE", "VSI", "CTQM", "LPIPS", "NIMA", "CSS"]
 
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
@@ -39,8 +39,7 @@ ev_methods = ["PSNR", "HI", "Corr", "BA", "MSE", "RMSE", "CF", "MSSSIM", "SSIM",
 # ------------------------------------------------------------------------------------------------------------------
 def test_all_CT_all_datatypes(out_path):
     # List of abbreviations for all color transfer methods
-    ct_methods = ["GLO", "BCC", "PDF", "CCS", "MKL", "GPC", "FUZ", "TPS", "HIS", "RHG", "EB3"]   
-    ct_methods = ["GLO"]   
+    ct_methods = ["Reinhard01", "Chang03", "Pitie05", "Xiao06", "Reinhard07", "Xiao09", "Qian10", "Grogan19", "Lee20", "Afifi21_2", "Goude21"]     
 
     print("Loading all files...")
     # Source input
@@ -117,7 +116,7 @@ def test_all_CT_all_datatypes(out_path):
 # ------------------------------------------------------------------------------------------------------------------
 def test_all_ST_all_datatypes(out_path):
     # List of abbreviations for all color transfer methods
-    ct_methods = ["NST", "DPT", "PSN", "CAM", "ST2"]   
+    ct_methods = ["Gatys15", "Luan17", "Cao20", "Afifi21", "Deng22"]
 
     print("Loading all files...")
     # Source input
@@ -135,7 +134,7 @@ def test_all_ST_all_datatypes(out_path):
     ref_vv = VolumetricVideo(folder_path='testdata/volumetricvideos/$volumetric$human', file_name='human')
     ref_im = Image(file_path='testdata/images/The_Scream.png')
     ref_vd = Video(file_path='testdata/videos/test_vid_00.mp4')
-    ref_pc = Mesh(file_path='testdata/pointclouds/Azurit.ply', datatype="PointCloud")
+    ref_pc = Mesh(file_path='testdata/pointclouds/Orange.ply', datatype="PointCloud")
     ref_me = Mesh(file_path='testdata/meshes/$mesh$Apple/Apple.obj', datatype="Mesh")
 
     src_dict = {
@@ -194,7 +193,7 @@ def test_all_ST_all_datatypes(out_path):
 # ------------------------------------------------------------------------------------------------------------------
 def test_all_CZ_all_datatypes(out_path):
     # List of abbreviations for all color transfer methods
-    ct_methods = ["IIC", "CFM", "DDC"] 
+    ct_methods = ["Su20", "Ji22", "Kang23"] 
 
     print("Loading all files...")
     # Source input
@@ -247,7 +246,9 @@ def test_all_CZ_all_datatypes(out_path):
 # ------------------------------------------------------------------------------------------------------------------
 def test_all_EVAL():
     # List of abbreviations for all evaluation methods
-    ev_methods = ["PSNR", "HI", "Corr", "BA", "MSE", "RMSE", "CF", "MSSSIM", "SSIM", "GSSIM", "IVSSIM", "IVEGSSIM", "FSIM", "BRISQUE", "NIQE", "VSI", "CTQM", "LPIPS", "NIMA", "CSS"]
+    ev_methods = ["PSNR", "HI", "Corr", "BD", "MSE", "RMSE", "CF", "MSSSIM", "SSIM", "GSSIM", "IVSSIM", "IVEGSSIM", "FSIM", "BRISQUE", "NIQE", "VSI", "CTQM", "LPIPS", "NIMA", "CSS"]
+
+    ev_methods = ["FSIM"]
 
     for method in ev_methods:
         print("Processing: " + method + " ...", end=' ')
