@@ -45,7 +45,7 @@ pip install git+https://github.com/facebookresearch/detectron2.git@main
 ```
 pip install -r requirements/requirements.txt -c requirements/constraints.txt
 python setup.py bdist_wheel
-pip install ../ColorTransferLib/dist/ColorTransferLib-2.1.0-py3-none-any.whl 
+pip install  dist/ColorTransferLib-2.1.0-py3-none-any.whl 
 pip install git+https://github.com/facebookresearch/detectron2.git@main
 ```
 
