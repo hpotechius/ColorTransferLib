@@ -1,0 +1,10 @@
+[
+  {
+    "name": "colorspace",
+    "default": "rgb",
+    "type": "string",
+    "values": ["rgb", "lalphabeta", "cielab"],
+    "tooltip": "Decides in which color space the algorithm is applied.",
+    "changeable": true
+  }
+]

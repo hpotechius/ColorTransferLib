@@ -1,0 +1,42 @@
+[
+  {
+    "name": "cluster_num",
+    "default": 5,
+    "type": "int",
+    "values": [],
+    "tooltip": "Number of clusters",
+    "changeable": true
+  },
+  {
+    "name": "fuzzier",
+    "default": 2.0,
+    "type": "float",
+    "values": [],
+    "tooltip": "Controls how fuzzy the cluster boundary should be",
+    "changeable": true
+  },
+  {
+    "name": "max_iterations",
+    "default": 1000,
+    "type": "int",
+    "values": [],
+    "tooltip": "Maximum number of iterations for updating clusters.",
+    "changeable": true
+  },
+  {
+    "name": "error",
+    "default": 1e-04,
+    "type": "float",
+    "values": [],
+    "tooltip": "Terminations error.",
+    "changeable": true
+  },
+  {
+    "name": "colorspace",
+    "default": "lalphabeta",
+    "type": "string",
+    "values": ["rgb", "lalphabeta", "cielab"],
+    "tooltip": "Decides in which color space the algorithm is applied.",
+    "changeable": true
+  }
+]

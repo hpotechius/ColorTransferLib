@@ -1,0 +1,25 @@
+[
+  {
+    "name": "version",
+    "default": "MGD",
+    "type": "string",
+    "values": ["IGD", "MGD"],
+    "tooltip": "Either Independent Gaussian Distributions or Multivariate Gaussian Distribution.",
+    "changeable": true
+  }, {
+    "name": "pca",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "Decides whether the normals are rotated using PCA",
+    "changeable": true
+  },
+  {
+    "name": "colorspace",
+    "default": "lalphabeta",
+    "type": "string",
+    "values": ["rgb", "lalphabeta", "cielab"],
+    "tooltip": "Decides in which color space the algorithm is applied.",
+    "changeable": true
+  }
+]

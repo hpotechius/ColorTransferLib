@@ -1,0 +1,10 @@
+[
+  {
+    "name": "model",
+    "default": "ddcolor_paper_tiny",
+    "type": "string",
+    "values": ["ddcolor_paper_tiny", "ddcolor_paper", "ddcolor_modelscope", "ddcolor_artistic"],
+    "tooltip": "Model to use for colorization.",
+    "changeable": true
+  }
+]

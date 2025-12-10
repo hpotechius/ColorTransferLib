@@ -1,0 +1,354 @@
+[
+  {
+    "name": "dataroot",
+    "default": "test",
+    "type": "string",
+    "values": ["test"],
+    "tooltip": "Path to images (should have subfolders trainA, trainB, valA, valB, etc)",
+    "changeable": false
+  },
+  {
+    "name": "batchSize",
+    "default": 1,
+    "type": "int",
+    "values": [],
+    "tooltip": "Input batch size.",
+    "changeable": false
+  },
+  {
+    "name": "loadSize",
+    "default": 512,
+    "type": "int",
+    "values": [],
+    "tooltip": "Scale images to this size.",
+    "changeable": false
+  },
+  {
+    "name": "fineSize",
+    "default": 512,
+    "type": "int",
+    "values": [],
+    "tooltip": "Then crop to this size.",
+    "changeable": false
+  },
+  {
+    "name": "ngf",
+    "default": 64,
+    "type": "int",
+    "values": [],
+    "tooltip": "Num. of gen filters in first conv layer.",
+    "changeable": false
+  },
+  {
+    "name": "ndf",
+    "default": 64,
+    "type": "int",
+    "values": [],
+    "tooltip": "Num. of discrim filters in first conv layer.",
+    "changeable": false
+  },
+  {
+    "name": "which_model_netD",
+    "default": "basic",
+    "type": "string",
+    "values": ["basic"],
+    "tooltip": "Selects model to use for netD.",
+    "changeable": false
+  },
+  {
+    "name": "which_model_netG",
+    "default": "resnet_9blocks",
+    "type": "string",
+    "values": ["resnet_9blocks"],
+    "tooltip": "Selects model to use for netG.",
+    "changeable": false
+  },
+  {
+    "name": "n_layers_D",
+    "default": 3,
+    "type": "int",
+    "values": [],
+    "tooltip": "Only used if which_model_netD==n_layers.",
+    "changeable": false
+  },
+  {
+    "name": "gpu_ids",
+    "default": [0],
+    "type": "array",
+    "values": [],
+    "tooltip": "Gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU.",
+    "changeable": false
+  },
+  {
+    "name": "name",
+    "default": "experiment_name",
+    "type": "string",
+    "values": ["experiment_name"],
+    "tooltip": "Name of the experiment. It decides where to store samples and models.",
+    "changeable": false
+  },
+  {
+    "name": "model",
+    "default": "cycle_gan",
+    "type": "string",
+    "values": ["cycle_gan","pix2pix","test"],
+    "tooltip": "Chooses which model to use. cycle_gan, pix2pix, test.",
+    "changeable": false
+  },
+  {
+    "name": "which_direction",
+    "default": "AtoB",
+    "type": "string",
+    "values": ["AtoB","BtoA"],
+    "tooltip": "AtoB or BtoA.",
+    "changeable": false
+  },
+  {
+    "name": "nThreads",
+    "default": 1,
+    "type": "int",
+    "values": [],
+    "tooltip": "Num. threads for loading data.",
+    "changeable": false
+  },
+  {
+    "name": "checkpoints_dir",
+    "default": "checkpoints",
+    "type": "string",
+    "values": [],
+    "tooltip": "Models are saved here.",
+    "changeable": false
+  },
+  {
+    "name": "network",
+    "default": "iccv_submitted",
+    "type": "string",
+    "values": ["iccv_submitted"],
+    "tooltip": "iccv_submitted.",
+    "changeable": false
+  },
+  {
+    "name": "network_H",
+    "default": "basic",
+    "type": "string",
+    "values": ["basic"],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "norm",
+    "default": "instance",
+    "type": "string",
+    "values": ["instance"],
+    "tooltip": "Instance normalization or batch normalization",
+    "changeable": false
+  },
+  {
+    "name": "serial_batches",
+    "default": true,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "If true, takes images in order to make batches, otherwise takes them randomly",
+    "changeable": false
+  },
+  {
+    "name": "display_winsize",
+    "default": 512,
+    "type": "int",
+    "values": [],
+    "tooltip": "Display window size",
+    "changeable": false
+  },
+  {
+    "name": "display_id",
+    "default": 1,
+    "type": "int",
+    "values": [],
+    "tooltip": "Window id of the web display.",
+    "changeable": false
+  },
+  {
+    "name": "display_env",
+    "default": "main",
+    "type": "string",
+    "values": [],
+    "tooltip": "Environment name of the web display.",
+    "changeable": false
+  },
+  {
+    "name": "display_port",
+    "default": 6005,
+    "type": "int",
+    "values": [],
+    "tooltip": "Visdom port of the web display.",
+    "changeable": false
+  },
+  {
+    "name": "no_dropout",
+    "default": true,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "No dropout for the generator.",
+    "changeable": false
+  },
+  {
+    "name": "max_dataset_size",
+    "default": 	3.402823466e38,
+    "type": "float",
+    "values": [],
+    "tooltip": "Maximum number of samples allowed per dataset. If the dataset directory contains more than max_dataset_size, only a subset is loaded.",
+    "changeable": false
+  },
+  {
+    "name": "resize_or_crop",
+    "default": 	"resize_and_crop",
+    "type": "string",
+    "values": ["resize_and_crop", "crop", "scale_width", "scale_width_and_crop"],
+    "tooltip": "Scaling and cropping of images at load time [resize_and_crop|crop|scale_width|scale_width_and_crop]",
+    "changeable": false
+  },
+  {
+    "name": "no_flip",
+    "default": 	true,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "If specified, do not flip the images for data augmentation",
+    "changeable": false
+  },
+  {
+    "name": "init_type",
+    "default": 	"normal",
+    "type": "string",
+    "values": ["normal", "xavier", "kaiming", "orthogonal"],
+    "tooltip": "Network initialization [normal|xavier|kaiming|orthogonal]",
+    "changeable": false
+  },
+  {
+    "name": "img_type",
+    "default": 	"lab",
+    "type": "string",
+    "values": ["lab"],
+    "tooltip": "Environment name of the web display.",
+    "changeable": false
+  },
+  {
+    "name": "pair_ratio",
+    "default":	0.0,
+    "type": "float",
+    "values": [],
+    "tooltip": "Ratio of Pair data.",
+    "changeable": false
+  },
+  {
+    "name": "mode",
+    "default":	"gsgt",
+    "type": "string",
+    "values": ["gsgt", "gsrt", "rsrt"],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "test_dir",
+    "default":	"1",
+    "type": "string",
+    "values": ["1", "2", "3", "4", "5"],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "is_psnr",
+    "default":	false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "is_SR",
+    "default":	false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "ntest",
+    "default":	3.402823466e38,
+    "type": "float",
+    "values": [],
+    "tooltip": "Num of test examples.",
+    "changeable": false
+  },
+  {
+    "name": "results_dir",
+    "default":	"results",
+    "type": "string",
+    "values": ["results"],
+    "tooltip": "Saves results here.",
+    "changeable": false
+  },
+  {
+    "name": "aspect_ratio",
+    "default":	1.0,
+    "type": "float",
+    "values": [],
+    "tooltip": "Aspect ratio of result images.",
+    "changeable": false
+  },
+  {
+    "name": "phase",
+    "default":	"test",
+    "type": "string",
+    "values": ["test"],
+    "tooltip": "Train, val, test, etc.",
+    "changeable": false
+  },
+  {
+    "name": "which_epoch",
+    "default":	"latest",
+    "type": "string",
+    "values": ["latest"],
+    "tooltip": "Which epoch to load? set to latest to use latest cached model.",
+    "changeable": false
+  },
+  {
+    "name": "how_many",
+    "default":	600,
+    "type": "int",
+    "values": [],
+    "tooltip": "How many test images to run.",
+    "changeable": false
+  },
+  {
+    "name": "video_folder",
+    "default":	"bear",
+    "type": "string",
+    "values": ["bear"],
+    "tooltip": "folder name ...",
+    "changeable": false
+  },
+  {
+    "name": "ab_bin",
+    "default":	64,
+    "type": "int",
+    "values": [],
+    "tooltip": "ab_bin",
+    "changeable": false
+  },
+  {
+    "name": "l_bin",
+    "default": 8,
+    "type": "int",
+    "values": [],
+    "tooltip": "l_bin",
+    "changeable": false
+  },
+  {
+    "name": "isTrain",
+    "default":	false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "isTrain",
+    "changeable": false
+  }
+]
