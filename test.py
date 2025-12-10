@@ -248,8 +248,6 @@ def test_all_EVAL():
     # List of abbreviations for all evaluation methods
     ev_methods = ["PSNR", "HI", "Corr", "BD", "MSE", "RMSE", "CF", "MSSSIM", "SSIM", "GSSIM", "IVSSIM", "IVEGSSIM", "FSIM", "BRISQUE", "NIQE", "VSI", "CTQM", "LPIPS", "NIMA", "CSS"]
 
-    ev_methods = ["FSIM"]
-
     for method in ev_methods:
         print("Processing: " + method + " ...", end=' ')
         src = Image(file_path='testdata/eval_test/Mona_Lisa.png')
