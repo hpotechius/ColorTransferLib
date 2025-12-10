@@ -5,7 +5,7 @@ https://github.com/hpotechius/ColorTransferLab and https://potechius.com/ColorTr
 ![colortransfer_example](https://github.com/user-attachments/assets/582bac9e-d38d-4318-8b05-874b030e602c)
 # ColorTransferLib
 ![](https://img.shields.io/badge/ColorTransferLabV2-1.0.0-black?link=https%3A%2F%2Fgithub.com%2Fhpotechius%2FColorTransferLab) ![python3.12.6](https://img.shields.io/badge/build-3.12.6-blue?logo=python&label=Python) ![](https://img.shields.io/badge/build-24.04.3%20LTS-orange?logo=ubuntu&label=Ubuntu
-) ![](https://img.shields.io/badge/build-MIT-purple?label=License) ![](https://img.shields.io/badge/build-6.4.0-brown?logo=octave&label=Octave) ![](https://img.shields.io/badge/build-GeForce%20RTX%204060%20Ti-white?logo=nvidia&label=GPU) ![](https://img.shields.io/badge/build-intel%20Core%20i7--14700KF-white?logo=intel&label=CPU) 
+) ![](https://img.shields.io/badge/build-MIT-purple?label=License) ![](https://img.shields.io/badge/build-GeForce%20RTX%204060%20Ti-white?logo=nvidia&label=GPU) ![](https://img.shields.io/badge/build-intel%20Core%20i7--14700KF-white?logo=intel&label=CPU) 
 
 ColorTransferLib is a library dedicated to color transfer, style transfer, and colorization, featuring a diverse range of published algorithms. Some methods have been re-implemented, while others are integrated from public repositories.
 
@@ -31,30 +31,6 @@ The output should resemble a dictionary format, as outlined in Listing 2. A stat
 <img alt="280272638-42e78a4f-89dc-4afe-876c-a1950044d514" src="https://github.com/user-attachments/assets/afde3c2a-a72f-4f9e-9be3-e5505faf46a7" />
 
 ## Installation
-### Requirements
-(1) Install the following packages:
-```
-# for running matlab code
-sudo apt-get install octave-dev
-# allows writing of mp4 with h246 codec
-sudo apt-get install ffmpeg
-```
-
-(2) Install the following octave package:
-```
-# activate octave environment
-octave
-# install packages
-octave:1> pkg install -forge image
-octave:2> pkg install -forge statistics
-```
-
-(3) Run the `gbvs_install.m` to make the evaluation metric VSI runnable:
-```
-user@pc:~/<Project Path>/ColorTransferLib/Evaluation/VIS/gbvs$ ocatve
-octave:1> gbvs_install.m
-```
-
 
 ### Install via PyPI
 ```
@@ -66,7 +42,7 @@ pip install git+https://github.com/facebookresearch/detectron2.git@main
 ```
 pip install -r requirements/requirements.txt -c requirements/constraints.txt
 python setup.py bdist_wheel
-pip install ../ColorTransferLib/dist/ColorTransferLib-2.0.3-py3-none-any.whl 
+pip install ../ColorTransferLib/dist/ColorTransferLib-2.1.0-py3-none-any.whl 
 pip install git+https://github.com/facebookresearch/detectron2.git@main
 ```
 
@@ -79,7 +55,7 @@ from ColorTransferLib.DataTypes.Image import Image
 src = Image(file_path='/media/source.png')
 ref = Image(file_path='/media/reference.png') 
 
-algo = "GLO"
+algo = "Reinhard01"
 ct = ColorTransfer(src, ref, algo)
 out = ct.apply()
 
@@ -100,6 +76,7 @@ ref = Image(file_path='/media/reference.png')
 out = Image(file_path='/media/output.png') 
 
 cte = ColorTransferEvaluation(src, ref, out)
+method = "CTQM"
 eva = cte.apply(method)
 print(eva)
 ```
@@ -126,14 +103,14 @@ The following color transfer, style transfer and colorization methods are integr
 | ---  | --- | --- | --- |
 | 2001 | $`Reinhard01`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [Color Transfer between Images](https://doi.org/10.1109/38.946629) |
 | 2003 | $`Chang03`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [A Framework for Transfer Colors Based on the Basic Color Categories](https://doi.org/10.1109/CGI.2003.1214463) |
-| 2005 | $`PDF`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [N-dimensional probability density function transfer and its application to color transfer](https://doi.org/10.1109/ICCV.2005.166) |
+| 2005 | $`Pitie05`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [N-dimensional probability density function transfer and its application to color transfer](https://doi.org/10.1109/ICCV.2005.166) |
 | 2006 | $`Xiao06`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [Color transfer in correlated color space](https://doi.org/10.1145/1128923.1128974) |
 | 2007 | $`Reinhard07`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [The Linear Monge-Kantorovitch Linear Colour Mapping for Example-Based Colour Transfer](https://doi.org/10.1049/cp:20070055) |
 | 2009 | $`Xiao09`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Color Transfer between Images](https://doi.org/10.1109/38.946629) | [Gradient-Preserving Color Transfer](http://dx.doi.org/10.1111/j.1467-8659.2009.01566.x) |
 | 2010 | $`Qian10`$ | <img src="https://github.com/user-attachments/assets/1589ba94-630a-420c-8309-09d01ea568ce" alt="Logo" style="width: 140px; height: 20px;"> | [An efficient fuzzy clustering-based color transfer method](https://doi.org/10.1109/FSKD.2010.5569560) |
 | 2019 | $`Grogan19`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [L2 Divergence for robust colour transfer](https://doi.org/10.1016/j.cviu.2019.02.002) - [Original Implementation](https://github.com/groganma/gmm-colour-transfer) |
 | 2020 | $`Lee20`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [Deep Color Transfer using Histogram Analogy](https://doi.org/10.1007/s00371-020-01921-6) - [Original Implementation](https://github.com/codeslake/Color_Transfer_Histogram_Analogy) |
-| 2021 | $`Afifi21_2`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms](https://doi.org/10.48550/arXiv.2011.11731) |
+| 2021 | $`Afifi21 _2`$ | <img src="https://github.com/user-attachments/assets/f1d9165b-7a80-452b-b4bf-84cbaf4cef46" alt="Logo" style="width: 140px; height: 20px;"> | [HistoGAN: Controlling Colors of GAN-Generated and Real Images via Color Histograms](https://doi.org/10.48550/arXiv.2011.11731) |
 | 2021 | $`Goude21`$ | <img src="https://github.com/user-attachments/assets/2c875956-1eaa-4ad4-bdfe-b2a0dd895b64" alt="Logo" style="width: 140px; height: 20px;"> | [Example-Based Colour Transfer for 3D Point Clouds](https://doi.org/10.1111/cgf.14388) |
 
 ### Style Transfer
@@ -160,10 +137,10 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 | / | $`PSNR^s_{rgb}`$ | Peak Signal-to-Noise Ratio | / |
 | / | $`HI^r_{rgb}`$ | Histogram Intersection | / |
 | / | $`Corr^r_{rgb}`$ | Correlation | / |
-| / | $`Bhattacharyya^r_{rgb}`$ | Bhattacharyya Distance | / |
+| / | $`BD^r_{rgb}`$ | Bhattacharyya Distance | / |
 | / | $`MSE^s_{rgb}`$ | Mean-Squared Error | / |
 | / | $`RMSE^s_{rgb}`$ | Root-Mean-Squared Error | / |
-| 2003 | $`Colorfulness^o_{rgyb}`$ | Colorfulness | [Measuring Colourfulness in Natural Images](http://dx.doi.org/10.1117/12.477378) |
+| 2003 | $`CF^o_{rgyb}`$ | Colorfulness | [Measuring Colourfulness in Natural Images](http://dx.doi.org/10.1117/12.477378) |
 | 2003 | $`MSSSIM^s_{rgb}`$ | Multi-Scale Structural Similarity Index | [Multiscale structural similarity for image quality assessment](https://doi.org/10.1109/ACSSC.2003.1292216) |
 | 2004 | $`SSIM^s_{rgb}`$ | Structural Similarity Index | [Image quality assessment: from error visibility to structural similarity](https://doi.org/10.1109/TIP.2003.819861) |
 | 2006 | $`GSSIM^s_{rgb}`$ | Gradient-based Structural Similarity Index | [Gradient-Based Structural Similarity for Image Quality Assessment](https://doi.org/10.1109/ICIP.2006.313132) |
@@ -184,11 +161,25 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 ## Citation
 If you utilize this code in your research, kindly provide a citation:
 ```
-@inproceeding{potechius2023,
-  title={A software test bed for sharing and evaluating color transfer algorithms for images and 3D objects},
+@article{potechius2023,
   author={Herbert Potechius, Thomas Sikora, Gunasekaran Raja, Sebastian Knorr},
+  title={A software test bed for sharing and evaluating color transfer algorithms for images and 3D objects},
   year={2023},
   booktitle={European Conference on Visual Media Production (CVMP)},
   doi={10.1145/3626495.3626509}
+}
+```
+```
+@article{potechius2025,
+  author = {Potechius,  Herbert and Sikora,  Thomas and Knorr, Sebastian},
+  title = {ColorTransferLabV2: a software testbed for multi-modal color transfer, colorization, and style transfer},
+  journal = {Journal of Electronic Imaging},
+  editor = {SPIE},
+  year = {2025},
+  volume = {34},
+  issue = {5},
+  pages = {1-31},
+  doi = {10.1117/1.JEI.34.5.051002},
+  url = { https://doi.org/10.1117/1.JEI.34.5.051002}
 }
 ```

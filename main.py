@@ -22,21 +22,21 @@ import argparse
 # ------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':  
 
-    # parser = argparse.ArgumentParser(description='Color Transfer Script')
-    # parser.add_argument('--test', type=str, required=False, help='Type of test to run')
-    # parser.add_argument('--out_path', type=str, default='testdata/results', required=False, help='Reference path')
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Color Transfer Script')
+    parser.add_argument('--test', type=str, required=False, help='Type of test to run')
+    parser.add_argument('--out_path', type=str, default='testdata/results', required=False, help='Reference path')
+    args = parser.parse_args()
 
-    # if args.test == "all_CT":
-    #     test_all_CT_all_datatypes(args.out_path)
-    # elif args.test == "all_ST":
-    #     test_all_ST_all_datatypes(args.out_path)
-    # elif args.test == "all_CZ":
-    #     test_all_CZ_all_datatypes(args.out_path)
-    # elif args.test == "all_EVAL":
-    #     test_all_EVAL()
+    if args.test == "all_CT":
+        test_all_CT_all_datatypes(args.out_path)
+    elif args.test == "all_ST":
+        test_all_ST_all_datatypes(args.out_path)
+    elif args.test == "all_CZ":
+        test_all_CZ_all_datatypes(args.out_path)
+    elif args.test == "all_EVAL":
+        test_all_EVAL()
 
-    # exit()
+    exit()
 
 
     
