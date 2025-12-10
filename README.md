@@ -175,7 +175,7 @@ If you utilize this code in your research, kindly provide a citation:
 ```
 ```
 @article{potechius2025,
-  author = {Potechius,  Herbert and Sikora,  Thomas and Knorr, Sebastian},
+  author = {Herbert Potechius, Thomas Sikora, Sebastian Knorr},
   title = {ColorTransferLabV2: a software testbed for multi-modal color transfer, colorization, and style transfer},
   journal = {Journal of Electronic Imaging},
   editor = {SPIE},
