@@ -1,7 +1,7 @@
 """
-Copyright 2023 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2026 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -9,6 +9,8 @@ Please see the LICENSE file that should have been included as part of this packa
 
 import pyiqa
 import torch
+import numpy as np
+import cv2
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -31,6 +33,18 @@ import torch
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class BRISQUE:
+    def __init__(self, model_path, range_path):
+        # Load SVM
+        self.svm = cv2.ml.SVM_load(model_path)
+
+        # Load range file
+        fr = cv2.FileStorage(range_path, cv2.FILE_STORAGE_READ)
+        range_mat = fr.getNode("range").mat()
+        fr.release()
+
+        # Extract feature_min and feature_max
+        self.feature_min = range_mat[0, :].astype(np.float32)
+        self.feature_max = range_mat[1, :].astype(np.float32)
     # ------------------------------------------------------------------------------------------------------------------
     #
     # ------------------------------------------------------------------------------------------------------------------
@@ -47,7 +61,6 @@ class BRISQUE:
         device = torch.device("cpu")
         iqa_metric = pyiqa.create_metric('brisque', device=device)
         score_nr = iqa_metric(img_ten)
-
         score = float(score_nr.cpu().detach().numpy())
 
         return round(score, 4)

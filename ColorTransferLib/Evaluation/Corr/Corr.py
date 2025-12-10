@@ -1,7 +1,7 @@
 """
-Copyright 2022 by Herbert Potechius,
-Ernst-Abbe-Hochschule Jena - University of Applied Sciences - Department of Electrical Engineering and Information
-Technology - Immersive Media and AR/VR Research Group.
+Copyright 2026 by Herbert Potechius,
+Technical University of Berlin
+Faculty IV - Electrical Engineering and Computer Science - Institute of Telecommunication Systems - Communication Systems Group
 All rights reserved.
 This file is released under the "MIT License Agreement".
 Please see the LICENSE file that should have been included as part of this package.
@@ -12,12 +12,20 @@ import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
-# Corr
-# ...
+# Based on the paper:
+#   Title: ...
+#   Author: ...
+#   Published in: ...
+#   Year of Publication: ...
 #
-# Source: https://docs.opencv.org/3.4/d8/dc8/tutorial_histogram_comparison.html
+# Info:
+#   Name: Correlation
+#   Identifier: Corr
+#   Link: ...
+#   Range [-1, 1] -> 1 means perfect similarity
 #
-# Range [-1, 1]
+# Implementation Details:
+#   from https://docs.opencv.org/3.4/d8/dc8/tutorial_histogram_comparison.html
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 class Corr:
