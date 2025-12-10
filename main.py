@@ -21,7 +21,6 @@ import argparse
 # ------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':  
-
     parser = argparse.ArgumentParser(description='Color Transfer Script')
     parser.add_argument('--test', type=str, required=False, help='Type of test to run')
     parser.add_argument('--out_path', type=str, default='testdata/results', required=False, help='Reference path')

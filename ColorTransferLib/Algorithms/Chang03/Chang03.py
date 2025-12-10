@@ -272,19 +272,40 @@ class Chang03:
                 output_colors = np.concatenate((output_colors, src_arr_cat), axis=0)
                 continue
 
-            mesh_src = Chang03.__calc_convex_hull(src_arr_cat)
-            mesh_ref = Chang03.__calc_convex_hull(ref_arr_cat)
+            try:
+                mesh_src = Chang03.__calc_convex_hull(src_arr_cat)
+                mesh_ref = Chang03.__calc_convex_hull(ref_arr_cat)
+            except Exception:
+                mesh_src = None
+                mesh_ref = None
+
+            # If hull construction failed, fall back to identity for this category
+            if mesh_src is None or mesh_ref is None:
+                output_colors = np.concatenate((output_colors, src_arr_cat), axis=0)
+                continue
 
             mass_center_src = Chang03.__calc_gravitational_center(mesh_src)
             mass_center_ref = Chang03.__calc_gravitational_center(mesh_ref)
 
+            # If mass center is invalid, keep originals for this category
+            if not np.all(np.isfinite(mass_center_src)) or not np.all(np.isfinite(mass_center_ref)):
+                output_colors = np.concatenate((output_colors, src_arr_cat), axis=0)
+                continue
+
             # intersections along rays from mass center
-            inter_src = Chang03.__calc_line_mesh_intersection(
-                mesh_src, src_arr_cat - mass_center_src, mass_center_src
-            )
-            inter_ref = Chang03.__calc_line_mesh_intersection(
-                mesh_ref, src_arr_cat - mass_center_src, mass_center_ref
-            )
+            try:
+                inter_src = Chang03.__calc_line_mesh_intersection(
+                    mesh_src, src_arr_cat - mass_center_src, mass_center_src
+                )
+                inter_ref = Chang03.__calc_line_mesh_intersection(
+                    mesh_ref, src_arr_cat - mass_center_src, mass_center_ref
+                )
+                dist_src = inter_src["t_hit"]
+                dist_ref = inter_ref["t_hit"]
+            except Exception:
+                # Ray casting failed; keep originals for this category
+                output_colors = np.concatenate((output_colors, src_arr_cat), axis=0)
+                continue
 
             # Color Transfer (in working colorspace)
             output_colors = Chang03.__transfer_colors(
@@ -292,8 +313,8 @@ class Chang03:
                 colors=src_arr_cat,
                 mass_center_src=mass_center_src,
                 mass_center_ref=mass_center_ref,
-                dist_src=inter_src["t_hit"],
-                dist_ref=inter_ref["t_hit"],
+                dist_src=dist_src,
+                dist_ref=dist_ref,
             )
 
         # ---------------------------------------------------------------------
@@ -378,19 +399,35 @@ class Chang03:
             vol_center += vol * geo_center
             mesh_volume += vol
         # (3) calculate mesh center based on: mass_center = sum(tetra_volumes*tetra_centers)/sum(volumes)
-        mass_center = vol_center / mesh_volume
+        if mesh_volume <= 1e-12 or not np.isfinite(mesh_volume):
+            # fall back to arithmetic mean of vertices
+            mass_center = vertices.mean(axis=0)
+        else:
+            mass_center = vol_center / mesh_volume
         return mass_center
     
     # ------------------------------------------------------------------------------------------------------------------
     # Calculates the convex hull of a given point set
     # ------------------------------------------------------------------------------------------------------------------  
     def __calc_convex_hull(points):
-        chull_red_src = ConvexHull(points)
-        chull_red_src_p = np.expand_dims(chull_red_src.points, axis=1).astype("float32")
-        chull_red_src_p = np.squeeze(chull_red_src_p)
+        pts = np.asarray(points, dtype=np.float64)
+        # Validate input: need at least 4 points in 3D
+        if pts.ndim != 2 or pts.shape[1] != 3 or pts.shape[0] < 4:
+            return None
+        try:
+            chull = ConvexHull(pts)
+        except Exception:
+            return None
 
-        mesh = o3d.geometry.TriangleMesh(vertices=o3d.utility.Vector3dVector(chull_red_src_p),
-                                          triangles=o3d.utility.Vector3iVector(chull_red_src.vertices))
+        hull_points = np.asarray(chull.points, dtype=np.float64)
+        triangles = np.asarray(chull.vertices, dtype=np.int32)
+        if hull_points.size == 0 or triangles.size == 0:
+            return None
+
+        mesh = o3d.geometry.TriangleMesh(
+            vertices=o3d.utility.Vector3dVector(hull_points),
+            triangles=o3d.utility.Vector3iVector(triangles),
+        )
         return mesh
     
     # ------------------------------------------------------------------------------------------------------------------
@@ -403,10 +440,15 @@ class Chang03:
 
         # Note: directions have to be normalized in order to get the correct ray cast distance
         norms = np.linalg.norm(directions, axis=1)[:, np.newaxis]
-        norms_ext = np.concatenate((norms, norms, norms), axis= 1)
+        # avoid division by zero
+        norms[norms == 0] = 1.0
+        norms_ext = np.concatenate((norms, norms, norms), axis=1)
         norm_directions = directions / norms_ext
 
-        rays_src = np.concatenate((np.full(np.asarray(directions).shape, mass_center), norm_directions), axis=1)
+        rays_src = np.concatenate(
+            (np.full(np.asarray(directions).shape, mass_center), norm_directions),
+            axis=1,
+        )
 
         rays_src_tensor = o3d.core.Tensor(rays_src, dtype=o3d.core.Dtype.Float32)
         ans = scene.cast_rays(rays_src_tensor)
