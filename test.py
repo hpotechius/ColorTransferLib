@@ -39,7 +39,7 @@ ev_methods = ["PSNR", "HI", "Corr", "BD", "MSE", "RMSE", "CF", "MSSSIM", "SSIM",
 # ------------------------------------------------------------------------------------------------------------------
 def test_all_CT_all_datatypes(out_path):
     # List of abbreviations for all color transfer methods
-    ct_methods = ["Reinhard01", "Chang03", "Pitie05", "Xiao06", "Reinhard07", "Xiao09", "Qian10", "Grogan19", "Lee20", "Afifi21_2", "Goude21"]     
+    ct_methods = ["Reinhard01", "Chang03", "Pitie05", "Xiao06", "Reinhard07", "Xiao09", "Qian10", "Grogan19", "Lee20", "Afifi21_2", "Goude21"] 
 
     print("Loading all files...")
     # Source input

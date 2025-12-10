@@ -5,7 +5,9 @@ https://github.com/hpotechius/ColorTransferLab and https://potechius.com/ColorTr
 ![colortransfer_example](https://github.com/user-attachments/assets/582bac9e-d38d-4318-8b05-874b030e602c)
 # ColorTransferLib
 ![](https://img.shields.io/badge/ColorTransferLabV2-1.0.0-black?link=https%3A%2F%2Fgithub.com%2Fhpotechius%2FColorTransferLab) ![python3.12.6](https://img.shields.io/badge/build-3.12.6-blue?logo=python&label=Python) ![](https://img.shields.io/badge/build-24.04.3%20LTS-orange?logo=ubuntu&label=Ubuntu
-) ![](https://img.shields.io/badge/build-MIT-purple?label=License) ![](https://img.shields.io/badge/build-GeForce%20RTX%204060%20Ti-white?logo=nvidia&label=GPU) ![](https://img.shields.io/badge/build-intel%20Core%20i7--14700KF-white?logo=intel&label=CPU) 
+) ![](https://img.shields.io/badge/build-MIT-purple?label=License) ![](https://img.shields.io/badge/build-GeForce%20RTX%204060%20Ti-white?logo=nvidia&label=GPU) ![](https://img.shields.io/badge/build-intel%20Core%20i7--14700KF-white?logo=intel&label=CPU) ![](https://img.shields.io/badge/macOS-Tahoe-deepskyblue?logo=apple) ![](https://img.shields.io/badge/Apple%20Silicon-M1-white)
+
+---
 
 ColorTransferLib is a library dedicated to color transfer, style transfer, and colorization, featuring a diverse range of published algorithms. Some methods have been re-implemented, while others are integrated from public repositories.
 
@@ -157,6 +159,7 @@ Three classes of evaluation metrics are considered here. Metrics that evaluate t
 
 ## Issues
 - PSN crashes if the point clouds are too large
+- NIMA is not working on Mac OS
 
 ## Citation
 If you utilize this code in your research, kindly provide a citation:

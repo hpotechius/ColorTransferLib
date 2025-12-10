@@ -9,7 +9,6 @@ Please see the LICENSE file that should have been included as part of this packa
 
 
 import numpy as np
-from fcmeans import FCM
 import networkx as nx
 import time
 from copy import deepcopy
