@@ -1,0 +1,170 @@
+[
+  {
+    "name": "content_image_path",
+    "default": "data/images/2020_Lee_Example-18_Source.png",
+    "type": "string",
+    "values": [],
+    "tooltip": "Path to the content image.",
+    "changeable": false
+  },
+  {
+    "name": "style_image_path",
+    "default": "data/images/2020_Lee_Example-18_Reference.png",
+    "type": "string",
+    "values": [],
+    "tooltip": "Path to the style image.",
+    "changeable": false
+  },
+  {
+    "name": "content_seg_path",
+    "default": "data/images/2020_Lee_Example-18_Source_seg.png",
+    "type": "string",
+    "values": [],
+    "tooltip": "Path to the style segmentation.",
+    "changeable": false
+  },
+  {
+    "name": "style_seg_path",
+    "default": "data/images/2020_Lee_Example-18_Reference_seg.png",
+    "type": "string",
+    "values": [],
+    "tooltip": "Path to the style segmentation.",
+    "changeable": false
+  },
+  {
+    "name": "init_image_path",
+    "default": "",
+    "type": "string",
+    "values": [],
+    "tooltip": "Path to the init image.",
+    "changeable": false
+  },
+  {
+    "name": "output_image",
+    "default": "best_stylized.png",
+    "type": "string",
+    "values": [],
+    "tooltip": "Path to output the stylized image.",
+    "changeable": false
+  },
+  {
+    "name": "serial",
+    "default": "./",
+    "type": "string",
+    "values": [],
+    "tooltip": "Path to save the serial out_iter_X.png",
+    "changeable": false
+  },
+  {
+    "name": "vgg19_path",
+    "default": "Models/DPT/vgg19.npy",
+    "type": "string",
+    "values": [],
+    "tooltip": "Path to save the serial out_iter_X.png",
+    "changeable": false
+  },
+  {
+    "name": "max_iter",
+    "default": 100,
+    "type": "int",
+    "values": [],
+    "tooltip": "Training Optimizer Options: Maximum image iteration.",
+    "changeable": true
+  },
+  {
+    "name": "learning_rate",
+    "default": 1.0,
+    "type": "float",
+    "values": [],
+    "tooltip": "Training Optimizer Options: Learning rate for adam optimizer.",
+    "changeable": false
+  },
+  {
+    "name": "print_iter",
+    "default": 1,
+    "type": "int",
+    "values": [],
+    "tooltip": "Training Optimizer Options: Print loss per iterations.",
+    "changeable": false
+  },
+  {
+    "name": "save_iter",
+    "default": 100,
+    "type": "int",
+    "values": [],
+    "tooltip": "Save temporary result per iterations.",
+    "changeable": false
+  },
+  {
+    "name": "lbfgs",
+    "default": true,
+    "type": "int",
+    "values": [true, false],
+    "tooltip": "True=lbfgs, False=Adam",
+    "changeable": false
+  },
+  {
+    "name": "content_weight",
+    "default": 1e2,
+    "type": "float",
+    "values": [],
+    "tooltip": "Weight of content loss.",
+    "changeable": true
+  },
+  {
+    "name": "style_weight",
+    "default": 1e2,
+    "type": "float",
+    "values": [],
+    "tooltip": "Weight of style loss.",
+    "changeable": true
+  },
+  {
+    "name": "tv_weight",
+    "default": 1e-3,
+    "type": "float",
+    "values": [],
+    "tooltip": "Weight of total variational loss.",
+    "changeable": true
+  },
+  {
+    "name": "affine_weight",
+    "default": 1e4,
+    "type": "float",
+    "values": [],
+    "tooltip": "Weight of affine loss.",
+    "changeable": true
+  },
+  {
+    "name": "style_option",
+    "default": 0,
+    "type": "int",
+    "values": [0, 1, 2],
+    "tooltip": "0=non-Matting, 1=only Matting, 2=first non-Matting, then Matting",
+    "changeable": true
+  },
+  {
+    "name": "apply_smooth",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "If apply local affine smooth.",
+    "changeable": true
+  },
+  {
+    "name": "f_radius",
+    "default": 15,
+    "type": "int",
+    "values": [],
+    "tooltip": "Sooth argument.",
+    "changeable": true
+  },
+  {
+    "name": "f_edge",
+    "default": 1e-1,
+    "type": "float",
+    "values": [],
+    "tooltip": "Sooth argument.",
+    "changeable": true
+  }
+]
