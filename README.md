@@ -37,15 +37,22 @@ The output should resemble a dictionary format, as outlined in Listing 2. A stat
 
 ### Install via PyPI
 ```
+python3.12 -m venv env
+source env/bin/activate
 pip install colortransferlib
 pip install git+https://github.com/facebookresearch/detectron2.git@main
 ```
 
 ### Install from source
 ```
-pip install -r requirements/requirements.txt -c requirements/constraints.txt
+python3.12 -m venv env
+source env/bin/activate
+pip install setuptools
+
+git clone git@github.com:hpotechius/ColorTransferLib.git
+cd ColorTransferLib
 python setup.py bdist_wheel
-pip install  dist/ColorTransferLib-2.1.0-py3-none-any.whl 
+pip install dist/ColorTransferLib-2.1.0-py3-none-any.whl 
 pip install git+https://github.com/facebookresearch/detectron2.git@main
 ```
 
