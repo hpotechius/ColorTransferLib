@@ -67,6 +67,8 @@ ref = Image(file_path='/media/reference.png')
 
 algo = "Reinhard01"
 ct = ColorTransfer(src, ref, algo)
+# Available options can be seen here: https://github.com/hpotechius/ColorTransferLib/tree/main/ColorTransferLib/Options
+ct.set_option("colorspace", "rgb")
 out = ct.apply()
 
 # No output file extension has to be given
