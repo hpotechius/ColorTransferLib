@@ -35,7 +35,6 @@ if __name__ == '__main__':
     elif args.test == "all_EVAL":
         test_all_EVAL()
 
-    exit()
 
 
     
@@ -57,15 +56,15 @@ if __name__ == '__main__':
 
 
     # Example without the ColorTransfer Class
-    from ColorTransferLib.Algorithms.Qian10 import Qian10
+    from ColorTransferLib.Algorithms.Su20 import Su20
     from ColorTransferLib.Utils.BaseOptions import BaseOptions
     import json
-    with open("ColorTransferLib/Options/Qian10.json", 'r') as f:
+    with open("ColorTransferLib/Options/Su20.json", 'r') as f:
         options = json.load(f)
         opt = BaseOptions(options)
 
-    out = Qian10.apply(src, ref, opt)    
+    out = Su20.apply(src, ref, opt)    
     if out["status_code"] == 0:
-        out["object"].write("testdata/results/Qian10_2")
+        out["object"].write("testdata/results/Su20")
     else:
         print("Error: " + out["response"])
