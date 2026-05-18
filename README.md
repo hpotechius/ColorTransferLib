@@ -19,7 +19,7 @@ Currently, the library supports 11 color transfer, 5 style transfer, and 3 color
 
 A compatibility chart for supported data types and a detailed list of all algorithms can be found below.
 
-![ColorTransferLabV2_DataTypes_wFiles](https://github.com/user-attachments/assets/3852256a-8547-4a36-be63-82f064d9f9b5)
+<img width="4242" height="2374" alt="ColorTransferLabV2_DataTypes_wFiles" src="https://github.com/user-attachments/assets/c735ba44-60e1-4d27-977b-6fdf693914b2" />
 
 ## API
 See [![ColorTransferAlg](https://img.shields.io/badge/ColorTransferAlg-red)](https://github.com/hpotechius/ColorTransferAlg) for information on how to integrate new color transfer algorithms.
