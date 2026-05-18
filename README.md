@@ -22,17 +22,7 @@ A compatibility chart for supported data types and a detailed list of all algori
 ![ColorTransferLabV2_DataTypes_wFiles](https://github.com/user-attachments/assets/3852256a-8547-4a36-be63-82f064d9f9b5)
 
 ## API
-For seamless integration, adhere to the API specifications of the new color transfer algorithm, depicted in the Figure below.
-
-Each class demands three inputs: Source, Reference, and Options. The Source and Reference should be of the **Image**, **Video**, **VolumetricVideo**, **LightField**, **GaussianSplatting** or **Mesh** class type, with the latter encompassing 3D point clouds and textured triangle meshes. The Options input consists of dictionaries, stored as a JSON file in the **Options** folder. For a sample option, see Listings 1. Every option details an adjustable parameter for the algorithm.
-
-Save each new color transfer class in the ColorTransferLib Repository under the **Algorithms** folder. The class should have the **apply(...)** function, which ingests the inputs and embodies the core logic for color transfer.
-
-The output should resemble a dictionary format, as outlined in Listing 2. A status code of 0 signifies a valid algorithm output, while -1 indicates invalidity. The process time denotes the algorithm's execution duration, useful for subsequent evaluations. The 'object' key in the dictionary holds the result, which should match the class type of the Source input.
-
-![CT-API_new](https://github.com/user-attachments/assets/e52ed0ba-3106-435d-b7f1-fbac67145251)
-
-<img alt="280272638-42e78a4f-89dc-4afe-876c-a1950044d514" src="https://github.com/user-attachments/assets/afde3c2a-a72f-4f9e-9be3-e5505faf46a7" />
+See [![ColorTransferAlg](https://img.shields.io/badge/ColorTransferAlg-red)](https://github.com/hpotechius/ColorTransferAlg) for information on how to integrate new color transfer algorithms.
 
 ## Installation
 
