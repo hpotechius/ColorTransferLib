@@ -1,11 +1,12 @@
-![](https://img.shields.io/badge/Also%2C%20check%20out%20the%20Web%20Application%20ColorTransferLab%20at-red?style=flat-square)
+This repository is part of a collection of three repositories. See the links below for the related projects.
 
-https://github.com/hpotechius/ColorTransferLab and https://potechius.com/ColorTransferLab
-
+[![Button 1](https://img.shields.io/badge/ColorTransferLab-blue)](https://github.com/hpotechius/ColorTransferLab)
+[![Button 2](https://img.shields.io/badge/ColorTransferLib-green)](https://github.com/hpotechius/ColorTransferLib)
+[![Button 3](https://img.shields.io/badge/ColorTransferAlg-red)](https://github.com/hpotechius/ColorTransferAlg)
 
 ![colortransferexample](https://github.com/user-attachments/assets/d5052bb6-e39b-445a-8abf-9966d02596d8)
 # ColorTransferLib
-![](https://img.shields.io/badge/ColorTransferLabV2-1.0.0-black?link=https%3A%2F%2Fgithub.com%2Fhpotechius%2FColorTransferLab) ![python3.12.6](https://img.shields.io/badge/build-3.12.6-blue?logo=python&label=Python) ![](https://img.shields.io/badge/build-24.04.3%20LTS-orange?logo=ubuntu&label=Ubuntu
+![](https://img.shields.io/badge/ColorTransferLab-1.0.0-black?link=https%3A%2F%2Fgithub.com%2Fhpotechius%2FColorTransferLab) ![python3.12.6](https://img.shields.io/badge/build-3.12.6-blue?logo=python&label=Python) ![](https://img.shields.io/badge/build-24.04.3%20LTS-orange?logo=ubuntu&label=Ubuntu
 ) ![](https://img.shields.io/badge/build-MIT-purple?label=License) ![](https://img.shields.io/badge/build-GeForce%20RTX%204060%20Ti-white?logo=nvidia&label=GPU) ![](https://img.shields.io/badge/build-intel%20Core%20i7--14700KF-white?logo=intel&label=CPU) ![](https://img.shields.io/badge/macOS-Tahoe-deepskyblue?logo=apple) ![](https://img.shields.io/badge/Apple%20Silicon-M1-white)
 
 ---

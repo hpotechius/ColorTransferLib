@@ -1,0 +1,418 @@
+[
+  {
+    "name": "data",
+    "default": "./dataset/",
+    "type": "string",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "models_dir",
+    "default": "./Models/RHG",
+    "type": "string",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "histGAN_models_dir",
+    "default": "./Models/RHG",
+    "type": "string",
+    "values": [],
+    "tooltip": "directory of pre-trained HistoGAN model",
+    "changeable": false
+  },
+  {
+    "name": "histoGAN_model_name",
+    "default": "",
+    "type": "string",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "target_hist",
+    "default": "",
+    "type": "string",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "input_image",
+    "default": "",
+    "type": "string",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "face_extraction",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "name",
+    "default": "Universal_rehistoGAN_v0",
+    "type": "string",
+    "values": ["Faces_rehistoGAN_v0", "Faces_rehistoGAN_v1", "Faces_rehistoGAN_v2", "Faces_rehistoGAN_v3", "Universal_rehistoGAN_v0", "Universal_rehistoGAN_v1", "Universal_rehistoGAN_v2"],
+    "tooltip": "...",
+    "changeable": true
+  },
+  {
+    "name": "sampling",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "for testing mode, if no target histogram is given, use sampling process",
+    "changeable": false
+  },
+  {
+    "name": "target_number",
+    "default": 50,
+    "type": "int",
+    "values": [],
+    "tooltip": "number of recolored images; ignore if you specify a target histogram",
+    "changeable": false
+  },
+  {
+    "name": "new",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "load_from",
+    "default": -1,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "image_size",
+    "default": 256,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "network_capacity",
+    "default": 18,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "transparent",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "batch_size",
+    "default": 1,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "gradient_accumulate_every",
+    "default": 8,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "num_train_steps",
+    "default": 200000,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "learning_rate",
+    "default": 2e-4,
+    "type": "float",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "num_workers",
+    "default": 1,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "save_every",
+    "default": 10000,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "trunc_psi",
+    "default": 0.75,
+    "type": "float",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "fp16",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "fq_layers",
+    "default": [],
+    "type": "array",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "fq_dict_size",
+    "default": 256,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "attn_layers",
+    "default": [],
+    "type": "array",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "gpu",
+    "default": 0,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "hist_bin",
+    "default": 64,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "hist_insz",
+    "default": 150,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "hist_method",
+    "default": "inverse-quadratic",
+    "type": "string",
+    "values": ["inverse-quadratic"],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "hist_resizing",
+    "default": "sampling",
+    "type": "string",
+    "values": ["sampling"],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "hist_sigma",
+    "default": 0.02,
+    "type": "float",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "generate",
+    "default": true,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "alpha",
+    "default": 32.0,
+    "type": "float",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "beta",
+    "default": 1.5,
+    "type": "float",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "gamma",
+    "default": 2.0,
+    "type": "float",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "change_hyperparameters",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "change_hyperparameters_after",
+    "default": 100000,
+    "type": "int",
+    "values": [],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "rec_loss",
+    "default": "laplacian",
+    "type": "string",
+    "values": ["laplacian", "sobel"],
+    "tooltip": "reconstruction loss (sobel or laplacian)",
+    "changeable": false
+  },
+  {
+    "name": "internal_hist",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "Internal histogram injection. This was an ablation on a different design; not what we did in the official ReHistoGAN",
+    "changeable": false
+  },
+  {
+    "name": "skip_conn_to_GAN",
+    "default": true,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "See Figures 4 and 6 in the paper.",
+    "changeable": false
+  },
+  {
+    "name": "fixed_gan_weights",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "To fix weights of the HistoGANs head.",
+    "changeable": false
+  },
+  {
+    "name": "load_histoGAN_weights",
+    "default": true,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "To load weights of HistoGANs head.",
+    "changeable": false
+  },
+  {
+    "name": "initialize_gan",
+    "default": true,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "variance_loss",
+    "default": true,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "...",
+    "changeable": false
+  },
+  {
+    "name": "upsampling_output",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "TESTING PHASE: Applies guided upsampling. It is recommended if input image > 256x256.",
+    "changeable": false
+  },
+  {
+    "name": "upsampling_method",
+    "default": "pyramid",
+    "type": "string",
+    "values": ["pyramid"],
+    "tooltip": "TESTING PHASE: BGU or pyramid.",
+    "changeable": false
+  },
+  {
+    "name": "pyramid_levels",
+    "default": 6,
+    "type": "int",
+    "values": [],
+    "tooltip": "TESTING PHASE: when --upsampling_output True and --upsampling_method is pyramid, this controls the number of levels in the Laplacian pymraid.",
+    "changeable": false
+  },
+  {
+    "name": "swapping_levels",
+    "default": 1,
+    "type": "int",
+    "values": [],
+    "tooltip": "TESTING PHASE: when --upsampling_output True and --upsampling_method is pyramid, this controls the number of levels to swap.",
+    "changeable": false
+  },
+  {
+    "name": "level_blending",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "TESTING PHASE: when --upsampling_output True and --upsampling_method is pyramid, this allows to blend between pyramid levels.",
+    "changeable": false
+  },
+  {
+    "name": "post_recoloring",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "TESTING PHASE: Applies post-recoloring to reduce artifacts. It is recommended if initial results have some color bleeding/artifacts.",
+    "changeable": false
+  },
+  {
+    "name": "results_dir",
+    "default": "./results_ReHistoGAN",
+    "type": "string",
+    "values": [],
+    "tooltip": "",
+    "changeable": false
+  }
+]
