@@ -39,9 +39,11 @@ if __name__ == '__main__':
 
     
     #src = Image(file_path='testdata/images/256_interior-02.png')
-    src = Image(file_path='testdata/images/256_interior-06.png')
+    #src = Image(file_path='testdata/images/256_interior-06.png')
     #src = Mesh(file_path='testdata/pointclouds/Statue_Athena.ply', datatype="PointCloud")
     #src = Video(file_path='testdata/videos/output.mp4')
+    #src = LightField(file_path='testdata/lightfields/legolow_reduced.mp4', size=(3, 3))
+    src = LightField(file_path='testdata/lightfields/lego', isVideo=False, size=(3, 3))
     ref = Image(file_path='testdata/images/256_interior-02.png')
     #ref = Mesh(file_path='testdata/pointclouds/Orange.ply', datatype="PointCloud")
     # out = Image(file_path='testdata/results/Grogan19.png')
@@ -56,15 +58,16 @@ if __name__ == '__main__':
 
 
     # Example without the ColorTransfer Class
-    from ColorTransferLib.Algorithms.Su20 import Su20
+    #from ColorTransferLib.Algorithms.Su20 import Su20
+    from ColorTransferLib.Algorithms.Reinhard01 import Reinhard01
     from ColorTransferLib.Utils.BaseOptions import BaseOptions
     import json
-    with open("ColorTransferLib/Options/Su20.json", 'r') as f:
+    with open("ColorTransferLib/Options/Reinhard01.json", 'r') as f:
         options = json.load(f)
         opt = BaseOptions(options)
 
-    out = Su20.apply(src, ref, opt)    
+    out = Reinhard01.apply(src, ref, opt)    
     if out["status_code"] == 0:
-        out["object"].write("testdata/results/Su20")
+        out["object"].write("testdata/results/Reinhard01")
     else:
         print("Error: " + out["response"])
