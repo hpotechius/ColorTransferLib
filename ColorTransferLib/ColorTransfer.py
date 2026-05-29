@@ -99,9 +99,16 @@ class ColorTransfer:
         self.__out = None
         self.__approach = approach
 
-        with open(os.path.dirname(os.path.abspath(__file__)) + "/Options/" + approach + ".json", 'r') as f:
+        algo_module = importlib.import_module(f'ColorTransferLib.Algorithms.{approach}.{approach}')
+        algo_dir = os.path.dirname(algo_module.__file__)
+        options_path = os.path.join(algo_dir, f"{approach}.json")
+        with open(options_path, 'r') as f:
             options = json.load(f)
             self.__options = BaseOptions(options)
+
+        # with open(os.path.dirname(os.path.abspath(__file__)) + "/Options/" + approach + ".json", 'r') as f:
+        #     options = json.load(f)
+        #     self.__options = BaseOptions(options)
 
 
     # ------------------------------------------------------------------------------------------------------------------

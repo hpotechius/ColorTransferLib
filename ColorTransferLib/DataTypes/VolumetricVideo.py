@@ -51,12 +51,12 @@ class VolumetricVideo:
     # Writes the mesh to the specified path
     # ------------------------------------------------------------------------------------------------------------------
     def write(self, path):
+        # Filename without folder path, e.g. "foo" from "some/path/foo"
         new_file_name = path.split("/")[-1]
-        out_folder, _ = os.path.split(path)
+        # Folder path without filename, e.g. "some/path" from "some/path/foo"
+        out_folder = path.rsplit("/", 1)[0]
 
-        out_folder += "/$volumetric$" + path.split("/")[-1]
-
-        # Erstelle den Ordner, falls er nicht existiert
+        # Create the folder if it does not exist
         if not os.path.exists(out_folder):
             os.makedirs(out_folder)
 
@@ -70,14 +70,14 @@ class VolumetricVideo:
             # possible -> this ending has to be removed from the png file and within the mtl file.
             o3d.io.write_triangle_mesh(file_path + ".obj", self.__meshes[i].get_mesh())
             img_path = file_path + "_0.png"
-            new_img_path = file_path + ".jpg"
+            new_img_path = file_path + ".png"
             file_name = file_path.split("/")[-1]
             os.rename(img_path, new_img_path)
 
             mtl_path = file_path + ".mtl"
             readFile = open(mtl_path, "r")
             data = readFile.read()
-            data = data.replace(file_name + "_0.png", file_name + ".jpg")
+            data = data.replace(file_name + "_0.png", file_name + ".png")
             writeFile = open(mtl_path, "w")
             writeFile.write(data)
 

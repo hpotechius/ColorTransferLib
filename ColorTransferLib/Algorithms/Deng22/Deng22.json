@@ -1,0 +1,18 @@
+[
+  {
+    "name": "colorspace",
+    "default": "rgb",
+    "type": "string",
+    "values": ["rgb", "lalphabeta"],
+    "tooltip": "Decides in which color space the algorithm is applied.",
+    "changeable": true
+  },
+  {
+      "name": "a",
+      "default": 1.0,
+      "type": "float",
+      "values": [],
+      "tooltip": "???",
+      "changeable": true
+  }
+]

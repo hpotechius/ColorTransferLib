@@ -1,0 +1,49 @@
+[
+  {
+    "name": "cluster_num",
+    "default": 50,
+    "type": "int",
+    "values": [],
+    "tooltip": "Number of cluster per gaussian mixture model.",
+    "changeable": true
+  },  {
+    "name": "grid_size",
+    "default": 5,
+    "type": "int",
+    "values": [],
+    "tooltip": "Grid size per dimension for the regular grid.",
+    "changeable": true
+  },
+  {
+    "name": "cluster_method",
+    "default": "KMeans",
+    "type": "str",
+    "values": ["KMeans", "MVQ"],
+    "tooltip": "Method for calculating clusters. MVQ currently not usable.",
+    "changeable": false
+  },
+  {
+    "name": "colorspace",
+    "default": "rgb",
+    "type": "str",
+    "values": ["rgb", "lalphabeta", "cielab"],
+    "tooltip": "Colorspace.",
+    "changeable": true
+  },
+  {
+    "name": "iterations",
+    "default": 10000,
+    "type": "int",
+    "values": [],
+    "tooltip": "Number of iterations.",
+    "changeable": true
+  },
+  {
+    "name": "learning_rate",
+    "default": 0.0001,
+    "type": "float",
+    "values": [],
+    "tooltip": "Learning rate for the color transfer algorithm.",
+    "changeable": true
+  }
+]

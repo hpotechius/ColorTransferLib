@@ -10,9 +10,9 @@ with open('requirements/requirements.txt') as f:
 
 setuptools.setup(
     name="ColorTransferLib",
-    version="2.1.0",
+    version="2.2.0",
     author="Herbert Potechius",
-    author_email="potechius.herbert@gmail.com",
+    author_email="herbert@potechius.com",
     description="This library provides color and tyle transfer algorithms which were published in scientific papers. Additionall a set of IQA metrics are available.",
     packages=setuptools.find_packages(),
     classifiers=[
@@ -21,6 +21,7 @@ setuptools.setup(
         "Operating System :: POSIX :: Linux",
     ],
     package_data={"": ['Options/*.json',
+                       'Algorithms/*/*.json',
                        'Config/*.json', 
                        'Evaluation/VSI/third_party/saliency_models/resources/*.mat',
                        'Algorithms/Kang23/third_party/basicsr/archs/ddcolor_arch_utils/*']},
@@ -28,7 +29,5 @@ setuptools.setup(
     python_requires='>=3.12,<3.13',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    install_requires= requirements
+    install_requires=requirements
 )
-
-# run seperately: "pip install opencv-python==4.9.0.80 --no-binary opencv-python"

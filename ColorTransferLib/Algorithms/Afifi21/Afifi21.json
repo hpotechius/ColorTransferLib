@@ -1,0 +1,186 @@
+[
+  {
+    "name": "smooth",
+    "default": true,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "No description yet!",
+    "changeable": false
+  },
+  {
+    "name": "show_masks",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "No description yet!",
+    "changeable": false
+  },
+  {
+    "name": "select_matches",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "Set to True to select color correspondences in palettes.",
+    "changeable": false
+  },
+  {
+    "name": "eps",
+    "default": 1e-6,
+    "type": "float",
+    "values": [],
+    "tooltip": "No description yet!",
+    "changeable": false
+  },
+  {
+    "name": "sigma",
+    "default": 0.25,
+    "type": "float",
+    "values": [],
+    "tooltip": "No description yet! Info: 0.25 and 0.3 work well in most cases.",
+    "changeable": false
+  },
+  {
+    "name": "palette_size",
+    "default": 5,
+    "type": "int",
+    "values": [],
+    "tooltip": "No description yet!",
+    "changeable": false
+  },
+  {
+    "name": "add_black_white",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "No description yet!",
+    "changeable": false
+  },
+  {
+    "name": "style_loss_weight",
+    "default": 10000,
+    "type": "int",
+    "values": [],
+    "tooltip": "No description yet!",
+    "changeable": true
+  },
+  {
+    "name": "content_loss_weight",
+    "default": 1,
+    "type": "int",
+    "values": [],
+    "tooltip": "No description yet!",
+    "changeable": true
+  },
+  {
+    "name": "color_distance",
+    "default": "chroma_L2",
+    "type": "string",
+    "values": ["chroma_L2", "L2"],
+    "tooltip": "No description yet!",
+    "changeable": true
+  },
+  {
+    "name": "style_feature_distance",
+    "default": "L2",
+    "type": "string",
+    "values": ["L2", "COSINE"],
+    "tooltip": "No description yet!",
+    "changeable": true
+  },
+  {
+    "name": "content_feature_distance",
+    "default": "L2",
+    "type": "string",
+    "values": ["L2", "COSINE"],
+    "tooltip": "No description yet!",
+    "changeable": true
+  },
+  {
+    "name": "optimizer",
+    "default": "LBFGS",
+    "type": "string",
+    "values": ["LBFGS", "Adam", "Adagrad"],
+    "tooltip": "No description yet!",
+    "changeable": false
+  },
+  {
+    "name": "lr",
+    "default": 0.5,
+    "type": "float",
+    "values": [],
+    "tooltip": "No description yet!",
+    "changeable": false
+  },
+  {
+    "name": "iterations",
+    "default": 100,
+    "type": "int",
+    "values": [],
+    "tooltip": "No description yet!",
+    "changeable": true
+  },
+  {
+    "name": "enable_img_scale",
+    "default": false,
+    "type": "bool",
+    "values": [true, false],
+    "tooltip": "Desired size of the output image.",
+    "changeable": false
+  },
+  {
+    "name": "img_size",
+    "default": 384,
+    "type": "int",
+    "values": [],
+    "tooltip": "Desired size of the output image.",
+    "changeable": true
+  },
+  {
+    "name": "gaussian_kernel",
+    "default": null,
+    "type": "int",
+    "values": [],
+    "tooltip": "No description yet!",
+    "changeable": false
+  },
+  {
+    "name": "device",
+    "default": "cuda",
+    "type": "string",
+    "values": ["cuda", "cpu"],
+    "tooltip": "No description yet!",
+    "changeable": true
+  },
+  {
+    "name": "loader",
+    "default": null,
+    "type": "string",
+    "values": [],
+    "tooltip": "No description yet!",
+    "changeable": false
+  },
+  {
+    "name": "unloader",
+    "default": null,
+    "type": "string",
+    "values": [],
+    "tooltip": "No description yet!",
+    "changeable": false
+  },
+  {
+    "name": "content_layers_default",
+    "default": ["conv_4", "conv_5"],
+    "type": "array",
+    "values": [],
+    "tooltip": "Desired depth layers to compute content losses.",
+    "changeable": false
+  },
+  {
+    "name": "color_aware_layers_default",
+    "default": ["conv_1", "conv_2", "conv_3", "conv_4", "conv_5"],
+    "type": "array",
+    "values": [],
+    "tooltip": "Desired depth layers to compute style losses.",
+    "changeable": false
+  }
+]
