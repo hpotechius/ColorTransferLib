@@ -18,7 +18,7 @@ def init_model_files(method, files):
 
     for file in files:
         file_path = os.path.join(method_cache_dir, file)
-        base_url = "https://potechius.com/Downloads/ColorTransferLibModels"
+        base_url = "https://huggingface.co/hpotechius/ColorTransferLibModels/resolve/main"
         url = os.path.join(base_url, method, file)
         download_model_file(url, file_path)
 

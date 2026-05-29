@@ -179,9 +179,6 @@ def test_all_ST_all_datatypes(out_path):
                 ct = ColorTransfer(src, ref, method)
                 out = ct.apply()
 
-                #print(out)
-                #exit()
-
                 if out["status_code"] == 0:
                     out["object"].write(f"{out_path}/{method}/"+ method + "_" + src_type + "_" + ref_type)
                     print("\033[92mDone\033[0m")

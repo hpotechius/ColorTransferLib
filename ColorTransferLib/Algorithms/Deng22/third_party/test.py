@@ -77,13 +77,12 @@ def predict(model_file_paths, src_img, ref_img, opt):
 
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # print(device)
     if device.type == "cuda":
         try:
             cuda_device_index = torch.cuda.current_device()
             print(f"Using CUDA device {cuda_device_index}: {torch.cuda.get_device_name(cuda_device_index)}")
-        except AssertionError as e:
-            print(f"Invalid CUDA device id: {e}")
+        except Exception as exc:
+            print(f"CUDA is not available or unusable: {exc}")
             device = torch.device("cpu")
             print("Falling back to CPU.")
     else:
@@ -110,8 +109,7 @@ def predict(model_file_paths, src_img, ref_img, opt):
 
 
     vgg = StyTR.vgg
-    # vgg.load_state_dict(torch.load(args.vgg))
-    vgg.load_state_dict(torch.load(model_file_paths["vgg_normalised.pth"]))
+    vgg.load_state_dict(torch.load(model_file_paths["vgg_normalised.pth"], map_location=device))
     vgg = nn.Sequential(*list(vgg.children())[:44])
 
     decoder = StyTR.decoder
@@ -123,8 +121,7 @@ def predict(model_file_paths, src_img, ref_img, opt):
     vgg.eval()
     from collections import OrderedDict
     new_state_dict = OrderedDict()
-    # state_dict = torch.load(args.decoder_path)
-    state_dict = torch.load(model_file_paths["decoder_iter_160000.pth"])
+    state_dict = torch.load(model_file_paths["decoder_iter_160000.pth"], map_location=device)
     for k, v in state_dict.items():
         #namekey = k[7:] # remove `module.`
         namekey = k
@@ -132,8 +129,7 @@ def predict(model_file_paths, src_img, ref_img, opt):
     decoder.load_state_dict(new_state_dict)
 
     new_state_dict = OrderedDict()
-    # state_dict = torch.load(args.Trans_path)
-    state_dict = torch.load(model_file_paths["transformer_iter_160000.pth"])
+    state_dict = torch.load(model_file_paths["transformer_iter_160000.pth"], map_location=device)
     for k, v in state_dict.items():
         #namekey = k[7:] # remove `module.`
         namekey = k
@@ -141,8 +137,7 @@ def predict(model_file_paths, src_img, ref_img, opt):
     Trans.load_state_dict(new_state_dict)
 
     new_state_dict = OrderedDict()
-    # state_dict = torch.load(args.embedding_path)
-    state_dict = torch.load(model_file_paths["embedding_iter_160000.pth"])
+    state_dict = torch.load(model_file_paths["embedding_iter_160000.pth"], map_location=device)
     for k, v in state_dict.items():
         #namekey = k[7:] # remove `module.`
         namekey = k
@@ -171,11 +166,11 @@ def predict(model_file_paths, src_img, ref_img, opt):
             # content = content.to(device).unsqueeze(0)
 
     src_img = cv2.resize(src_img, dsize=(content_size,content_size))
-    content = torch.from_numpy(np.transpose(src_img, (2, 0, 1))).float().unsqueeze(0)
+    content = torch.from_numpy(np.transpose(src_img, (2, 0, 1))).float().unsqueeze(0).to(device)
 
     
     ref_img = cv2.resize(ref_img, dsize=(style_size, style_size))
-    style = torch.from_numpy(np.transpose(ref_img, (2, 0, 1))).float().unsqueeze(0)
+    style = torch.from_numpy(np.transpose(ref_img, (2, 0, 1))).float().unsqueeze(0).to(device)
 
     
 
