@@ -36,7 +36,6 @@ See [ColorTransferAlg](https://github.com/hpotechius/ColorTransferAlg) for infor
 python3.12 -m venv env
 source env/bin/activate
 pip install colortransferlib
-pip install git+https://github.com/facebookresearch/detectron2.git@main
 ```
 
 ### Install from source
@@ -49,8 +48,12 @@ git clone git@github.com:hpotechius/ColorTransferLib.git
 cd ColorTransferLib
 python setup.py bdist_wheel
 pip install dist/colortransferlib-2.2.0-py3-none-any.whl 
-pip install git+https://github.com/facebookresearch/detectron2.git@main
 ```
+
+The Hugging Face-compatible method list excludes algorithms that require
+runtime model or checkpoint downloads. This includes `Afifi21`, `Afifi21_2`,
+`Cao20`, `Chang03`, `Deng22`, `Gatys15`, `Ji22`, `Kang23`, `Lee20`, `Luan17`,
+and `Su20`. It also avoids their native or Detectron2 dependencies.
 
 ## Usage
 ### Color Transfer

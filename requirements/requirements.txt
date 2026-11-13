@@ -1,7 +1,6 @@
 
 appdirs==1.4.4
 cog==0.16.8
-dlib==20.0.0
 faiss-cpu==1.13.1
 linear_attention_transformer==0.19.1
 lpips==0.1.4
@@ -12,7 +11,6 @@ phasepack==1.5
 plyfile==1.1.3
 pyamg==5.3.0
 pyfftw==0.15.1
-pyhull==2015.2.1
 pyiqa==0.1.14.1
 pyntcloud==0.3.1
 retry==0.9.2

@@ -81,7 +81,13 @@ def check_compatibility(src, ref, compatibility_list):
 # ----------------------------------------------------------------------------------------------------------------------
 def get_methods():
     available_methods = os.listdir(os.path.dirname(os.path.abspath(__file__)) + "/../Algorithms")
-    toremove = ["__init__.pyc", "__init__.py", "__pycache__", ".DS_Store", "FCM", "GMM","RGH","DPT","PSN","BCC","NST","TPS","EB3","PDF","HIS","FUZ","CAM","GPC","RHG","CCS", "MKL"]
+    toremove = ["__init__.pyc", "__init__.py", "__pycache__", ".DS_Store",
+                "FCM", "GMM", "RGH", "DPT", "PSN", "BCC", "NST", "TPS",
+                "EB3", "PDF", "HIS", "FUZ", "CAM", "GPC", "RHG", "CCS",
+                "MKL",
+                # Methods that download model/checkpoint files at runtime.
+                "Afifi21", "Afifi21_2", "Cao20", "Chang03", "Deng22",
+                "Gatys15", "Ji22", "Kang23", "Lee20", "Luan17", "Su20"]
     #toremove = ["__init__.pyc", "__init__.py", "__pycache__", ".DS_Store", "FCM", "GMM", "TPS"]
     available_methods = [m for m in available_methods if m not in toremove]
     return available_methods
